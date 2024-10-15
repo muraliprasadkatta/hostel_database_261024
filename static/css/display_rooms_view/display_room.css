@@ -1,0 +1,499 @@
+      
+/* Add your existing CSS styles here */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+.header,.image-section, .statistics, .container-wrapper, .addRoom {
+    transition: margin-left 0.3s ease;
+  }
+
+  body.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  body.sidebar-open .header {
+    margin-left: 280px;
+    width: calc(100% - 300px);
+  }
+
+  body.sidebar-open .image-section,
+  body.sidebar-open .statistics,
+  body.sidebar-open .addRoom,
+  body.sidebar-open .container-wrapper {
+    margin-left: 280px;
+    width: calc(100% - 285px);
+  }
+
+
+
+.header.scrolled {
+  background-color: #333; /* New background color when scrolled */
+  color: #fff; /* Change text color if needed */
+  background: blue;
+}
+
+.back-arrow {
+  display: block !important;
+  height: 30px;
+  width: 50px;
+  background: none;
+}
+
+.back-arrow img {
+  height: 30px;
+  width: 40px;
+}
+
+.header .logo {
+  display: flex;
+  align-items: center;
+  background: blue;
+}
+
+.header .logo img {
+  height: 40px;
+}
+
+.back-arrow {
+  display: none; /* Hide by default */
+}
+
+.menu-icon {
+  display: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.menu-icon img {
+  width: 30px;
+  height: 30px;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 1001;
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdown-menu ul li {
+  border-bottom: 1px solid #ddd;
+}
+
+.dropdown-menu ul li a {
+  display: block;
+  padding: 10px 20px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.dropdown-menu ul li a:hover {
+  background-color: #f5f5f5;
+}
+
+.image-section {
+  margin-top: 50px;
+}
+
+.image-section img {
+  width: 100%;
+  height: 300px;
+}
+
+.statistics {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  /* background-color: #fff; */
+  background: rgb(252, 235, 253);    
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+}
+
+.statistics .stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.statistics .stat-item div:first-child {
+  font-size: 18px;
+  color: #555;
+}
+
+.statistics .stat-item div:last-child {
+  font-size: 24px;
+  color: #333;
+}
+
+.divider {
+  width: 2px;
+  height: 50px; /* Adjust height as needed */
+  background-color: #333;
+  margin: 0 1px; /* Adjust space around the divider as needed */
+}
+
+.container-wrapper {
+  display: flex;
+  justify-content: center;
+  background: rgb(235, 206, 237);
+}
+
+.container-display {
+  width: 100%;
+}
+
+
+.display-room-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  margin: 5px;
+  padding: 15px;
+  
+}
+
+/* When sidebar is open */
+body.sidebar-open .display-room-row {
+  margin: 5px;
+  padding:0px 20px 0px 40px; /* Increase padding when sidebar is open */
+  /* background: blue; */
+}
+
+  /* Room box link covers the whole box */
+  .room-box-link {
+    display: block;
+    text-decoration: none; /* Remove underline from link */
+    color: inherit; /* Inherit text color */
+    position: relative; /* Ensure proper positioning for child elements */
+  }
+
+.room-box {
+  margin: 5px;
+
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 100px;
+  min-height: 150px;
+  text-align: center;
+  position: relative;
+  cursor: pointer; /* Make the room-box clickable */
+  flex: 1 1 800px; /* Adjust as needed to ensure proper spacing */
+  /* background:transparent; */
+  /* background: blue; */
+}
+
+body.sidebar-open .room-box {
+  margin: 5px
+}
+
+/* Hover effect for room box */
+.room-box:hover {
+  background-color: #e0e0e0; /* Add hover effect if needed */
+}
+
+
+.room-number {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 0 40px; /* Add padding to accommodate the icon */
+  color: black;
+}
+
+.room-edit-option {
+  position: absolute;
+  right: 10px; /* Adjust this value to position the icon closer or further */
+  top: 50%;
+  transform: translateY(-50%);
+  color: black; /* Adjust text color for better visibility */
+  z-index: 10; /* Ensure it's above the clickable room box */
+  cursor: default; /* Set cursor to default (normal arrow) */
+}
+
+/* Ensure that the room link is disabled when hovering over the edit option */
+.room-edit-option:hover {
+  pointer-events: auto; /* Enable pointer events for the edit option */
+}
+
+/* Disable pointer events for the room box link when hovering over the edit option */
+.room-edit-option:hover ~ .room-box-link {
+  pointer-events: none;
+}
+
+.room-edit-options-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 11; /* Ensure it is above everything else */
+  background: whitesmoke;
+  /* padding: 2px;
+  width: 80px; */
+}
+
+.room-edit-options-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.room-edit-options-menu ul li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: black;
+  font-size: 15px;
+  padding: 1px;
+  
+}
+
+.room-edit-options-menu ul li img {
+  margin-right: 0px; /* Adjust as needed for spacing */
+  width: 10px; /* Image width */
+  height: 10px; /* Image height */
+
+}
+
+.room-edit-options-menu ul li:hover {
+  background: #f0f0f0;
+}
+
+.shareNumbers {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.shareNumbers i {
+  margin: 5px;
+}
+
+.read-more-link {
+  margin-top: 10px;
+  display: block;
+}
+
+.payments-section {
+  margin: 65px 10px 0px 10px;
+  /* background: rgb(235, 206, 237); */
+  border-bottom: 1px solid black;
+  border-radius: 0px;
+  background: rgb(252, 235, 253);    
+}
+
+body.sidebar-open .sidebar {
+  transform: translateX(0); /* Show sidebar */
+}
+
+body.sidebar-open .payments-section {
+  margin-left: 280px; /* Adjust content when sidebar is open */
+  width: calc(100% - 250px);
+}
+
+.payments-section {
+  transition: margin-left 0.3s ease;
+}
+
+.custom-button {
+  border: none;
+  color: black;
+  padding: 5px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 30px;
+  background: transparent; /* Make the button background transparent */
+  position: relative;
+  z-index: 1;
+  width: 150px; /* Fixed width for buttons */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+}
+
+.button-container span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px; /* Adjusted width */
+  height: 40px; /* Adjusted height */
+  /* background: linear-gradient(45deg, #4f1919, #ff3333); */
+  /* background: linear-gradient(45deg, #fcfcfc, #ff9393); */
+  background: white;
+  border-radius: 30px;
+  transition: all .1s ease-in-out;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+}
+
+#collection-button:hover ~ span {
+  margin-left: -110px; /* Adjusted for button position */
+}
+
+#Requests-button:hover ~ span {
+  margin-left: 0;
+}
+
+#history-button:hover ~ span {
+  margin-left: 110px; /* Adjusted for button position */
+}
+
+@media screen and (max-width: 768px) {
+
+  .container-wrapper {
+    background: rgb(235, 206, 237);
+  }
+
+    body.sidebar-open .header,
+    body.sidebar-open .custom-button,
+    body.sidebar-open .image-section,
+    body.sidebar-open .statistics,
+    body.sidebar-open .container-wrapper,
+    body.sidebar-open .addRoom {
+      margin-left: 450px;
+      width: calc(100% - 300px);
+    }
+
+    
+  .custom-button {
+    font-size: 12px;
+    padding: 5px 10px;
+    width: 100px; /* Adjusted width for mobile */
+  }
+
+  .button-container span {
+    width: 100px; /* Adjusted width for mobile */
+    height: 30px; /* Adjusted height for mobile */
+  }
+
+  #collection-button:hover ~ span {
+    margin-left: -125px; /* Adjusted for button position */
+  }
+
+  #dashboard-button:hover ~ span {
+    margin-left: 0;
+  }
+
+  #Requests-button:hover ~ span {
+    margin-left: 125px; 
+  }
+
+  body.sidebar-open .payments-section {
+    margin-left: 400px; /* Adjust content when sidebar is open */
+    width: calc(100% - 350px);
+  }
+
+  .image-section {
+    margin-top: 0px;
+  }
+
+  .image-section img {
+    width: 100%;
+    height: 150px;
+  }
+
+  .room-box {
+    margin: 5px;
+    padding: 0px;
+  }
+
+  .display-room-row {
+    padding: 10px;
+    background: orange;
+  }
+
+
+  .form-row .box {
+    margin: 0px;
+  }
+
+  .form-row .box input[type="text"] {
+    /* margin-top: 10px; */
+    width: 80px;
+    height: 30px;
+    border: 1px solid black;
+    /* background: red; */
+    text-align: center;
+  }
+
+  .roomavailable-container {
+    margin: 20px 0px 20px 0px;
+    border: 1px dotted black;
+    padding: 10px 30px;
+  }
+
+  .select-all-container {
+    margin: 10px 0px 10px 0px;
+  }
+}
+/* Simple modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+

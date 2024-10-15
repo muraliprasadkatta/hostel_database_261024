@@ -1,0 +1,216 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Document{% endblock %}</title>
+  
+  <!-- CSS links -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  {% include 'includes/cdnlines.html' %}
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<!-- Internal CSS for Property Styles -->
+
+
+<body>
+  <!-- Sidebar for properties -->
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">×</span>
+    
+    <!-- Profile Section -->
+    <a href="{% url 'propertyProfile' selected_property.id %}">
+      <div class="profile-section">
+        <div class="profile-image-container">
+          {% if selected_property.image %}
+            <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
+          {% else %}
+            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
+          {% endif %}
+        </div>
+        <span class="profile-name" id="selectedPropertyName">{{ selected_property.hostelname }}</span>
+      </div>
+    </a>
+
+    <!-- Properties List -->
+    <ul class="sidebar-options">
+      <li class="property-header">
+        <i class="fas fa-exchange-alt icon"></i> Switch Properties
+      </li>
+      
+      <li class="properties-box">
+        <div class="scrollable-properties">
+          {% if user_properties %}
+            {% for property in user_properties %}
+              <div class="property-item {% if property.id == selected_property.id %}active{% else %}disabled{% endif %}" id="property-{{ property.id }}">
+                {% if property.image %}
+                  <img src="{{ property.image.url }}" class="property-image" alt="{{ property.hostelname }} Image">
+                {% else %}
+                  <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="property-image" alt="Default Image">
+                {% endif %}
+                <span class="property-name">{{ property.hostelname }}</span>
+                {% if property.id == selected_property.id %}
+                  <img src="{% static 'images/displayroom_sidebar/3d-tick-image.png' %}" alt="Selected" class="tick-image" id="tick-{{ property.id }}">
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div>No Properties Yet</div>
+          {% endif %}
+        </div>
+      </li>
+
+    <!-- Base template lo -->
+    <div class="change-property-button">
+      {% if show_change_property_button %}
+          <button onclick="switchProperty()">Change Property</button>
+      {% endif %}
+    </div>
+
+      
+      <li><a href="{% url 'history_url' property_id=selected_property.id %}"><i class="fas fa-history icon"></i> History</a></li>
+      <li><a href="#"><i class="fas fa-question-circle icon"></i> Help</a></li>
+      <li><a href="#"><i class="fas fa-cog icon"></i> Settings</a></li>
+      <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt icon"></i> Logout</a></li>
+    </ul>
+
+    <div class="bottom-link">
+      <a href="#"><i class="fas fa-home icon"></i> Go to Home Page</a>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="header" id="header">
+    <div class="dispalyMenubar-icon" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-container header-search">
+      <input type="text" placeholder="Search..." class="search-box" id="search-header">
+      <i class="fa fa-search search-icon header-icon"></i>
+    </div>
+
+    <!-- Dropdown and Navigation -->
+    <div class="rightOption-icon">
+      <i class="fas fa-ellipsis-v options-icon" onclick="toggleOptions()"></i>
+    </div>
+
+    <nav class="nav">
+      <ul class="nav-list">
+        <li><a href="#" class="nav-item nav-home">Home</a></li>
+        <li><a href="#" class="nav-item nav-rooms">Rooms</a></li>
+        <li><a href="{% url 'test' %}" class="nav-item nav-bookings">Bookings</a></li>
+        <li><a href="{% url 'Payments' property_id=selected_property.id %}" class="nav-item nav-collections">Collections</a></li>
+      </ul>
+    </nav>
+
+    <div class="dropdown-menu" id="dropdownMenu">
+      <ul>
+        <li><a href="#" class="nav-item" id="editRoom"><img src="{% static 'images/displayroom_header/edit_room_image.png' %}" alt="Edit Rooms" style="width:30px;height:30px;"> Edit Rooms</a></li>
+        <li><a href="#" class="nav-item"><i class="fas fa-calendar-check"></i> Apply Monthly Extras</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Content and Payment Template -->
+  {% include 'data/add_property_modal.html' %}
+  {% block paymentTemplate %}{% endblock %}
+  {% block content %}{% endblock %}
+
+<script>
+
+function switchProperty() {
+    // Clear session storage (if needed)
+    sessionStorage.clear();
+
+    // Replace the current history state with the dashboard URL
+    window.history.replaceState(null, '', '/dashboard/');
+
+    // Optionally reload the page to clear any session-related data
+    window.location.replace('/dashboard/');
+}
+
+
+
+    // Toggle dropdown menu
+    function toggleOptions() {
+      const dropdownMenu = document.getElementById('dropdownMenu');
+      dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.rightOption-icon') && !event.target.closest('.dropdown-menu')) {
+        document.getElementById('dropdownMenu').style.display = 'none';
+      }
+    });
+
+    // Handle sidebar state and restore state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidebarState = localStorage.getItem('sidebarState');
+      if (window.innerWidth > 768 && (!sidebarState || sidebarState === 'open')) {
+        document.body.classList.add('sidebar-open');
+      }
+    });
+
+    // Toggle sidebar and save state to localStorage
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-open');
+      localStorage.setItem('sidebarState', document.body.classList.contains('sidebar-open') ? 'open' : 'closed');
+    }
+
+    // Fetch rooms for the selected property
+    function fetchRooms(propertyId, propertyImage) {
+      fetch(`/DisplayRooms/${propertyId}/`, {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        updateRoomsOnPage(data.user_rooms);
+        updateSelectedProperty(propertyId, propertyImage);
+      })
+      .catch(error => console.error('Error fetching rooms:', error));
+    }
+
+    // Update rooms on the page
+    function updateRoomsOnPage(rooms) {
+      const roomsContainer = document.querySelector('.display-room-row');
+      roomsContainer.innerHTML = '';  // Clear existing rooms
+
+      rooms.forEach(room => {
+        const roomDiv = document.createElement('div');
+        roomDiv.classList.add('room-box');
+        roomDiv.innerHTML = `
+          <div class="room-number">${room.room_number}</div>
+          <div class="shareNumbers">${room.number_of_share}</div>
+        `;
+        roomsContainer.appendChild(roomDiv);
+      });
+    }
+
+    // Update selected property in the UI
+    function updateSelectedProperty(propertyId, propertyImage) {
+      document.querySelectorAll('.tick-image').forEach(img => img.style.display = 'none');  // Hide all tick images
+      document.getElementById('tick-' + propertyId).style.display = 'block';  // Show tick for selected property
+
+      const selectedPropertyImage = document.getElementById('selectedPropertyImage');
+      selectedPropertyImage.src = propertyImage;  // Update the image
+
+      const propertyItem = document.getElementById('property-' + propertyId);
+      const propertyName = propertyItem.querySelector('.property-name').textContent;
+      document.getElementById('selectedPropertyName').textContent = propertyName;  // Update the property name
+    }
+  </script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

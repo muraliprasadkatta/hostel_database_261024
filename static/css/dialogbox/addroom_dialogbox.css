@@ -1,0 +1,217 @@
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1500; /* High z-index to stay on top */
+    left: 0;
+    top: 0; /* Start from the very top */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+}
+
+    .modal-content {
+    background-color: #fefefe;
+    margin: 0 auto; /* Center the content horizontally */
+    padding: 20px; 
+    /* border: 1px solid #888; */
+    width: 100%; /* Adjust the width as necessary */
+    height: 90vh; /* Example height that could cause scrolling */
+    overflow-y: auto; /* Allows scrolling within the content if it overflows */
+    box-sizing: border-box; /* Includes padding and border in the width and height */
+}
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+
+
+.modal-header {
+    background-color: #f7f7f7; /* Default background color */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1px 1px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    width: 100%;
+    /* border-bottom: 1px solid #ccc; */
+    /* box-sizing: border-box; */
+    position: sticky;
+    top: 0; /* This will stick the header at the top of the modal */
+    z-index: 1600; /* Higher than the content for stacking context */
+}
+
+.modal-header.border-visible {
+    border-bottom: 1px solid #b6b6b6; /* Light grey border for visibility */
+    background-color: #ffffff; /* Change background color to white when active */
+}
+
+
+.modal-header .back-arrow img {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    padding-left: 9px;
+}
+
+.modal-title {
+    flex-grow: 1;  /* Allows the title to take up the available space */
+    text-align: center;
+}
+
+
+        /* Flexbox for form fields */
+        .form-row {
+    display: flex;  /* Aligns children (boxes) in a row */
+    justify-content: space-between;  /* Distributes space between the children evenly */
+    align-items: flex-start; /* Aligns items at the start of their container */
+    flex-wrap: wrap;  /* Allows items to wrap on smaller screens */
+    width: 100%; /* Ensures the row takes full width of its container */
+}
+
+.box {
+    flex: 1 1 2%;  /* Allows box to grow and shrink with a basis of 22% of the flex container's size */
+    display: flex;
+    flex-direction: column; /* Stacks the label and input vertically */
+    align-items: center; /* Centers the items horizontally */
+    padding: 10px; /* Adds some padding around each box */
+    box-sizing: border-box; /* Includes padding in the box's size calculation */
+}
+
+.box label {
+    margin-bottom: 8px; /* Space between the label and the input */
+    text-align: center; /* Centers the label text */
+    width: 100%; /* Ensures the label takes full width of the box */
+}
+
+.box input[type="text"], .box input[type="number"] {
+    width: 80%; /* Makes input take up the entire width of the box */
+    padding: 8px; /* Padding for aesthetic spacing inside the input */
+}
+
+
+
+
+.radio-container {
+    display: flex;
+    align-items: center;
+    justify-content: start; /* Adjust this as needed, 'start' aligns items at the start of the container */
+}
+
+.radio-option {
+    margin-right: 20px; /* Adds space between the 'Yes' and 'No' options */
+}
+
+        /* .container-facilitie {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: green;
+
+            } */
+
+        .checkbox-tile-group {
+            display: flex;
+            flex-wrap: wrap;
+            /* margin-left: 10px; */
+            justify-content: center;
+            /* background: blue */
+            width: 100%;
+            }
+            
+.input-container {
+    position: relative;
+    height: 100px; /* Increased height for better spacing */
+    width: 90px; /* Increased width for better spacing */
+    margin: 5px; /* Increased margin for clear separation */
+    cursor: pointer;
+}
+
+.input-container .checkbox-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers content horizontally in a flex column */
+    justify-content: center; /* Centers content vertically */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    /* background-color: #f9f9f9; */
+    height: 100%;
+    width: 100%;
+}
+
+.input-container span {
+    font-size: 24px; /* Larger icon size */
+    color: #333; /* Darker color for better visibility */
+}
+
+.input-container label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center; /* Ensure the text is centered */
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+.input-container input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.input-container input[type="checkbox"]:checked + .checkbox-tile {
+    border-color: #07afd9; /* Highlight color when active */
+    background-color: #e6f7ff; /* Light blue background when checked */
+    
+}
+
+
+:root {
+--primary-color: #07afd9;
+}
+
+@media (max-width: 768px) {
+    .input-container {
+    position: relative;
+    height: 80px; /* Increased height for better spacing */
+    width: 65px; /* Increased width for better spacing */
+    margin: 5px; /* Increased margin for clear separation */
+}
+
+
+.input-container label {
+    font-size: 0.6rem;
+
+}
+
+.form-row .box {
+        flex-basis: 50%;  /* Makes each box take full width on small screens */
+        margin-bottom: 7px;  /* Adds margin at the bottom for stacking */
+    }
+
+    .checkbox-tile-group {
+            display: flex;
+            flex-wrap: wrap;
+            /* margin-left: 10px; */
+            justify-content: center;
+            /* background: blue */
+            width: 100%;
+            }
+}

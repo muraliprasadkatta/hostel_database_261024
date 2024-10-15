@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Details</title>
+    <style>
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #e0e0e0;
+        }
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            display: none; /* Hide by default */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .text-field {
+            margin: 5px 0;
+            padding: 8px;
+            display: block;
+        }
+        .image-upload {
+            display: none; /* Hide image upload by default */
+        }
+    </style>
+</head>
+<body>
+    <h1>Tenant Details</h1>
+
+    <!-- Form for Editing Tenant -->
+    <form id="tenantForm" method="POST" action="{% url 'EditTenant' room.property_id room.room_number tenant.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <h2>Personal Information</h2>
+        <p><strong>Tenant Name:</strong> <span id="nameText" class="text-field">{{ tenant.name }}</span>
+            <input type="text" id="tenantName" name="name" class="input-field" value="{{ tenant.name }}">
+        </p>
+
+        <p><strong>Email:</strong> <span id="emailText" class="text-field">{{ email }}</span>
+            <input type="email" id="email" name="email" class="input-field" value="{{ email }}">
+        </p>
+
+        <p><strong>Mobile:</strong> <span id="mobileText" class="text-field">{{ mobile }}</span>
+            <input type="text" id="mobile" name="mobile" class="input-field" value="{{ mobile }}">
+        </p>
+
+        <h2>Government ID Proof</h2>
+        <p><strong>Adhar Number:</strong> <span id="adharText" class="text-field">{{ adhar_number }}</span>
+            <input type="text" id="adhar_number" name="adhar_number" class="input-field" value="{{ adhar_number }}">
+        </p>
+
+        <h2>Address</h2>
+        <p><strong>Pincode:</strong> <span id="pincodeText" class="text-field">{{ pincode }}</span>
+            <input type="text" id="pincode" name="pincode" class="input-field" value="{{ pincode }}">
+        </p>
+
+        <p><strong>State:</strong> <span id="stateText" class="text-field">{{ state }}</span>
+            <input type="text" id="state" name="state" class="input-field" value="{{ state }}">
+        </p>
+
+        <p><strong>District:</strong> <span id="distText" class="text-field">{{ dist }}</span>
+            <input type="text" id="dist" name="dist" class="input-field" value="{{ dist }}">
+        </p>
+
+        <p><strong>City/Town/Village:</strong> <span id="cityText" class="text-field">{{ city }}</span>
+            <input type="text" id="city" name="city" class="input-field" value="{{ city }}">
+        </p>
+
+        <p><strong>Door No:</strong> <span id="doorNoText" class="text-field">{{ door_no }}</span>
+            <input type="text" id="door_no" name="door_no" class="input-field" value="{{ door_no }}">
+        </p>
+
+        <p><strong>Area:</strong> <span id="areaText" class="text-field">{{ area }}</span>
+            <input type="text" id="area" name="area" class="input-field" value="{{ area }}">
+        </p>
+
+        <p><strong>Street:</strong> <span id="streetText" class="text-field">{{ street }}</span>
+            <input type="text" id="street" name="street" class="input-field" value="{{ street }}">
+        </p>
+
+        <p><strong>Landmark:</strong> <span id="landmarkText" class="text-field">{{ landmark }}</span>
+            <input type="text" id="landmark" name="landmark" class="input-field" value="{{ landmark }}">
+        </p>
+
+        <h2>Management Details</h2>
+        <p><strong>Bike Number:</strong> <span id="bikeText" class="text-field">{{ bike_number }}</span>
+            <input type="text" id="bike_number" name="bike_number" class="input-field" value="{{ bike_number }}">
+        </p>
+
+        <p><strong>Joining Date:</strong> <span id="joiningDateText" class="text-field">{{ joining_date }}</span>
+            <input type="date" id="joining_date" name="joining_date" class="input-field" value="{{ joining_date }}">
+        </p>
+
+        <p><strong>Allocated Bed:</strong> <span id="allocatedBedText" class="text-field">{{ allocated_bed }}</span>
+            <input type="text" id="allocated_bed" name="allocated_bed" class="input-field" value="{{ allocated_bed }}">
+        </p>
+
+        <p><strong>Rent:</strong> <span id="rentText" class="text-field">{{ rent }}</span>
+            <input type="text" id="rent" name="rent" class="input-field" value="{{ rent }}">
+        </p>
+
+        <p><strong>Advance:</strong> <span id="advanceText" class="text-field">{{ advance }}</span>
+            <input type="text" id="advance" name="advance" class="input-field" value="{{ advance }}">
+        </p>
+
+        <h2>Tenant Image</h2>
+        {% if tenant_image %}
+            <img src="{{ tenant_image.url }}" alt="Tenant Image" width="100"><br>
+        {% else %}
+            <span>No image available</span><br>
+        {% endif %}
+
+        <!-- File Input for Image Upload (hidden by default) -->
+        <input type="file" id="tenant_image" name="tenant_image" class="image-upload"><br>
+
+        <button type="button" class="button" id="editButton" onclick="enableEditing()">Edit Tenant</button>
+        <button type="submit" class="button" id="saveButton" style="display:none;">Save Changes</button>
+    </form>
+
+    <script>
+        function enableEditing() {
+            // Hide text fields and show input fields
+            document.querySelectorAll('.text-field').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.input-field').forEach(el => el.style.display = 'block');
+
+            // Show the image upload option
+            document.querySelector('.image-upload').style.display = 'block';
+
+            // Show the Save button
+            document.getElementById('saveButton').style.display = 'inline-block';
+
+            // Hide the Edit button
+            document.getElementById('editButton').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

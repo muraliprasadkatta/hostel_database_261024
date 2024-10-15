@@ -1,0 +1,702 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Registration Form</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>
+
+    <style>
+        body, html {
+            height: 100%;
+            margin-top: 0%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .flip-card {
+            background-color: transparent;
+            width: 350px;
+            height: 520px;
+            perspective: 1000px;
+            margin-top: 5px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 14px 18px 0 rgba(0,0,0,0.2);
+            transform: rotateY(0deg);
+        }
+
+        .flip-card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            box-shadow: 5px 10px 20px #000;
+            border-radius: 10px;
+        }
+
+        .flip-card-front {
+            background: linear-gradient(to bottom, #c8c8da, #c2beef, #dddaa1, #b8cf71, #7ec76c, #76c2aa, #6fa0d8, #5b5ba7);
+            color: black;
+        }
+
+        .flip-card-back {
+            background: linear-gradient(to bottom, #c8c8da, #c2beef, #dddaa1, #b8cf71, #7ec76c, #76c2aa, #6fa0d8, #5b5ba7);
+            color: black;
+            transform: rotateY(180deg);
+        }
+
+        .back-container {
+            padding: 20px;
+            height: 100%;
+        }
+
+        .front-container {
+            padding: 10px 10px;
+            margin: 20px; /* Added margin only to front card */
+            height: 100%;
+        }
+
+        input[type="text"], input[type="password"], button {
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #573b8a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #004494;
+        }
+
+        button:disabled {
+            background-color: lightgray;
+            cursor: not-allowed;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 20px;
+            top: 17px;
+            cursor: pointer;
+            color: #000;
+            font-size: 12px;
+        }
+
+        .social-logins-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .social-logins {
+            display: flex;
+            justify-content: space-around;
+            width: 95%;
+        }
+
+        .social-login img.social-icon {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .social-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+        }
+
+        .google-login img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .google-login {
+            background-color: #db4437;
+            color: white;
+        }
+
+        .facebook-login {
+            background-color: #3b5998;
+            color: white;
+        }
+
+        .social-login-title {
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+        }
+
+        #passwordError {
+            visibility: hidden; /* Hide by default */
+            color: red;
+        }
+
+        .button-link {
+            text-decoration: none;
+        }
+
+        .loginimage {
+            padding-right: 100px;
+            background-color: transparent; /* Ensures the div has no background color */
+        }
+
+        .loginimage img {
+            background: none; /* Ensures the image has no CSS background */
+            display: block; /* Removes any extra space below the image which might be showing the background */
+        }
+
+        /* ---------------------------------------- */
+
+        #middleimage_a, #middleimage_r, #middleimage_u, #middleimage_m {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* container */
+        .middleslider {
+            overflow: hidden;
+            max-width: 300px; /* Set the width of the slider */
+            position: relative;
+            border: 1px solid whitesmoke;
+            border-radius: 8px;
+            border-bottom: 10px 25px 30px;
+            height: 300px;
+        }
+
+        /* wrapper */
+        .middleslides {
+            display: flex;
+            width: 400%; /* 3 images, so 300% */
+            animation: slide 12s infinite; /* Adjusted duration for clearer transitions */
+        }
+
+        .slide {
+            width: 100%;
+            transition: opacity 1s ease;
+        }
+
+        .slide img {
+            width: 100%;
+            display: block;
+        }
+
+        @keyframes slide {
+            0%, 20% { transform: translateX(0); }     /* First image */
+            25%, 45% { transform: translateX(-25%); } /* Second image */
+            50%, 70% { transform: translateX(-50%); } /* Third image */
+            75%, 95% { transform: translateX(-75%); } /* Fourth image */
+        }
+
+        /* right slider */
+        /* container */
+        .lfslider {
+            overflow: hidden;
+            max-width: 100px; /* Set the width of the slider */
+            /* position: relative;border: 1px solid; */
+            border-radius: 8px;
+            border-bottom: 10px 25px 30px;
+            height: 100px;
+            margin: 50px;
+        }
+
+        /* wrapper */
+        .lfslides {
+            display: flex;
+            width: 400%; /* 3 images, so 300% */
+            animation: slide 12s infinite; /* Adjusted duration for clearer transitions */
+            height: 500px;
+        }
+
+        .slide img {
+            width: 100%;
+            display: block;
+        }
+
+        #lfimage_a, #lfimage_r, #lfimage_m, #lfimage_u {
+            width: 100px;
+            height: 100px;
+        }
+
+        .registration-indicate-image {
+            width: 520px;
+            height: auto;
+            margin: 90px;
+
+        }
+
+        /* Hide sidebar on mobile view */
+        @media (max-width: 768px) {
+            .lfslider, .middleslider {
+                display: none;
+            }
+
+            .flip-card {
+                width: 100%;
+                height: auto;
+            }
+
+            .flip-card-inner {
+                height: auto;
+            }
+
+            .flip-card-front, .flip-card-back {
+                height: auto;
+            }
+            
+
+            body, html {
+                height: 80%;
+                display: block;
+                padding: 10px;
+                box-sizing: border-box;
+                margin-top: 35px;
+            }
+
+            .front-container, .back-container {
+                margin: 0;
+                padding: 20px;
+            }
+            .registration-indicate-image{
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- <div class="lfslider">
+        <div class="lfslides">
+            <div class="slide"><img src="{% static 'images/hostel_login_image_a.png' %}" alt="a" id="lfimage_a"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image_r.png' %}" alt="r" id="lfimage_r"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image_m.png' %}" alt="m" id="lfimage_m"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image.u.jpg' %}" alt="u" id="lfimage_u"></div>
+        </div>
+    </div> 
+    <div class="middleslider">
+        <div class="middleslides">
+            <div class="slide"><img src="{% static 'images/hostel_login_image_r.png' %}" alt="r" id="middleimage_r"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image_m.png' %}" alt="m" id="middleimage_m"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image.u.jpg' %}" alt="u" id="middleimage_u"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image_a.png' %}" alt="a" id="middleimage_a"></div>
+        </div>
+    </div>
+    <div class="lfslider">
+        <div class="lfslides">
+            <div class="slide"><img src="{% static 'images/hostel_login_image_m.png' %}" alt="m" id="lfimage_m"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image.u.jpg' %}" alt="u" id="lfimage_u"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image_a.png' %}" alt="a" id="lfimage_a"></div>
+            <div class="slide"><img src="{% static 'images/hostel_login_image_r.png' %}" alt="r" id="lfimage_r"></div>
+        </div>
+    </div>     -->
+
+    <img src="{% static 'images/dashboard/regsitration_indicate.png'%}" alt="no image founded" class="registration-indicate-image">
+    <div class="flip-card">
+        <div class="flip-card-inner">
+            <div class="flip-card-front">
+                <div class="front-container">
+                    <form method="post" action="{% url 'login_and_registration' %}" id="loginForm">
+                        {% csrf_token %}
+                        <h1>Login</h1>
+
+
+                        <div class="messages">
+                            {% for message in messages %}
+                                {% if 'login_error' in message.tags %}
+                                    <div class="{{ message.tags }}" style="color: red;">
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <input type="text" name="identifier" placeholder="Username or Email or Mobile" required oninput="removeSpaces(this)">
+                        <div class="password-container">
+                            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+                            <i onclick="togglePasswordVisibility('loginPassword', this)" class="eye-icon fas fa-eye-slash"></i>
+                        </div>
+                        <button type="submit" name="login">Login</button>
+                        <p><a href="javascript:void(0);" onclick="flipCard()">Need an account? Register</a></p>
+                        <p><a href="{% url 'ForgetPassword'%}">Forgot Password?</a></p>
+
+
+                        <div class="social-logins-container">
+                            <span class="social-login-title">Log in with social media</span>
+                            <div class="social-logins">
+
+                                <a href="{% url 'social:begin' 'google-oauth2' %}?action=signup" class="button-link">
+                                    <button type="button" class="social-login google-login">
+                                        <img src="{% static 'images/google.jpg' %}" alt="Google Logo" class="social-icon">
+                                        <span class="text-google">Sign up with Google</span>
+                                    </button>
+                                </a>
+                                
+                            </div>
+                        </div>         
+                    </form>
+                </div>
+            </div>
+
+
+            
+            <div class="flip-card-back">
+                <div class="back-container">
+                    <form method="post" action="{% url 'login_and_registration' %}" id="registerForm" onsubmit="return validateEmailOrMobile()">
+                        {% csrf_token %}
+                        <h1>Register</h1>
+
+                        <div class="messages">
+                            {% for message in messages %}
+                                {% if 'signup_error' in message.tags %}
+                                    <div class="{{ message.tags }}" style="color: red;">
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+            
+                        
+                        <input type="text" name="username" placeholder="Username" id="username" required oninput="removeSpaces(this)" hx-post="{% url 'check_username' %}" hx-target="#username-check" hx-trigger="change" value="{{ username|default:'' }}">
+                        <div id="username-check"></div>
+                    
+                        
+                        <input type="text" name="email_or_mobile" id="email_or_mobile" placeholder="Email or Mobile" required value="{{ email|default_if_none:'' }}{{ mobile|default_if_none:'' }}">
+                        <div id="data-check"></div>
+                        
+                        <input type="hidden" name="email" id="email" value="{{ email|default:'' }}">
+                        <input type="hidden" name="mobile" id="mobile" value="{{ mobile|default:'' }}" minlength="10">
+                        
+                        <div class="password-container">
+                            <input type="password" id="password" name="password" placeholder="Password" required value="{{ password|default:'' }}">
+                            <i onclick="togglePasswordVisibility('password', this)" class="eye-icon fas fa-eye-slash"></i>
+                        </div>
+                        
+                        <div class="password-container">
+                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required value="{{ confirmPassword|default:'' }}">
+                            <i onclick="togglePasswordVisibility('confirmPassword', this)" class="eye-icon fas fa-eye-slash"></i>
+                        </div>
+                    
+                        <button type="submit" name="signup" id="submit-btn">Register</button>
+                    
+                        <p><a href="javascript:void(0);" onclick="flipCard()">Have an account? Login</a></p>
+                        <div class="social-logins-container">
+                            <span class="social-login-title">Log in with social media</span>
+                            <div class="social-logins">
+
+                                <a href="{% url 'social:begin' 'google-oauth2' %}?action=signup" class="button-link">
+                                    <button type="button" class="social-login google-login">
+                                        <img src="{% static 'images/google.jpg' %}" alt="Google Logo" class="social-icon">
+                                        <span class="text-google">Sign up with Google</span>
+                                    </button>
+                                </a>
+                                
+                            </div>
+                        </div>                    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+<!-- back change the color with image color automatically -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
+    <script>
+        const slides = document.querySelectorAll('.slide img');
+        const body = document.body;
+        const colorThief = new ColorThief();
+    
+        let currentSlide = 0;
+        const slideInterval = 3000; // 4 seconds per slide
+    
+        function changeBackgroundColor() {
+            const currentImage = slides[currentSlide];
+            
+            // Ensure image is loaded before getting the color
+            if (currentImage.complete) {
+                const dominantColor = colorThief.getColor(currentImage);
+                body.style.backgroundColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
+            } else {
+                currentImage.addEventListener('load', () => {
+                    const dominantColor = colorThief.getColor(currentImage);
+                    body.style.backgroundColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
+                });
+            }
+        }
+    
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            changeBackgroundColor();
+        }, slideInterval);
+    
+        // Initial background color
+        changeBackgroundColor();
+    </script>
+
+
+<!-- ---------------------------------------------------- -->
+<!-- for the filpcard rotate block while refreshing -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var showSignup = '{{ show_signup }}' === 'true';  // Ensure this matches exactly the string set in context
+    ensureCorrectCardState(showSignup);
+});
+
+function ensureCorrectCardState(showSignup) {
+    var cardInner = document.querySelector('.flip-card-inner');
+    var isFlipped = cardInner.classList.contains('flipped');
+    if (showSignup && !isFlipped) {
+        cardInner.classList.add('flipped');
+    } else if (!showSignup && isFlipped) {
+        cardInner.classList.remove('flipped');
+    }
+}
+
+function flipCard() {
+    var cardInner = document.querySelector('.flip-card-inner');
+    cardInner.classList.toggle('flipped');
+}
+
+function togglePasswordVisibility(passwordId, toggleIcon) {
+    var passwordInput = document.getElementById(passwordId);
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleIcon.classList.add('fa-eye');
+        toggleIcon.classList.remove('fa-eye-slash');
+    } else {
+        passwordInput.type = "password";
+        toggleIcon.classList.add('fa-eye-slash');
+        toggleIcon.classList.remove('fa-eye');
+    }
+}
+</script>
+
+
+<!-- ---------------------------------------------------- -->
+
+
+
+<!-- ---------------------------------------------------- -->
+
+<!-- flipcard function -->
+    <script>
+        function flipCard() {
+            var cardInner = document.querySelector('.flip-card-inner');
+            cardInner.classList.toggle('flipped');
+        }
+    </script>
+    <script>
+        function removeSpaces(input) {
+            input.value = input.value.replace(/\s+/g, '');
+        }
+
+        function togglePasswordVisibility(passwordFieldId, eyeIcon) {
+            var passwordField = document.getElementById(passwordFieldId);
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            }
+        }
+    </script>
+<!-- -------------------------------------------------------- -->
+<!-- filp-card conditions -->
+<script>
+
+    function flipCard() {
+        var cardInner = document.querySelector('.flip-card-inner');
+        var isFlipped = cardInner.style.transform === 'rotateY(180deg)';
+        cardInner.style.transform = isFlipped ? 'rotateY(0deg)' : 'rotateY(180deg)';
+
+        var front = document.querySelector('.flip-card-front');
+        var back = document.querySelector('.flip-card-back');
+        
+        // Set a brief timeout to wait for the flip transition to complete
+        setTimeout(function() {
+            if (isFlipped) {
+                // Now showing the front, so hide the back
+                back.style.visibility = 'hidden';
+                front.style.visibility = 'visible';
+            } else {
+                // Now showing the back, so hide the front
+                front.style.visibility = 'hidden';
+                back.style.visibility = 'visible';
+            }
+        }, 200); // This should match the duration of the flip transition
+    }
+
+    function togglePasswordVisibility(passwordFieldId, icon) {
+        var passwordInput = document.getElementById(passwordFieldId);
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            passwordInput.type = "password";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    }
+
+    function handleGoogleLogin() {
+        // Placeholder function for Google login logic
+        console.log("Google login clicked");
+        // Implement Google Sign-In using Google's APIs and update accordingly
+    }
+
+    function handleFacebookLogin() {
+        // Placeholder function for Facebook login logic
+        console.log("Facebook login clicked");
+        // Implement Facebook Sign-In using Facebook's APIs and update accordingly
+    }
+</script>
+
+<!-- ---------------------------------------------------- -->
+
+
+<!--------------------------------------------------------- -->
+
+<!-- htmx for email and mobile fields auto taken email or mobile field -->
+
+<!-- htmx for email and mobile fields auto taken email or mobile field  and disable the submit button whengettingany error-->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var inputField = document.getElementById('email_or_mobile');
+        var emailField = document.getElementById('email');
+        var mobileField = document.getElementById('mobile');
+        var submitButton = document.getElementById('submit-btn');
+    
+        function validateInput() {
+            var input = inputField.value.trim();
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex pattern
+            var mobilePattern = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/; // Mobile number validation pattern
+    
+            // Reset hidden fields
+            emailField.value = '';
+            mobileField.value = '';
+            submitButton.disabled = true; // Disable submit button by default
+    
+            // Check if the input is an email
+            if (emailPattern.test(input)) {
+                emailField.value = input;
+                document.getElementById('data-check').innerHTML = '';
+                checkField('email', "{% url 'check_email' %}", 'data-check');
+            } 
+            // Check if the input is a mobile number
+            else if (mobilePattern.test(input)) {
+                var cleanedMobile = input.replace(/^\+91[\-\s]?/, '').replace(/^0/, ''); // Clean the mobile number
+                if(cleanedMobile.length === 10) {
+                    mobileField.value = cleanedMobile;
+                    document.getElementById('data-check').innerHTML = '';
+                    checkField('mobile', "{% url 'check_mobile' %}", 'data-check');
+                } else {
+                    document.getElementById('data-check').innerHTML = '<div style="color: red;">Please enter a valid 10-digit mobile number.</div>';
+                    submitButton.disabled = true;
+                }
+            } else {
+                // If input is invalid, show error message
+                if(input.length > 0) {
+                    document.getElementById('data-check').innerHTML = '<div style="color: red;">Please enter a valid Gmail address or 10-digit mobile number.</div>';
+                    submitButton.disabled = true;
+                }
+            }
+        }
+    
+        inputField.addEventListener('input', validateInput);
+    
+        function checkField(fieldId, checkUrl, outputDiv) {
+            var value = document.getElementById(fieldId).value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', checkUrl, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById(outputDiv).innerHTML = this.responseText;
+                    if (this.responseText.trim() !== '') {
+                        submitButton.disabled = true; // Disable submit button if server returns an error
+                    } else {
+                        submitButton.disabled = false; // Enable submit button if server returns no error
+                    }
+                }
+            };
+            xhr.send(fieldId + '=' + encodeURIComponent(value));
+        }
+    });
+</script>
+    
+     
+    <!-- ---------------------------------------------------- -->
+
+
+    <!-- ---------------------------------------------------- -->
+
+<!-- password match error validation -->
+
+    <script>
+        document.getElementById('confirmPassword').addEventListener('input', validatePasswords);
+        document.getElementById('confirmPassword').addEventListener('blur', validatePasswords); // Also validate when user leaves the field
+    
+        function validatePasswords() {
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+            var errorDiv = document.getElementById('passwordError');
+    
+            // Only show an error if confirmPassword has been interacted with
+            if (confirmPassword.length > 0 && password !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match.';
+                errorDiv.style.visibility = 'visible'; // Ensure this is visible when there is a mismatch
+            } else if (password === confirmPassword) {
+                errorDiv.style.visibility = 'hidden'; // Hide error message when passwords match
+                errorDiv.textContent = ''; // Clear the error message
+            }
+        }
+    </script>
+
+    
+</body>
+</html>

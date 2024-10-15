@@ -1,0 +1,214 @@
+    .dispaly-beds-conatiner {
+        margin-top: 5%;
+        padding: 10px;
+        box-sizing: border-box;
+        height: 100%;
+        transition: margin-left 0.3s ease; /* Add transition */
+    }
+
+    .mobile-header {
+        display: none;
+    }
+
+    .header {
+        transition: margin-left 0.3s ease; /* Add transition */
+    }
+
+    body.sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    body.sidebar-open .header, 
+    body.sidebar-open .dispaly-beds-conatiner {
+        margin-left: 280px; /* Adjust content when sidebar is open */
+        width: calc(100% - 280px);
+    }
+
+    .tenant-image {
+        border-radius: 10%;
+        width: 100px;
+        height: 100px;
+        margin: 10px;
+    }
+
+    .tenant-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        border: 1px solid #ddd;
+        margin: 8px;
+        border-radius: 10px;
+        width: 290px;
+        box-sizing: border-box;
+        box-shadow: rgba(240, 46, 170, 0.4) -5px 5px, rgba(240, 46, 170, 0.3) -10px 10px, rgba(240, 46, 170, 0.2) -15px 15px, rgba(240, 46, 170, 0.1) -20px 20px, rgba(240, 46, 170, 0.05) -25px 25px;
+    }
+
+    .tenant-image-class {
+        margin-right: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tenant-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .tenant-details {
+        margin: 5px;
+    }
+
+    .tenant-details div {
+        margin: 2px 0;
+    }
+
+    .tenant-detail-box {
+        padding: 5px;
+        margin-bottom: 10px;
+        border-radius: 15%;
+        width: 120px;
+    }
+
+    .tenant-detail-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #ddd;
+        font-size: 13px;
+        color: black;
+    }
+
+    .tenant-detail-content {
+        margin-left: 10px;
+        font-size: 13px;
+    }
+
+    .tenant-name {
+        display: none; /* Hide the tenant name */
+    }
+
+    .bed-list {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: 0;
+        padding-left: 5px;
+    }
+
+    .tenant-buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .tenant-button {
+        padding: 3px 50px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .pay-button {
+        background-color: #4CAF50; /* Green */
+        color: white;
+    }
+
+    .initial-button {
+        background-color: #008CBA; /* Blue */
+        color: white;
+    }
+
+    .add-tenant-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 20px; /* Adjust padding for text */
+        background-color: #f0c14b;
+        border: 1px solid #a88734;
+        border-radius: 5px;
+        font-size: 16px;
+        color: white;
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+    }
+
+    .add-tenant-button img {
+        width: 24px; /* Adjust the size of the icon */
+        height: auto;
+    }
+
+    .add-tenant-button span {
+        margin-left: 8px;
+        white-space: nowrap;
+        opacity: 1; /* Always visible */
+    }
+
+    .add-tenant-button:disabled {
+        cursor: not-allowed;
+        background-color: #d3d3d3; /* Dim color */
+        border: 1px solid #a9a9a9; /* Dim border */
+        color: #a9a9a9; /* Dim text color */
+    }
+
+    .no-tenants-image {
+        width: 200px; /* Adjust the size of the image */
+        height: auto;
+        margin: 20px auto;
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar, .header {
+            display: none;
+        }
+
+        .dispaly-beds-conatiner {
+            margin: 0;
+            padding: 0 10px 10px 10px;
+            box-sizing: border-box;
+            height: auto;
+        }
+
+        .mobile-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-top: 0;
+        }
+
+        .mobile-header .back-button {
+            font-size: 0px;
+            cursor: pointer;
+            margin: 0 20px 0 5px;
+        }
+
+        .back-arrow-image {
+            width: 30px;
+            height: auto;
+        }
+
+        .mobile-header .title {
+            font-size: 18px;
+            font-weight: bold;
+            width: 65%;
+            text-align: center;
+        }
+
+        .tenant-item {
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid #ddd;
+            margin: 10px;
+            border-radius: 10px;
+            width: 300px;
+        }
+    }
+

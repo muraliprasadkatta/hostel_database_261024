@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- jQuery CDN Include -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <link rel="stylesheet" href="{% static 'css/dashboard/dashboard.css' %}">
+    {% include 'includes/cdnlines.html' %}
+    <title>Hostel Data</title>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">×</span>
+    <div class="profile-section">
+        <div class="profile-image" id="profileImage">👤</div>
+        <div class="camera-icon">
+            <img src="path/to/camera-icon.png" alt="Upload">
+        </div>
+    </div>
+    <hr>
+    <ul class="sidebar-options">
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+    </ul>
+</div>
+
+<div class="main-container" id="main-container">
+    <div class="header" id="header">
+        <div class="menu-icon" id="menuIcon" onclick="toggleSidebar()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="header-content" id="headerContent">
+            Hostel Data
+        </div>
+    </div>
+
+    <div class="content-container" id="main-content">
+        {% if user_properties %}
+            <div class="flex-box">
+                {% for property in user_properties %}
+                <a href="{% url 'DisplayRooms' property.id %}" class="flexbox-item" onclick="saveSelectedHostel({{ property.id }})">
+                    <div>
+                        <p>Hostel Name: {{ property.hostelname }}</p>
+                        <p>Owner Name: {{ property.ownername }}</p>  
+                    </div>
+                </a>
+                {% endfor %}
+                <div class="button-container-data">
+                    <button class="add-property-btn-data" onclick="openAddPropertyModal()">Add Property +</button>
+                </div>
+            </div>
+        {% else %}
+            <div class="image-dashboard">
+                <img src="{% static 'images/dashboard/house_image.png' %}" alt="No Properties Yet">
+                <p class="properties-paragrap">No Properties Added Yet</p>
+            </div>
+            <div class="button-container">
+                <button class="add-property-btn" onclick="openAddPropertyModal()">Add Property +</button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'data/add_property_modal.html' with user_pin_set=user_pin_set username=username management_pin_value=management_pin_value %}
+
+
+
+<!-- Toggle Sidebar Script -->
+<script>
+function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var mainContainer = document.getElementById('main-container');
+    var header = document.getElementById('header');
+    var menuIcon = document.getElementById('menuIcon');
+    var headerContent = document.getElementById('headerContent');
+    var contentContainer = document.getElementById('main-content');
+
+    sidebar.classList.toggle('open');
+    mainContainer.classList.toggle('compressed');
+    header.classList.toggle('compressed');
+    contentContainer.classList.toggle('compressed');
+
+    if (sidebar.classList.contains('open')) {
+        menuIcon.classList.add('hidden');
+        if (window.innerWidth <= 768) {
+            headerContent.classList.add('mobile-hidden');
+        }
+    } else {
+        menuIcon.classList.remove('hidden');
+        headerContent.classList.remove('mobile-hidden');
+    }
+}
+
+
+</script>
+
+<!-- Open and Close Modal Scripts -->
+
+<script>
+
+function openAddPropertyModal() {
+    document.getElementById('addPropertyModal').style.display = 'block';
+    document.getElementById('main-container').classList.add('blur');
+    document.getElementById('header').classList.add('blur');
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function closeAddPropertyModal() {
+    document.getElementById('addPropertyModal').style.display = 'none';
+    document.getElementById('main-container').classList.remove('blur');
+    document.getElementById('header').classList.remove('blur');
+}
+
+function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    document.getElementById('latitude').value = latitude;
+    document.getElementById('longitude').value = longitude;
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("User denied the request for Geolocation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            alert("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("An unknown error occurred.");
+            break;
+    }
+}
+</script>
+
+</body>
+</html>

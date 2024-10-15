@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Property Profile{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/header_property_profile.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .property-details-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            margin: 20px;
+            box-sizing: border-box;
+        }
+
+        .property-details-container h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .property-image {
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+        }
+
+        .property-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .property-info p {
+            flex: 1 1 calc(50% - 20px);
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .property-info p span {
+            font-weight: bold;
+        }
+
+        .location-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .location-container h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .location-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .location-table th, .location-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-container .edit-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button-container .edit-button:hover {
+            background-color: #45a049;
+        }
+
+        .button-container .delete-button {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .button-container .delete-button:hover {
+            background-color: #d32f2f;
+        }
+
+        @media (max-width: 768px) {
+            .property-info p {
+                flex: 1 1 100%;
+            }
+
+            .property-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .property-details-container {
+                width: 95%;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="property-details-container">
+        <h1>{{ property.hostelname }}</h1>
+        {% if property.image %}
+            <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
+        {% else %}
+            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
+        {% endif %}
+        <div class="property-info">
+            <p><span>Owner:</span> {{ property.ownername }}</p>
+            <p><span>Email:</span> {{ property.email }}</p>
+            <p><span>Mobile:</span> {{ property.mobile }}</p>
+            <p><span>Address:</span> {{ property.address }}</p>
+        </div>
+        <div class="location-container">
+            <h2>Location</h2>
+            <table class="location-table">
+                <tr>
+                    <th>Latitude</th>
+                    <td>{{ property.latitude }}</td>
+                </tr>
+                <tr>
+                    <th>Longitude</th>
+                    <td>{{ property.longitude }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="button-container">
+            <button class="edit-button" onclick="window.location.href='#'">Edit</button>
+            <button class="delete-button" onclick="#">Delete</button>
+        </div>
+    </div>
+</body>
+</html>

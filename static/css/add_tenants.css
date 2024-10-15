@@ -1,0 +1,216 @@
+body {
+    font-size: 16px;
+    font-family: system-ui;
+    /* background: white; */
+    background-color: #a9bae64a;
+
+    /* background:-webkit-radial-gradient(top left, #90F6FB,#2C3283); */
+}
+
+.form{
+    width: 100%;
+}
+h2 {
+    text-align: center;
+    color: #ef6e58;
+}
+form {
+    max-width: 400px; /* Set a maximum width for mobile screens */
+    width: 300px;
+    padding: 15px 40px 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    margin: 4% auto;
+}
+label {
+    display: block;
+    margin-bottom: 5px
+}
+label i {
+    color: #999;
+    font-size: 80%;
+}
+input, select {
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 2px;
+    background: white;
+}
+textarea{
+    padding: 30px;
+    background-color: #a9bae64a;
+
+}
+.box {
+    padding-bottom: 10px;
+}
+.form-inline {
+    border: 1px solid #ccc;
+    padding: 8px 10px 4px;
+    border-radius: 2px;
+}
+.form-inline label, .form-inline input {
+    display: inline-block;
+    width: auto;
+    padding-right: 15px;
+}
+.error {
+    color: red;
+    font-size: 90%;
+}
+input[type=text]{
+        outline: none;
+}
+
+input[type="submit"] {
+    font-size: 110%;
+    font-weight: 100;
+    background: #ef6e58;
+    border-color: #ef6e58;
+    box-shadow: 0 3px 0 #bd432e;
+    color: #fff;
+    margin-top: 10px;
+    cursor: pointer;
+}
+input[type="submit"]:hover {
+    background: #bd432e;
+    border-color: #bd432e;
+}
+
+.input-1 {
+    background-image: url('../images/check.png');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: 1px solid #01cc40;
+}
+
+.input-2 {
+    background-image: url('../images/cancel.png');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    border: 1px solid red;
+}
+.input-3{
+    border:1px solid #01cc40!important;
+}
+select{
+    outline: none!important;
+}
+.input-4{
+    border:1px solid red;
+}
+/* --------------------------------------------------------------- */
+/* for auto suggision input field */
+
+.container-search {
+    display: flex;
+    justify-content: space-between; /* Adjust as needed */
+    gap: 20px; /* Adjust as needed */
+}
+
+.search-box ,.search-box-state{
+    position: absolute;
+    margin: auto 0;
+    height: 65px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.search-box-pincode, .search-box-city,
+.search-box-doorno, .search-box-area{
+    margin-bottom: 10px;
+
+}
+/* .search-box-state {
+    border: orangered solid 2px;
+
+} */
+.search-box-row , .search-box-row-state{
+    display: flex;
+    align-items: center;
+    padding-left: 0px;
+    
+}
+
+#input-search-box , #input-search-box-state{
+    flex: 1;
+    border: 1px solid #ccc;
+    outline: 0;
+    background: transparent;
+    color: #333;  
+    background: white;
+  
+}
+.result-box ul{
+    border-top: 1px solid #999;
+    padding: 15px 10px;
+    margin-top: 0px;
+    z-index: 1; /* Set a higher z-index to bring the result boxes to the top layer */
+}
+.result-box-state ul{
+    border-top: 1px solid #999;
+    padding: 15px 10px;
+    margin-top: 0px;
+}
+
+
+.result-box ul li{
+    list-style:  none;
+    padding: 10px;
+    cursor: pointer;
+}
+.result-box-state ul li{
+    list-style:  none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+
+
+.result-box ul li:hover{
+    background: white;
+}
+.result-box-state ul li:hover{
+    background: white;
+}
+
+    
+.result-box, .result-box-state {
+    max-height: 300px;
+    overflow-y: scroll;
+    background: whitesmoke;
+    z-index: 3; /* Set a higher z-index to bring the result boxes to the top layer */
+
+}
+
+
+/* .container-search{
+    border: red solid 2px;
+} */
+
+/* Media query for screens with a maximum width of 600 pixels (typical mobile screens) */
+@media (max-width: 600px) {
+    form {
+        width: 90%;
+        margin-top: 50%;
+    }
+
+    input[type="submit"], input[type="reset"] {
+        font-size: 100%;
+    }
+
+    form {
+        max-width:max-content;/* Set a maximum width for mobile screens */
+        /* width: 100px; */
+        padding: 15px 40px 40px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        margin: 10 auto;
+    }
+}
+

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>header</title>
+    <!-- attach css files -->
+    <link rel="stylesheet"  href="{% static 'css/header.css'%}">
+    <!-- font awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- attach js files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="{% static 'js/header.js' %}"></script>
+    <!-- cdn lines  -->
+
+    {% include 'includes/cdnlines.html'%}
+
+</head>
+<style>
+
+</style>
+<body>
+
+    <div class="menu-btn">
+        <!-- <i class="fas fa-bars"></i>  -->
+    </div>
+
+    <div class="HeadContainer">
+          <div class="HeaderRow"><span>Hostel Data</span></div>
+    </div>
+
+    <div class="side-bar">
+        <!-- header section -->
+        <header>
+            <!-- close button -->
+            <div class="close-btn">
+                <i class="fas fa-times"></i>
+            </div>
+            <!-- img -->
+            <img src="{% static 'assets/chongy.jpeg' %}" alt="no image available">
+        </header>
+        <!-- menu items -->
+        <!-- (.item>a>i.fas)*5 short cut -->
+        <div class="menu">
+            <div class="item"><a href="#"><i class="fas fa-desktop"></i>Dashboard</a></div>
+            <div class="item"><a class="sub-btn"><i class="fas fa-table"></i>Tables
+            <!-- drop-down 1-->
+            <!-- drom_down-arrow -->
+            <i class="fas fa-angle-right dropdown"></i>
+            </a>
+            <div class="sub-menu">
+                <!-- (a.sub-item)*3 -->
+                <a href="#" class="sub-item">Sub-item 01</a>
+                <a href="#" class="sub-item">Sub-item 02</a>
+                <a href="#" class="sub-item">Sub-item 03</a>
+            </div>
+            </div>
+            <div class="item"><a href="#"><i class="fas fa-th"></i>Forms</a></div>
+            <div class="item"><a class="sub-btn"><i class="fas fa-cog"></i>Settings
+            <!-- drop-down  2-->
+            <!-- drom_down-arrow -->
+            <i class="fas fa-angle-right dropdown"></i>
+            </a>
+            <div class="sub-menu">
+                <!-- (a.sub-item)*3 -->
+                <a href="#" class="sub-item">Sub-item 01</a>
+                <a href="#" class="sub-item">Sub-item 02</a>
+            </div>
+            </div>
+            <div class="item"><a href="{% url 'logout' %}"><i class="fas fa-info-circle"></i>About</a></div>
+        </div>
+    </div>
+    <!-- for js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+    /* Styles for the add property modal */
+    .add-property-modal {
+        display: none; 
+        position: fixed; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%; 
+        overflow: auto; 
+        background-color: rgba(0, 0, 0, 0.4); 
+        padding-top: 10px;
+        z-index: 1000; /* Ensure it's lower than the PIN modal */
+    }
+
+    .add-property-modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        position: relative;
+        max-height: 90%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .add-property-camera-access-modal, .add-property-camera-modal {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        z-index: 1001;
+    }
+
+    .option-button {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+
+    .option-button img {
+        margin-right: 10px;
+        width: 30px;
+        height: 30px;
+    }
+
+/* Close modal icon in cam vide modal */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    line-height: 35px; /* Align the icon within the circle */
+    font-size: 28px; /* Increased font size */
+    color: red; /* Add color if needed for better visibility */
+    border-radius: 50%;
+    
+
+}
+    .close-camera-access-modal {
+        font-size: 24px; /* Increase the font size */
+        cursor: pointer;
+    }
+
+    .camera-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative; /* Added for positioning the flip icon */
+    }
+
+    .camera-container video {
+        width: 100%;
+        max-width: 400px;
+        transform: scaleX(-1); /* Flip the video horizontally */
+        background: red;
+        margin: 30px 0px;
+    }
+
+    .camera-container button {
+        margin-top: 5px;
+    }
+
+/* Flip camera icon */
+.flip_camera_icon {
+    position: absolute;
+    bottom: 0px; /* Position at the bottom */
+    right: 10px;  /* Position at the right */
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 10px;
+    width: 40px;  /* Adjusted width */
+    height: 40px; /* Adjusted height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.image-preview-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Ensure vertical centering */
+    margin-top: 10px;
+    width: 100%; /* Ensure the container takes up full width */
+}
+
+    .image-preview {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .image-preview-buttons {
+        margin-top: 10px;
+    }
+
+    .image-preview-camera {
+        transform: scaleX(-1); /* Flip the image preview horizontally only for camera capture */
+    }
+
+    .form-submit {
+        width: 100%; /* Increase the width of the submit button */
+    }
+
+    .box {
+        margin-bottom: 5px;
+    }
+
+    .box button,
+    .box input[type="submit"] {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .box.full-width {
+        width: 100%;
+    }
+
+/* Success button styles */
+.pin-success {
+    background-color: #28a745;
+    color: white;
+    position: relative;
+    cursor: default; /* Change cursor to default to indicate the button is disabled */
+}
+
+.pin-success::after {
+    content: "✔";
+    position: absolute;
+    bottom: 3px; /* Adjusted to position inside the button */
+    right: 10px; /* Adjusted to position inside the button */
+    background-color: white;
+    color: #28a745;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Disabled button styles */
+.pin-disabled {
+    pointer-events: none; /* Disable pointer events */
+    opacity: 0.65; /* Lower opacity to indicate disabled state */
+}
+
+
+
+
+/* Mobile specific styles */
+@media (max-width: 768px) {
+    .add-property-camera-modal{
+        height: 100%;
+        width: 100%;
+    }
+
+    .camera-container {
+        height: 100%;
+    }
+
+    .camera-container button {
+        margin-top: auto;
+        width: 100%;
+        border-radius: 0;
+        padding: 15px 0;
+    }
+
+    .camera-container video {
+        width: 100%;
+        max-width: 400px;
+        transform: scaleX(-1); /* Flip the video horizontally */
+        height: 100%;
+    }
+}
+

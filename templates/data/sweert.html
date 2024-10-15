@@ -1,0 +1,28 @@
+<!-- Include SweetAlert2 library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<!-- Your HTML content -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Example</title>
+</head>
+<body>
+
+    <button onclick="showAlert()">Show Alert</button>
+
+    <!-- JavaScript code to trigger SweetAlert2 -->
+    <script>
+        function showAlert() {
+            Swal.fire({
+                title: "Good job!",
+                text: "You clicked the button!",
+                icon: "success"
+            });
+        }
+    </script>
+
+</body>
+</html>

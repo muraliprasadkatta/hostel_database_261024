@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static%}
+{% block paymentTemplate %}
+<style>
+
+
+.mobile-header {
+        display: none;
+    }
+  
+    .header {
+        transition: margin-left 0.3s ease; /* Add transition */
+    }
+
+body.sidebar-open .sidebar {
+    transform: translateX(0); /* Show sidebar */
+}
+
+body.sidebar-open .header,
+body.sidebar-open .paymentContainer{
+
+    margin-left: 280px; /* Adjust content when sidebar is open */
+    width: calc(100% - 280px);
+}
+
+.paymentContainer{
+    transition: margin-left 0.3s ease;
+}
+
+    .paymentContainer{
+        margin-top: 5%;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar, .header {
+            display: none;
+        }
+
+        .dispaly-beds-conatiner {
+            margin: 0;
+            padding: 0 10px 10px 10px;
+            box-sizing: border-box;
+            height: auto;
+        }
+
+        .mobile-header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-top: 0;
+        }
+
+        .mobile-header .back-button {
+            font-size: 20px;
+            cursor: pointer;
+            margin: 0 20px 0 5px;
+        }
+
+        .back-arrow-image {
+            width: 30px;
+            height: auto;
+        }
+
+        .mobile-header .title {
+            font-size: 18px;
+            font-weight: bold;
+            width: 65%;
+            text-align: center;
+        }
+
+        .tenant-item {
+            display: flex;
+            align-items: flex-start;
+            border: 1px solid #ddd;
+            margin: 10px;
+            border-radius: 10px;
+            width: 300px;
+        }
+    }
+
+    
+</style>
+<body>
+
+    <div class="mobile-header">
+        <span class="back-button" onclick="history.back()">
+            <img src="{% static 'images/displaybeds/free-back-arrow-bed.png' %}" alt="Back" class="back-arrow-image">
+        </span>
+        <span class="title">Tenants Dues</span>
+    </div>
+
+    <div class="paymentContainer">
+    <div class="button-container">
+        <a href="{% url 'dues_url' selected_property.id %}"><button id="duesButton" class="{% if request.resolver_match.url_name == 'dues_url' %}selected{% endif %}">Dues</button></a>
+        <a href="{% url 'remainder_url' selected_property.id %}"><button id="remainderButton" class="{% if request.resolver_match.url_name == 'remainder_url' %}selected{% endif %}">Remainder</button></a>
+        {% block paymentsContent %}{% endblock %}
+
+    </div>
+</div>
+
+</body>
+{% endblock %}

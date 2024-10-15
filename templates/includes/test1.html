@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .bottom-container {
+      margin-top: 150px;
+    }
+    .header {
+      border: 2px red solid;
+      position: fixed;
+      top: 10px;
+      width: 100%;
+      opacity: 0; /* Initially hide the header */
+      transition: opacity 0.5s ease-in-out; /* Smooth transition for opacity */
+    }
+    .header.visible {
+      opacity: 1; /* Show the header */
+    }
+    .logo, .nav, .search-container {
+      flex-grow: 1;
+    }
+    .search-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent; /* Ensures the background doesn't interfere with border visuals */
+    }
+    .header-search .search-box {
+      flex-grow: 1;
+      font-size: 16px;
+      border: none; /* Removes default border */
+      border-top: 2px solid hsl(0, 0%, 80%);
+      border-bottom: 2px solid hsl(0, 0%, 80%);
+      border-radius: 20px 0 0 20px; /* Rounded corners on the left side only */
+      outline: none;
+      color: black;
+      padding: 11px 10px 10px 10px; /* Adjusted padding */
+      margin-right: 0; /* Ensures no gap between the box and the icon */
+    }
+    .header-search .search-icon {
+      padding: 8px;
+      background: transparent;
+      color: gray;
+      cursor: pointer;
+      border: none; /* Removes all borders */
+      border-right: 2px solid hsl(0, 0%, 80%);
+      border-top: 2px solid hsl(0, 0%, 80%);
+      border-bottom: 2px solid hsl(0, 0%, 80%);
+      border-radius: 0 20px 20px 0; /* Rounded corners on the right side only */
+    }
+    .fa-search {
+      color: #ccc;
+      cursor: pointer;
+      background: black;
+    }
+    .image-section .search-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center; /* Ensures the icon is aligned vertically in the middle */
+      width: 80%;
+      max-width: 600px;
+    }
+    .image-section .image-search .search-box {
+      flex-grow: 1;
+      padding: 10px 20px 10px 10px; /* Adjust the right padding to reduce it, making room for the icon */
+      font-size: 16px;
+      border: 2px solid white;
+      border-radius: 5px 0 0 5px; /* Rounded on the left side only */
+      outline: none;
+      color: black;
+      background: white;
+    }
+    .image-section .image-search .image-icon {
+      padding: 14px;
+      background: white;
+      color: gray;
+      cursor: pointer;
+      border-left: 1px solid gray; /* Acts as a separator */
+    }
+  </style>
+</head>
+<body>
+  <div class="header" id="header">
+    <h1>welcome</h1>
+    <div class="search-container header-search">
+      <input type="text" placeholder="Search..." class="search-box" id="search-header">
+      <i class="fa fa-search search-icon header-icon"></i>
+    </div>
+  </div>
+  <div class="bottom-container" id="bottom-container">
+    <img src="#" alt="Background Image" style="width: 100%;">
+    <div class="search-container image-search">
+      <input type="text" placeholder="Search..." class="search-box" id="search-image">
+      <i class="fa fa-search search-icon image-icon"></i>
+    </div>
+
+    <div class="statistics">
+      <div>
+        <div>Total Rooms</div>
+        <div>85</div>
+      </div>
+      <div>
+        <div>Occupied Beds</div>
+        <div>63</div>
+      </div>
+      <div>
+        <div>Free Beds</div>
+        <div>22</div>
+      </div>
+    </div>
+    <!-- Repeat statistics as needed -->
+  </div>
+
+  <div class="statistics">
+    <div>
+      <div>Total Rooms</div>
+      <div>85</div>
+    </div>
+    <div>
+      <div>Occupied Beds</div>
+      <div>63</div>
+    </div>
+    <div>
+      <div>Free Beds</div>
+      <div>22</div>
+    </div>
+  </div>
+  <!-- Repeat statistics as needed -->
+</div>
+
+<div class="statistics">
+  <div>
+    <div>Total Rooms</div>
+    <div>85</div>
+  </div>
+  <div>
+    <div>Occupied Beds</div>
+    <div>63</div>
+  </div>
+  <div>
+    <div>Free Beds</div>
+    <div>22</div>
+  </div>
+</div>
+<!-- Repeat statistics as needed -->
+</div>
+
+<div class="statistics">
+  <div>
+    <div>Total Rooms</div>
+    <div>85</div>
+  </div>
+  <div>
+    <div>Occupied Beds</div>
+    <div>63</div>
+  </div>
+  <div>
+    <div>Free Beds</div>
+    <div>22</div>
+  </div>
+</div>
+<!-- Repeat statistics as needed -->
+</div>
+
+<div class="statistics">
+  <div>
+    <div>Total Rooms</div>
+    <div>85</div>
+  </div>
+  <div>
+    <div>Occupied Beds</div>
+    <div>63</div>
+  </div>
+  <div>
+    <div>Free Beds</div>
+    <div>22</div>
+  </div>
+</div>
+<!-- Repeat statistics as needed -->
+</div>
+
+  <script>
+    window.addEventListener('scroll', function() {
+      var header = document.getElementById('header');
+      var bottomContainer = document.getElementById('bottom-container');
+      var bottomContainerRect = bottomContainer.getBoundingClientRect();
+
+      if (bottomContainerRect.top <= 100) {
+        header.classList.add('visible');
+      } else {
+        header.classList.remove('visible');
+      }
+    });
+  </script>
+</body>
+</html>

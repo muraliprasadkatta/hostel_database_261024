@@ -1,0 +1,451 @@
+{% extends 'collections/payments.html' %}
+
+{% block title %}Dues Page{% endblock %}
+
+{% block paymentsContent %}
+<style>
+    .dues-modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .dues-modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+    }
+
+    .dues-close, .dues-cancel {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .dues-close:hover,
+    .dues-close:focus,
+    .dues-cancel:hover,
+    .dues-cancel:focus {
+        color: black;
+        text-decoration: none;
+    }
+
+    .dues-input-number::-webkit-outer-spin-button,
+    .dues-input-number::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .dues-input-number {
+        -moz-appearance: textfield;
+    }
+
+    .dues-error {
+        border: 2px solid red;
+        animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+
+    .dues-checkbox-button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .dues-checkbox-button input[type="checkbox"] {
+        display: none;
+    }
+
+    .dues-checkbox-button.active {
+        background-color: #add8e6;
+    }
+</style>
+<div id="payments" class="section">
+    <h1>Dues Page</h1>
+    <form id="duesForm" method="get" action="{% url 'dues_url' selected_property.id %}">
+        <label for="date">Select Date:</label>
+        <input type="date" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}">
+        <button type="submit">Filter</button>
+    </form>
+
+    <h2>
+        Tenants with due payments 
+        {% if date_filtered %}
+            {{ selected_date|date:'F j, Y' }}
+        {% else %}
+            up to {{ selected_date|date:'F j, Y' }}
+        {% endif %}
+    </h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Due Amount</th>
+                <th>Due Date</th>
+                <th>Payment</th>
+                <th>Initial Payment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tenant in tenants_with_due_today %}
+                <tr>
+                    <td>{{ tenant.name }}</td>
+                    <td>{{ tenant.rent }}</td>
+                    <td>{{ tenant.next_due_date }}</td>
+                    <td>
+                        <button type="button" onclick="openDuesPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.rent }}')">Pay</button>
+                    </td>
+                    <td>
+                        <button type="button" onclick="openDuesInitialPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.next_due_date|date:'F j, Y' }}', '{{ tenant.rent }}')">Initial Payment</button>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No tenants with due payments up to this date.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    <!-- The Initial Payment Modal -->
+    <div id="duesInitialPaymentModal" class="dues-modal">
+        <div class="dues-modal-content">
+            <span class="dues-close" onclick="closeDuesInitialPaymentModal()">&times;</span>
+            <h2>Initial Payment for <span id="duesInitialTenantName"></span></h2>
+            <p>Due Date: <span id="duesInitialDueDate"></span></p>
+            <p>Total Rent: <span id="duesInitialTotalRent"></span></p>
+            <p>Due Amount: <input type="number" id="duesInitialTenantAmount" value="0" onfocus="clearDuesDefaultZero(this)" oninput="calculateDuesInitialRemainingAmount()" min="0"></p>
+            <div id="duesRecommendedAmounts"></div>
+            <p>Remaining Amount: <span id="duesInitialRemainingAmount"></span></p>
+            <label for="initialPaymentType">Payment Type:</label><br>
+            <input type="radio" id="duesInitialCash" name="initial_payment_type" value="cash" checked onclick="toggleDuesInitialReferenceInput()">
+            <label for="duesInitialCash">Cash</label><br>
+            <input type="radio" id="duesInitialScreenshot" name="initial_payment_type" value="screenshot" onclick="toggleDuesInitialReferenceInput()">
+            <label for="duesInitialScreenshot">Screenshot</label><br>
+            <input type="radio" id="duesInitialOnline" name="initial_payment_type" value="online" onclick="toggleDuesInitialReferenceInput()">
+            <label for="duesInitialOnline">Online Payment</label><br>
+            <p id="duesInitialReferenceNumberField" style="display:none;">
+                Reference Number: <input type="text" name="reference_number" id="duesInitialReferenceNumberInput" placeholder="Reference Number" maxlength="12" oninput="validateDuesInitialReferenceInput()">
+            </p>
+            <p id="duesInitialScreenshotUploadField" style="display:none;">
+                Upload Screenshot: <input type="file" name="payment_screenshot" id="duesInitialScreenshotInput" onchange="validateDuesInitialScreenshotInput()">
+            </p>
+            <button type="button" id="duesInitialPayButton" onclick="confirmDuesInitialPayment()">Pay</button>
+            <button type="button" class="dues-cancel" onclick="closeDuesInitialPaymentModal()">Cancel</button>
+            <!-- Hidden input for tenant ID -->
+            <input type="hidden" id="duesPaymentTenantIdInput">
+            <!-- Hidden input for selected property ID -->
+            <input type="hidden" id="selectedPropertyId" value="{{ selected_property.id }}">
+        </div>
+    </div>
+</div>
+
+<script>
+    var initialTenantAmountOriginal = 0;
+
+    function openDuesPaymentModal(tenantId, tenantName, tenantAmount) {
+        var modal = document.getElementById("duesPaymentModal");
+        document.getElementById("duesPaymentTenantName").textContent = tenantName;
+        document.getElementById("duesPaymentTenantAmount").textContent = tenantAmount;
+        document.getElementById("duesPaymentTenantIdInput").value = tenantId;
+        document.getElementById("duesPaymentAmountInput").value = tenantAmount;
+        modal.style.display = "block";
+        toggleDuesPaymentReferenceInput();
+    }
+
+    function openDuesInitialPaymentModal(tenantId, tenantName, tenantDueDate, tenantAmount) {
+        var modal = document.getElementById("duesInitialPaymentModal");
+        document.getElementById("duesInitialTenantName").textContent = tenantName;
+        document.getElementById("duesInitialDueDate").textContent = tenantDueDate;
+        document.getElementById("duesInitialTotalRent").textContent = tenantAmount;
+        document.getElementById("duesInitialTenantAmount").value = 0;
+        initialTenantAmountOriginal = parseInt(tenantAmount);
+        document.getElementById("duesInitialRemainingAmount").textContent = initialTenantAmountOriginal;
+        document.getElementById("duesPaymentTenantIdInput").value = tenantId; // Ensure tenant ID is set here
+        generateDuesRecommendedAmounts(initialTenantAmountOriginal);
+        modal.style.display = "block";
+        toggleDuesInitialReferenceInput();
+    }
+
+    function closeDuesPaymentModal() {
+        var modal = document.getElementById("duesPaymentModal");
+        modal.style.display = "none";
+    }
+
+    function closeDuesInitialPaymentModal() {
+        var modal = document.getElementById("duesInitialPaymentModal");
+        modal.style.display = "none";
+    }
+
+    function clearDuesDefaultZero(input) {
+        if (input.value === "0") {
+            input.value = "";
+        }
+    }
+
+    function calculateDuesInitialRemainingAmount() {
+        var rentInput = document.getElementById("duesInitialTenantAmount");
+        var rent = parseInt(rentInput.value) || 0;
+
+        if (rent > initialTenantAmountOriginal) {
+            rent = initialTenantAmountOriginal;
+            rentInput.value = rent;
+        }
+
+        var remainingAmount = initialTenantAmountOriginal - rent;
+        document.getElementById("duesInitialRemainingAmount").textContent = remainingAmount;
+        if (rent > 0) {
+            removeDuesError(rentInput);
+        }
+    }
+
+    function confirmDuesPayment() {
+        var modal = document.getElementById("duesPaymentModal");
+        var paymentType = modal.querySelector("[name='payment_type']:checked").value;
+        var isValid = true;
+
+        if (paymentType === "online") {
+            var referenceInput = modal.querySelector("#duesPaymentReferenceNumberInput");
+            if (referenceInput.value.length !== 12) {
+                isValid = false;
+                highlightDuesError(referenceInput);
+            }
+        } else if (paymentType === "screenshot") {
+            var screenshotInput = modal.querySelector("#duesPaymentScreenshotInput");
+            if (screenshotInput.files.length === 0) {
+                isValid = false;
+                highlightDuesError(screenshotInput);
+            }
+        }
+
+        if (isValid) {
+            document.getElementById("duesPaymentForm").submit();
+        }
+    }
+
+    function confirmDuesInitialPayment() {
+        var isValid = true;
+        var initialTenantAmount = document.getElementById("duesInitialTenantAmount").value;
+
+        if (parseInt(initialTenantAmount) <= 0 || initialTenantAmount === "") {
+            isValid = false;
+            highlightDuesError(document.getElementById("duesInitialTenantAmount"));
+        }
+
+        var paymentType = document.querySelector("[name='initial_payment_type']:checked").value;
+
+        if (paymentType === "online") {
+            var referenceInput = document.getElementById("duesInitialReferenceNumberInput");
+            if (referenceInput.value.length !== 12) {
+                isValid = false;
+                highlightDuesError(referenceInput);
+            }
+        } else if (paymentType === "screenshot") {
+            var screenshotInput = document.getElementById("duesInitialScreenshotInput");
+            if (screenshotInput.files.length === 0) {
+                isValid = false;
+                highlightDuesError(screenshotInput);
+            }
+        }
+
+        if (isValid) {
+            var tenantId = document.getElementById("duesPaymentTenantIdInput").value;
+            var amountPaid = parseFloat(initialTenantAmount);
+            var remainingAmount = initialTenantAmountOriginal - amountPaid;
+            var propertyId = document.getElementById("selectedPropertyId").value;
+
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/Payments/' + propertyId + '/remainder/';
+            form.enctype = 'multipart/form-data';
+
+            var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+            form.appendChild(createDuesHiddenInput('csrfmiddlewaretoken', csrfToken));
+            form.appendChild(createDuesHiddenInput('tenant_id', tenantId));
+            form.appendChild(createDuesHiddenInput('amount_paid', amountPaid));
+            form.appendChild(createDuesHiddenInput('remaining_amount', remainingAmount));
+            form.appendChild(createDuesHiddenInput('payment_type', paymentType));
+            form.appendChild(createDuesHiddenInput('reference_number', document.getElementById("duesInitialReferenceNumberInput").value || ''));
+
+            if (document.getElementById("duesInitialScreenshotInput").files.length > 0) {
+                form.appendChild(createDuesFileInput('payment_screenshot', document.getElementById("duesInitialScreenshotInput").files[0]));
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    function createDuesHiddenInput(name, value) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        return input;
+    }
+
+    function createDuesFileInput(name, file) {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.name = name;
+        var dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        input.files = dataTransfer.files;
+        return input;
+    }
+
+    function toggleDuesPaymentReferenceInput() {
+        var paymentType = document.querySelector("[name='payment_type']:checked").value;
+        var referenceField = document.getElementById("duesPaymentReferenceNumberField");
+        var screenshotField = document.getElementById("duesPaymentScreenshotUploadField");
+
+        if (paymentType === "online") {
+            referenceField.style.display = "block";
+            screenshotField.style.display = "none";
+        } else if (paymentType === "screenshot") {
+            referenceField.style.display = "none";
+            screenshotField.style.display = "block";
+        } else {
+            referenceField.style.display = "none";
+            screenshotField.style.display = "none";
+        }
+    }
+
+    function toggleDuesInitialReferenceInput() {
+        var paymentType = document.querySelector("[name='initial_payment_type']:checked").value;
+        var referenceField = document.getElementById("duesInitialReferenceNumberField");
+        var screenshotField = document.getElementById("duesInitialScreenshotUploadField");
+
+        if (paymentType === "online") {
+            referenceField.style.display = "block";
+            screenshotField.style.display = "none";
+        } else if (paymentType === "screenshot") {
+            referenceField.style.display = "none";
+            screenshotField.style.display = "block";
+        } else {
+            referenceField.style.display = "none";
+            screenshotField.style.display = "none";
+        }
+    }
+
+    function validateDuesPaymentReferenceInput() {
+        var referenceInput = document.getElementById("duesPaymentReferenceNumberInput").value;
+        if (referenceInput.length !== 12) {
+            highlightDuesError(document.getElementById("duesPaymentReferenceNumberInput"));
+        } else {
+            removeDuesError(document.getElementById("duesPaymentReferenceNumberInput"));
+        }
+    }
+
+    function validateDuesPaymentScreenshotInput() {
+        var screenshotInput = document.getElementById("duesPaymentScreenshotInput").files.length;
+        if (screenshotInput === 0) {
+            highlightDuesError(document.getElementById("duesPaymentScreenshotInput"));
+        } else {
+            removeDuesError(document.getElementById("duesPaymentScreenshotInput"));
+        }
+    }
+
+    function validateDuesInitialReferenceInput() {
+        var referenceInput = document.getElementById("duesInitialReferenceNumberInput").value;
+        if (referenceInput.length !== 12) {
+            highlightDuesError(document.getElementById("duesInitialReferenceNumberInput"));
+        } else {
+            removeDuesError(document.getElementById("duesInitialReferenceNumberInput"));
+        }
+    }
+
+    function validateDuesInitialScreenshotInput() {
+        var screenshotInput = document.getElementById("duesInitialScreenshotInput").files.length;
+        if (screenshotInput === 0) {
+            highlightDuesError(document.getElementById("duesInitialScreenshotInput"));
+        } else {
+            removeDuesError(document.getElementById("duesInitialScreenshotInput"));
+        }
+    }
+
+    function highlightDuesError(input) {
+        input.classList.add("dues-error");
+    }
+
+    function removeDuesError(input) {
+        input.classList.remove("dues-error");
+    }
+
+    function generateDuesRecommendedAmounts(totalRent) {
+        var recommendedAmounts = document.getElementById("duesRecommendedAmounts");
+        recommendedAmounts.innerHTML = ""; // Clear previous recommendations
+
+        for (var amount = 1000; amount < totalRent; amount += 1000) {
+            var label = document.createElement("label");
+            label.classList.add("dues-checkbox-button");
+            label.innerHTML = `
+                <input type="checkbox" value="${amount}" onclick="setDuesRecommendedAmount(this)">
+                ${amount}
+            `;
+            recommendedAmounts.appendChild(label);
+        }
+
+        var rentInput = document.getElementById("duesInitialTenantAmount");
+        rentInput.addEventListener('input', function() {
+            clearDuesRecommendedAmounts();
+        });
+    }
+
+    function setDuesRecommendedAmount(checkbox) {
+        var checkboxes = document.querySelectorAll("#duesRecommendedAmounts input[type='checkbox']");
+        checkboxes.forEach(function(cb) {
+            cb.checked = false;
+            cb.parentElement.classList.remove("active");
+        });
+
+        checkbox.checked = true;
+        checkbox.parentElement.classList.add("active");
+        var rentInput = document.getElementById("duesInitialTenantAmount");
+        rentInput.value = checkbox.value;
+        calculateDuesInitialRemainingAmount();
+    }
+
+    function clearDuesRecommendedAmounts() {
+        var checkboxes = document.querySelectorAll("#duesRecommendedAmounts input[type='checkbox']");
+        checkboxes.forEach(function(cb) {
+            cb.checked = false;
+            cb.parentElement.classList.remove("active");
+        });
+    }
+
+    // Close the modals when clicking outside of them
+    window.onclick = function(event) {
+        if (event.target == document.getElementById("duesPaymentModal")) {
+            closeDuesPaymentModal();
+        }
+        if (event.target == document.getElementById("duesInitialPaymentModal")) {
+            closeDuesInitialPaymentModal();
+        }
+    }
+</script>
+{% endblock %}

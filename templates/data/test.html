@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Layout</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 150px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar.closed {
+            width: 30px;
+        }
+
+        .sidebar.closed .menu-text {
+            display: none;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: -20px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .menu {
+            list-style-type: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .menu li {
+            margin: 10px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .top-bar input {
+            padding: 5px;
+            width: 200px;
+        }
+
+        .line-above-history {
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="toggle-btn" onclick="toggleSidebar()">&#9776;</div>
+        <ul class="menu">
+            <li><span class="menu-icon">&#x1F4C4;</span><span class="menu-text">Application</span></li>
+            <li><span class="menu-icon">&#x1F4DD;</span><span class="menu-text">Management</span></li>
+            <li><span class="menu-icon">&#x1F464;</span><span class="menu-text">User</span></li>
+            <li><span class="menu-icon">&#x1F4D3;</span><span class="menu-text">History</span></li>
+            <li><span class="menu-icon">&#x1F4E6;</span><span class="menu-text">Feedback</span></li>
+            <li><span class="menu-icon">&#x1F4B3;</span><span class="menu-text">No Of Account</span></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <input type="text" placeholder="Search...">
+        </div>
+        <div class="line-above-history"></div>
+        <div class="box">
+            <div>
+                Got it, Venkatesh! If you need any more changes or further assistance, just let me know.            
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("closed");
+        }
+    </script>
+</body>
+</html>

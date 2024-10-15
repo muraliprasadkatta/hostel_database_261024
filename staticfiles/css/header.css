@@ -1,0 +1,162 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+
+body {
+    min-height: 100vh;
+    background: white;
+    /* color: white; */
+    background-size: cover;
+    background-position: center;
+}
+
+
+.side-bar {
+    /* background: #1b1a1b; */
+    background: red;
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    overflow-y: auto;
+    transition: 0.6s ease;
+    left: -250px;
+}
+
+header {
+    /* background: #33363a; */
+    background: green;
+    position: sticky;
+    top: 0;
+    /* z-index: 2;   */
+}
+
+header img {
+    width: 100px;
+    margin: 15px;
+    margin-left: 70px;
+    border-radius: 50%;
+    border: 3px solid #b4b8b9;
+    z-index: 2;
+}
+
+.close-btn {
+    position: absolute;
+    color: #fff;
+    font-size: 23px;
+    right: 0px;
+    margin: 15px;
+    cursor: pointer;
+}
+
+.menu {
+    width: 100%;
+    margin-top: 30px;
+}
+
+.menu .item {
+    position: relative;
+    cursor: pointer;
+}
+
+.menu .item a {
+    color: white;
+    font-size: 16px;
+    text-decoration: none;
+    display: block;
+    padding: 5px 30px;
+    line-height: 60px;
+}
+
+.item i {
+    margin-right: 15px;
+}
+
+.item a .dropdown {
+    position: absolute;
+    right: 0px;
+    margin: 20px;
+}
+
+.item .sub-menu {
+    background: #262627;
+    display: none;
+}
+
+.menu-btn {
+    position: fixed;
+    top: 0;
+    color: blue;
+    font-size: 35px;
+    cursor: pointer;
+    margin:25px;
+	margin-top: 10px;
+    z-index: 2;
+}
+
+.side-bar.active {
+    left: 0;
+}
+
+.side-bar ::-webkit-scrollbar {
+    width: 0px;
+}
+
+.item .sub-menu a {
+    padding-left: 80px;
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+/* nave-header */
+
+
+hr.Head-1{
+    border: 2px solid black;
+}
+
+.HeadContainer {
+    position: sticky;
+    background: yellow;
+    top: 0px;
+    border: 2px solid black;
+  }
+
+
+  .HeaderRow {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .HeaderRow span {
+    display: inline-block;
+    text-align: center;
+    padding: 5px 20px;
+    font-size: 30px;
+    width: 100%; 
+  }
+/* ----------------------------------------------------------- */
+
+/* add responsive media quaries */
+
+@media screen and (max-width:1200px){
+
+.menu-btn {
+    position: fixed;
+    top: 0;
+    color: blue;
+    font-size: 25px;
+    cursor: pointer;
+    margin:25px;
+	margin-top: 10px;
+    margin-left: 20px;
+    z-index: 2;
+}
+
+}

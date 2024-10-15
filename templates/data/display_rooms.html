@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Display Rooms{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/display_rooms_view/display_room.css' %}">
+
+<!-- Payments Section -->
+<div class="payments-section">
+  <div class="button-container">
+    <a href="{% url 'Payments' property_id=selected_property.id %}">
+      <button id="collection-button" class="custom-button">Collections</button>
+    </a>
+    <button id="dashboard-button" class="custom-button">Dashboard</button>
+    <button id="Requests-button" class="custom-button">Requests</button>
+    <span></span>
+  </div>
+</div>
+
+<div class="image-section" style="position: relative; text-align: center; color: white;">
+  <img src="{% static 'images/displayrooms/hostel_peoples.jpg' %}" alt="Background Image" style="width: 100%;">
+</div>
+
+<div class="statistics">
+  <div class="stat-item">
+    <div>Total Rooms</div>
+    <div>{{ total_rooms }}</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-item">
+    <div>Occupied Beds</div>
+    <div>{{ occupied_beds }}</div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-item">
+    <div>Free Beds</div>
+    <div>{{ free_beds }}</div>
+  </div>
+</div>
+
+<div class="addRoom">
+  <button id="add-room-button">Add Rooms</button>
+  <div class="admin-row"></div>
+  {% include 'includes/error_messages.html' %}
+</div>
+
+{% include 'data/add_rooms_modal.html' %}
+
+<div class="container-wrapper">
+  <div class="container-display">
+    <div class="display-room-row">
+      {% if user_rooms %}
+        {% for room in user_rooms %}
+          <div class="room-box">
+            <div class="room-number">
+              {{ room.room_number }}
+              <div class="room-edit-option">
+                <!-- Three dots icon to show edit option -->
+                <i class="fas fa-ellipsis-v options-icon" data-room-number="{{ room.room_number }}"></i>
+                <!-- Edit option menu for each room -->
+                <div class="room-edit-options-menu" id="optionsMenu_{{ room.room_number }}">
+                  <ul>
+                    <li onclick="editRoom('{{ room.room_number }}', event)">
+                      <img src="{% static 'images/displayroom_header/edit_room_image.png' %}" alt="Edit Rooms" style="width:30px;height:30px;">
+                      Edit
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <!-- Link to display beds of the room -->
+            <a href="{% url 'DisplayBeds' property_id=selected_property.id room_number=room.room_number %}" style="text-decoration: none; color: inherit;">
+              <div class="shareNumbers" id="shareNumbers_{{ room.room_number }}">
+                <!-- Bed icons will be inserted here via JavaScript -->
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No Rooms Added</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeSuccessModal()">&times;</span>
+    <p>Successfully changed the property!</p>
+    <button onclick="closeSuccessModal()">Close</button>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+
+<!-- this used for auto hide the edit option when if we click somewhere -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Attach click event to all icons with the class 'options-icon'
+    document.querySelectorAll('.options-icon').forEach(function(icon) {
+        icon.addEventListener('click', function(event) {
+            var roomNumber = this.dataset.roomNumber; // Use dataset to access the room number
+            toggleOptions(roomNumber, event);
+        });
+    });
+
+    // Function to toggle options menu
+    function toggleOptions(roomNumber, event) {
+        event.stopPropagation();
+        closeAllMenus(); // Close all other menus
+        var menu = document.getElementById("optionsMenu_" + roomNumber);
+        menu.style.display = menu.style.display === "block" ? "none" : "block"; // Toggle visibility
+    }
+
+    // Close all menus
+    function closeAllMenus() {
+        document.querySelectorAll(".room-edit-options-menu").forEach(function(menu) {
+            menu.style.display = "none";
+        });
+    }
+
+    // Close menus when clicking outside
+    window.addEventListener('click', function(event) {
+        if (!event.target.closest('.options-icon') && !event.target.closest('.room-edit-option')) {
+            closeAllMenus();
+        }
+    });
+});
+
+</script>
+
+<!-- To log the history navigation actions in the console for debugging -->
+<script>
+  (function() {
+    var originalPushState = history.pushState;
+    var originalReplaceState = history.replaceState;
+
+    // Overriding the history pushState method to log to console
+    history.pushState = function(state, title, url) {
+        console.log('pushState called:', state, title, url);
+        return originalPushState.apply(history, arguments);
+    };
+
+    // Overriding the history replaceState method to log to console
+    history.replaceState = function(state, title, url) {
+        console.log('replaceState called:', state, title, url);
+        return originalReplaceState.apply(history, arguments);
+        alert('testing the js')
+
+    };
+  })();
+</script>
+
+
+<script>
+  // This will hold the room data passed from Django as JSON
+  var user_rooms = JSON.parse('{{ user_rooms_json|escapejs }}');
+
+  // Function to edit a room based on room number
+  function editRoom(roomNumber) {
+    // Find the room data for the selected room number
+    var roomData = user_rooms.find(room => room.room_number == roomNumber);
+    if (roomData) {
+      // Fill the modal form fields with room data
+      $('#room_id').val(roomData.id);
+      $('#roomnumber').val(roomData.room_number);
+      $('#floortype').val(roomData.floor_type);
+      $('#numberofshare').val(roomData.number_of_share);
+      $('#remarks').val(roomData.remarks);
+
+      // Populate the current occupied beds field
+      var occupiedBeds = roomData.has_data; // Assuming has_data holds the count of occupied beds
+      $('#current_occupied_beds').val(occupiedBeds);
+
+      // Check availability and set the corresponding radio button
+      if (roomData.available_room_or_not === 'yes') {
+        $('#available_yes').prop('checked', true);
+      } else {
+        $('#available_no').prop('checked', true);
+      }
+
+      // Clear and then set the room facilities based on current data
+      $('input[name="transportation"]').prop('checked', false);
+      roomData.room_facilities.split(', ').forEach(function(facility) {
+        $('input[name="transportation"][value="' + facility + '"]').prop('checked', true);
+      });
+
+      // Display the modal for editing
+      $('#addRoomModal').css('display', 'block');
+    }
+  }
+
+  // Hide options menu if clicking outside of the room edit options
+  window.onclick = function(event) {
+    if (!event.target.matches('.fas') && !event.target.matches('.room-edit-option')) {
+      var dropdowns = document.getElementsByClassName("room-edit-options-menu");
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.style.display === "block") {
+          openDropdown.style.display = "none";
+        }
+      }
+    }
+  }
+</script>
+
+<!-- Script for handling modal opening/closing for adding rooms -->
+<script>
+  $(document).ready(function() {
+    // Enable the add room button initially
+    $('#add-room-button').prop('disabled', false);
+
+    // When the add room button is clicked, open the modal
+    $('#add-room-button').on('click', function() {
+      $('#addRoomModal').css('display', 'block');
+      // Temporarily disable the button to prevent multiple clicks
+      $(this).prop('disabled', true);
+      setTimeout(() => {
+        $(this).prop('disabled', false);
+      }, 1000);
+    });
+
+    // Close modal when the close button is clicked
+    $('.close').on('click', function() {
+      $('#addRoomModal').css('display', 'none');
+    });
+
+    // Close modal if the user clicks outside the modal
+    $(window).on('click', function(event) {
+      if (event.target.id === 'addRoomModal') {
+        $('#addRoomModal').css('display', 'none');
+      }
+    });
+
+    // Loop through the rooms and dynamically generate bed icons
+    {% for room in user_rooms %}
+      var shareNumbersDiv = document.getElementById("shareNumbers_{{ room.room_number }}");
+      var number_of_share = {{ room.number_of_share }};
+      var hasData = {{ room.has_data|lower }};
+      var displayLimit = Math.min(number_of_share, 6);
+
+      // Generate bed icons for each room based on the number of shares
+      for (var i = 1; i <= displayLimit; i++) {
+        var iconElement = document.createElement("i");
+        iconElement.className = "fas fa-bed";
+        // Red color indicates occupied beds
+        if (i <= hasData) {
+          iconElement.style.color = "red";
+        }
+        shareNumbersDiv.appendChild(iconElement);
+      }
+
+      // If there are more beds than the display limit, show a '...more' link
+      if (number_of_share > displayLimit) {
+        var remainingBeds = number_of_share - displayLimit;
+        var readMoreLink = document.createElement("a");
+        readMoreLink.href = "#";
+        readMoreLink.innerText = remainingBeds + "..more";
+        readMoreLink.classList.add("read-more-link");
+        shareNumbersDiv.appendChild(readMoreLink);
+      }
+    {% endfor %}
+  });
+
+  // Function to select/deselect all checkboxes for transportation
+  function toggleSelectAll() {
+    var selectAllChecked = document.getElementById('select_all').checked;
+    var checkboxes = document.querySelectorAll('input[name="transportation"]');
+    checkboxes.forEach(function(checkbox) {
+      checkbox.checked = selectAllChecked;
+    });
+  }
+</script>
+
+{% endblock %}

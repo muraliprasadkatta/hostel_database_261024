@@ -1,0 +1,271 @@
+{% extends 'collections/payments.html' %}
+
+{% block title %}Remainder Page{% endblock %}
+
+{% block paymentsContent %}
+<style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .error {
+        border: 2px solid red;
+        animation: shake 0.2s ease-in-out 0s 2;
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+
+    .green-button {
+        background-color: green;
+        color: white;
+    }
+
+    .yellow-button {
+        background-color: yellow;
+        color: black;
+    }
+</style>
+<div id="payments" class="section">
+    <h1>Remainder Page</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Tenant Name</th>
+                <th>Tenant Rent</th>
+                <th>Payment Type</th>
+                <th>Reference Number</th>
+                <th>Due Date</th>
+                <th>Amount Paid</th>
+                <th>Remaining Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for remainder in remainders %}
+                <tr>
+                    <td>{{ remainder.tenant.name }}</td>
+                    <td>{{ remainder.tenant.rent|floatformat:"0" }}</td>
+                    <td>{{ remainder.payment_type }}</td>
+                    <td>{{ remainder.reference_number }}</td>
+                    <td>{{ remainder.due_date }}</td>
+                    <td>{{ remainder.amount_paid|floatformat:"0" }}</td>
+                    <td>
+                        <input type="number" value="{{ remainder.remaining_amount|floatformat:"0" }}" class="remaining-amount-input" id="remainingAmount{{ remainder.id }}" oninput="validateRemainingAmount({{ remainder.id }}, {{ remainder.remaining_amount|floatformat:"0" }})" style="-moz-appearance: textfield;" />
+                    </td>
+                    <td>
+                        <button type="button" id="payButton{{ remainder.id }}" onclick="openRemainderPaymentModal('{{ remainder.id }}', '{{ remainder.tenant.id }}', '{{ remainder.tenant.name }}', '{{ remainder.amount_paid|floatformat:"0" }}', '{{ remainder.tenant.rent|floatformat:"0" }}')">Pay</button>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8">No remainder records found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- The Remainder Payment Modal -->
+    <div id="remainderPaymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRemainderPaymentModal()">&times;</span>
+            <form method="post" action="{% url 'remainder_url' selected_property.id %}" id="remainderPaymentForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="tenant_id" id="remainderIdInput">
+                <input type="hidden" name="amount_paid" id="remainderAmountInput">
+                <input type="hidden" name="remaining_amount" id="remainderRemainingAmountInput">
+                <h2>Payment for remainder tenant <span id="remainderTenantName"></span></h2>
+                <p>Initial Payment Amount: <span id="remainderTenantAmount"></span></p>
+                <p>Remaining Amount: <input type="number" name="remaining_amount_display" id="remainderRemainingAmountDisplay" readonly></p>
+                <p>Tenant Rent: <span id="remainderTenantRent"></span></p>
+                <label for="remainderPaymentType">Payment Type:</label><br>
+                <input type="radio" id="remainderPaymentCash" name="payment_type" value="cash" checked onclick="toggleRemainderPaymentReferenceInput()">
+                <label for="remainderPaymentCash">Cash</label><br>
+                <input type="radio" id="remainderPaymentScreenshot" name="payment_type" value="screenshot" onclick="toggleRemainderPaymentReferenceInput()">
+                <label for="remainderPaymentScreenshot">Screenshot</label><br>
+                <input type="radio" id="remainderPaymentOnline" name="payment_type" value="online" onclick="toggleRemainderPaymentReferenceInput()">
+                <label for="remainderPaymentOnline">Online Payment</label><br>
+                <p id="remainderPaymentReferenceNumberField" style="display:none;">
+                    Reference Number: <input type="text" name="reference_number" id="remainderPaymentReferenceNumberInput" placeholder="Reference Number" maxlength="12" oninput="validateRemainderPaymentReferenceInput()">
+                </p>
+                <p id="remainderPaymentScreenshotUploadField" style="display:none;">
+                    Upload Screenshot: <input type="file" name="payment_screenshot" id="remainderPaymentScreenshotInput" onchange="validateRemainderPaymentScreenshotInput()">
+                </p>
+                <button type="button" id="remainderPaymentPayButton" onclick="confirmRemainderPayment()">Pay</button>
+                <button type="button" class="cancel" onclick="closeRemainderPaymentModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to update the button state based on the remaining amount input
+    function updateButtonState(remainderId, tenantRent, amountPaid) {
+        var remainingAmountInput = document.getElementById("remainingAmount" + remainderId);
+        var payButton = document.getElementById("payButton" + remainderId);
+        var updatedAmount = parseFloat(remainingAmountInput.value);
+
+        if (isNaN(updatedAmount) || updatedAmount === 0) {
+            remainingAmountInput.classList.add("error");
+            payButton.innerText = "Enter Amount";
+            payButton.className = "yellow-button";
+        } else if (tenantRent - (updatedAmount + amountPaid) === 0) {
+            remainingAmountInput.classList.remove("error");
+            payButton.innerText = "Pay";
+            payButton.className = "";
+        } else {
+            remainingAmountInput.classList.remove("error");
+            payButton.innerText = "Update";
+            payButton.className = "green-button";
+        }
+    }
+
+    // Function to open the payment modal with prefilled data
+    function openRemainderPaymentModal(remainderId, tenantId, tenantName, amountPaid, tenantRent) {
+        var updatedAmount = document.getElementById("remainingAmount" + remainderId).value;
+        console.log("Opening modal with values:", { remainderId, tenantId, tenantName, amountPaid, tenantRent, updatedAmount });
+        var modal = document.getElementById("remainderPaymentModal");
+        document.getElementById("remainderTenantName").textContent = tenantName;
+        document.getElementById("remainderTenantAmount").textContent = updatedAmount;
+        document.getElementById("remainderIdInput").value = tenantId;
+        document.getElementById("remainderAmountInput").value = updatedAmount;
+        document.getElementById("remainderTenantRent").textContent = tenantRent;
+        var remainingAmount = parseFloat(tenantRent) - (parseFloat(updatedAmount) + parseFloat(amountPaid));
+        document.getElementById("remainderRemainingAmountInput").value = remainingAmount.toFixed(0);
+        document.getElementById("remainderRemainingAmountDisplay").value = remainingAmount.toFixed(0);
+        modal.style.display = "block";
+        toggleRemainderPaymentReferenceInput();
+    }
+
+    // Function to validate and confirm the remainder payment
+    function confirmRemainderPayment() {
+        var modal = document.getElementById("remainderPaymentModal");
+        var paymentType = modal.querySelector("[name='payment_type']:checked").value;
+        var isValid = true;
+
+        var amountPaid = document.getElementById("remainderAmountInput").value;
+        var remainingAmount = document.getElementById("remainderRemainingAmountInput").value;
+
+        if (!amountPaid || parseFloat(amountPaid) === 0) {
+            highlightError(document.getElementById("remainderAmountInput"));
+            isValid = false;
+        }
+
+        if (paymentType === "online") {
+            var referenceInput = modal.querySelector("#remainderPaymentReferenceNumberInput");
+            if (referenceInput.value.length !== 12) {
+                isValid = false;
+                highlightError(referenceInput);
+            }
+        } else if (paymentType === "screenshot") {
+            var screenshotInput = modal.querySelector("#remainderPaymentScreenshotInput");
+            if (screenshotInput.files.length === 0) {
+                isValid = false;
+                highlightError(screenshotInput);
+            }
+        }
+
+        if (isValid) {
+            console.log("Submitting form with values:", {
+                tenant_id: document.getElementById("remainderIdInput").value,
+                amount_paid: document.getElementById("remainderAmountInput").value,
+                remaining_amount: document.getElementById("remainderRemainingAmountInput").value,
+                payment_type: paymentType,
+                reference_number: referenceInput ? referenceInput.value : null,
+                payment_screenshot: screenshotInput ? screenshotInput.files : null,
+            });
+            document.getElementById("remainderPaymentForm").submit();
+        }
+    }
+
+    // Function to highlight input errors
+    function highlightError(input) {
+        input.classList.add("error");
+    }
+
+    // Function to remove input errors
+    function removeError(input) {
+        input.classList.remove("error");
+    }
+
+    // Function to toggle the reference input field based on payment type
+    function toggleRemainderPaymentReferenceInput() {
+        var paymentType = document.querySelector("[name='payment_type']:checked").value;
+        var referenceField = document.getElementById("remainderPaymentReferenceNumberField");
+        var screenshotField = document.getElementById("remainderPaymentScreenshotUploadField");
+
+        if (paymentType === "online") {
+            referenceField.style.display = "block";
+            screenshotField.style.display = "none";
+        } else if (paymentType === "screenshot") {
+            referenceField.style.display = "none";
+            screenshotField.style.display = "block";
+        } else {
+            referenceField.style.display = "none";
+            screenshotField.style.display = "none";
+        }
+    }
+
+    // Function to validate the reference input field
+    function validateRemainderPaymentReferenceInput() {
+        var referenceInput = document.getElementById("remainderPaymentReferenceNumberInput").value;
+        if (referenceInput.length !== 12) {
+            highlightError(document.getElementById("remainderPaymentReferenceNumberInput"));
+        } else {
+            removeError(document.getElementById("remainderPaymentReferenceNumberInput"));
+        }
+    }
+
+    // Function to validate the screenshot input field
+    function validateRemainderPaymentScreenshotInput() {
+        var screenshotInput = document.getElementById("remainderPaymentScreenshotInput").files.length;
+        if (screenshotInput === 0) {
+            highlightError(document.getElementById("remainderPaymentScreenshotInput"));
+        } else {
+            removeError(document.getElementById("remainderPaymentScreenshotInput"));
+        }
+    }
+
+    // Function to validate remaining amount input and revert if it exceeds actual remaining amount
+    function validateRemainingAmount(remainderId, actualRemainingAmount) {
+        var remainingAmountInput = document.getElementById("remainingAmount" + remainderId);
+        var payButton = document.getElementById("payButton" + remainderId);
+        var updatedAmount = parseFloat(remainingAmountInput.value);
+
+        if (updatedAmount > actualRemainingAmount) {
+            remainingAmountInput.value = actualRemainingAmount;
+            highlightError(remainingAmountInput);
+            setTimeout(() => {
+                removeError(remainingAmountInput);
+            }, 1000);
+        } else {
+            removeError(remainingAmountInput);
+            updateButtonState(remainderId, actualRemainingAmount, updatedAmount);
+        }
+    }
+
+    // Function to revert remaining amount to the actual value if input is cleared
+    document.querySelectorAll('.remaining-amount-input').forEach(input => {
+        input.addEventListener('blur', function () {
+            if (this.value === "") {
+                var actualRemainingAmount = parseFloat(this.getAttribute('value'));
+                this.value = actualRemainingAmount;
+                removeError(this);
+                updateButtonState(this.id.replace('remainingAmount', ''), actualRemainingAmount, 0);
+            }
+        });
+    });
+</script>
+
+{% endblock %}
