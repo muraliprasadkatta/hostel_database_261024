@@ -28,10 +28,14 @@
       <div class="profile-section">
         <div class="profile-image-container">
           {% if selected_property.image %}
-            <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
-          {% else %}
-            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
-          {% endif %}
+          <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
+          <p>Debug: Image URL - {{ selected_property.image.url }}</p>  <!-- Debugging line -->
+      {% else %}
+          <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
+          <p>No Image Available</p> <!-- Debugging line -->
+      {% endif %}
+      
+      
         </div>
         <span class="profile-name" id="selectedPropertyName">{{ selected_property.hostelname }}</span>
       </div>

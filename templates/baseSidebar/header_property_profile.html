@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Property Profile{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/header_property_profile.css' %}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -141,17 +140,29 @@
 <body>
     <div class="property-details-container">
         <h1>{{ property.hostelname }}</h1>
+        
+        <!-- Error validation for image existence -->
         {% if property.image %}
-            <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
+            {% if property.image.url %}
+                <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
+            {% else %}
+                <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
+                <p>Image URL is not valid.</p>
+            {% endif %}
         {% else %}
             <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
+            <p>No image available for this property.</p>
         {% endif %}
+        
+        <!-- Property Information -->
         <div class="property-info">
             <p><span>Owner:</span> {{ property.ownername }}</p>
             <p><span>Email:</span> {{ property.email }}</p>
             <p><span>Mobile:</span> {{ property.mobile }}</p>
             <p><span>Address:</span> {{ property.address }}</p>
         </div>
+
+        <!-- Location Information -->
         <div class="location-container">
             <h2>Location</h2>
             <table class="location-table">
@@ -165,6 +176,8 @@
                 </tr>
             </table>
         </div>
+
+        <!-- Edit/Delete Buttons -->
         <div class="button-container">
             <button class="edit-button" onclick="window.location.href='#'">Edit</button>
             <button class="delete-button" onclick="#">Delete</button>
