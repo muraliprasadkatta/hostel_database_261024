@@ -1,0 +1,232 @@
+.option-container {
+    position: sticky;
+    background: white;
+    margin-top: 0px;
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.option-link {
+    flex: 1;
+    text-align: center;
+}
+.payment_buttons button {
+    cursor: pointer;
+}
+
+
+    /* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+.section {
+display: none;
+}
+
+.historyContainer{
+display: flex;
+display: grid;
+grid-template-columns: 50px 1fr 100px; /* Adjust sizes as needed */
+align-items: center;
+justify-content: space-between;
+/* gap: 20px;  */
+/* Adjust the space between items */
+/* flex: 1; */
+}
+
+.tenantImage-in-historyPage {
+display: flex;
+justify-content: center; /* Center horizontally */
+align-items: center; /* Center vertically */
+border: black 1px solid;
+
+}
+
+.tenantDueAmount {
+text-align: right; /* Align text to the right */
+overflow: hidden; /* Hide overflow */
+text-overflow: ellipsis; /* Add ellipsis to indicate text has been truncated */
+max-width: 110px; /* Adjust max width as needed */
+hyphens: auto; /* Automatically add hyphens for better break */
+height: 100%;
+border-radius: 5px solid black;
+border: black 1px solid;
+
+}
+.tenantDetails{
+overflow: hidden; /* Hide overflow */
+text-overflow: ellipsis; /* Add ellipsis to indicate text has been truncated */
+border: black 1px solid;
+
+}
+
+.tenantDueAmount span {
+white-space: nowrap; /* Keep text in a single line */
+}
+#columnsId{
+height: 100%;
+padding: 2px;
+}
+
+
+.input-1 {
+background-image: url('../images/check.png');
+background-repeat: no-repeat;
+background-position: right 10px center;
+border: 1px solid #01cc40;
+}
+
+.input-2 {
+background-image: url('../images/cancel.png');
+background-repeat: no-repeat;
+background-position: right 10px center;
+border: 1px solid red;
+}
+
+.input-error {
+border: 1px solid red;
+}
+
+/* for remainder table */
+
+.remainderContainer table {
+border-collapse: collapse;
+width: 100%;
+}
+.remainderContainer th, .remainderContainer td {
+border: 1px solid #ddd;
+padding: 8px;
+}
+.remainderContainer th {
+background-color: #f2f2f2;
+}
+/* ------------------------------------------------------ */
+/* for header navigatin */
+.option-container {
+display: flex;
+justify-content: center; /* Center the options horizontally */
+flex-wrap: wrap; /* Allow the options to wrap as needed */
+padding: 10px;
+margin-top: 20px; /* Adjust based on your layout */
+}
+.options {
+display: flex;
+justify-content: space-around;
+width: 100%; /* Ensure the options container fills the parent */
+flex-wrap: wrap; /* Allow the links to wrap onto the next line on small screens */
+}
+.option-link {
+padding: 10px 20px;
+margin: 1px;
+border: 1px solid #007bff;
+background-color: #007bff;
+color: white;
+text-decoration: none;
+flex-grow: 1; /* Allow the links to grow and fill the space */
+text-align: center; /* Center the text within each link */
+border-radius: 5px; /* Optional: Adds rounded corners */
+}
+
+
+/* option amounts */
+
+/* Style for the amount option boxes */
+.amount-option-checkbox {
+    display: none; /* Hide the default checkbox */
+}
+
+.amount-option-label {
+    display: inline-block;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.amount-option-checkbox:checked + .amount-option-label {
+    background-color: #007bff; /* Selected background color */
+    color: #fff; /* Selected text color */
+    border-color: #007bff; /* Selected border color */
+}
+
+.amount-option-label:hover {
+    background-color: #e0e0e0; /* Hover background color */
+    border-color: #bdbdbd; /* Hover border color */
+}
+
+
+/* Modal overlay */
+.dialogBoxForPayment {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1050; /* Move dialog box to the front */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    overflow: hidden; /* Prevent background scrolling */
+}
+
+/* Modal content wrapper */
+.dialogBoxForPayment-content-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%; /* Adjust as needed */
+    height: auto; /* Limit height */
+    background-color: #fefefe;
+    border: 1px solid #888;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0; /* Remove padding to avoid double padding */
+    /* background: red; */
+
+}
+
+/* Modal content/box */
+.dialogBoxForPayment-content {
+    padding: 10px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: calc(90vh - 50px); /* Ensure it uses full available height minus padding */
+    /* background: blue; */
+}
+
+.dialogBoxForPayment-content h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    background: red;
+}
+
+/* Close button */
+.dialogBoxForPayment .close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.dialogBoxForPayment .close:hover {
+    color: #000;
+}

@@ -1,0 +1,553 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dues Page{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+     <!-- for auto commos and ruppie symbol and chaekc these setting in INSTALLED APPS -->
+    {% load humanize %}
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/dues_page.css' %}">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+
+    .duesPagecontainer {
+        margin-top: 5%;
+        padding: 10px;
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    .mobile-header-duespage {
+        display: none;
+    }
+
+    body.sidebar-open .duesPagecontainer {
+        margin-left: 280px; /* Adjust content when sidebar is open */
+        width: calc(100% - 280px);
+    }
+
+    .duesPagecontainer {
+        transition: margin-left 0.3s ease;
+    }
+
+    
+/* Modal overlay */
+.dialogBoxForPayment {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1050; /* Move dialog box to the front */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    overflow: hidden; /* Prevent background scrolling */
+}
+
+/* Modal content wrapper */
+.dialogBoxForPayment-content-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%; /* Adjust as needed */
+    min-height: 80%; /* Limit height */
+    background-color: #fefefe;
+    border: 1px solid #888;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0; /* Remove padding to avoid double padding */
+    background: rgb(178, 255, 255);
+
+}
+
+/* Modal content/box */
+.dialogBoxForPayment-content {
+    padding: 25px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: calc(90vh - 50px); /* Ensure it uses full available height minus padding */
+    background: white;
+    margin: 15px;
+}
+
+.dialogBoxForPayment-content h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    background: red;
+}
+
+/* Close button */
+.dialogBoxForPayment .close {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.dialogBoxForPayment .close:hover {
+    color: #000;
+}
+
+
+    @media (max-width: 768px) {
+        .sidebar, .header {
+            display: none;
+        }
+
+        .mobile-header-duespage {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-top: 0;
+        }
+
+        .mobile-header-duespage .back-button {
+            font-size: 20px;
+            cursor: pointer;
+            margin: 0 20px 0 5px;
+        }
+
+        .back-arrow-image {
+            width: 30px;
+            height: auto;
+        }
+
+        .mobile-header-duespage .title {
+            font-size: 18px;
+            font-weight: bold;
+            width: 65%;
+            text-align: center;
+        }
+
+    }
+</style>
+</head>
+<body>
+
+<div class="mobile-header-duespage">
+        <span class="back-button" onclick="history.back()">
+            <img src="{% static 'images/displaybeds/free-back-arrow-bed.png' %}" alt="Back" class="back-arrow-image">
+        </span>
+        <span class="title">Tenant Dues</span>
+</div>
+
+<!-- dues page -->
+<div class="duesPagecontainer">
+    
+<div id="dues" class="section" style="display: block;">
+    <form id="filterForm" method="get">
+        <input type="date" name="date" value="{{ selected_date }}">
+        <button type="submit">Filter</button>
+    </form><br>
+    <div id="duesContent">
+        {% if tenants %}
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Room Number</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+            {% for tenant in tenants %}
+                <tr>
+                    <td>{{ tenant.name }}</td>
+                    <td>{{ tenant.room.room_number }}</td>
+                    <td>{{ tenant.due_date }}</td>
+                    <td>
+                        <button style="color: green;" onclick="clearPayment('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.room.room_number }}','{{ tenant.rent }}')">Clear the payment</button>
+                        <button style="color: blue;" onclick="clearPayment('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.room.room_number }}','{{ tenant.rent }}', 'initial')">Pay Initial Payment</button>
+
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No tenants have dues as of {{ selected_date }}</p>
+    {% endif %}
+    </div>
+</div>
+
+<div class="dialogBoxForPayment" id="paymentModal">
+    <div class="dialogBoxForPayment-content-wrapper">
+        <h2>Payment Method</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="dialogBoxForPayment-content">
+            <form name="Form" id="paymentForm" method="post" action="{% url 'FullPayment' property_id=selected_property.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p id="tenantInfo">Tenant Name: <span id="tenantName"></span>, Room: <span id="tenantRoom"></span>, Rent: <span id="tenantRent"></span></p>
+
+                <div>
+                    <span style="display: none;">Tenant ID: </span>
+                    <input id="tenantIdInput" name="tenantId" value="">
+                </div>
+                
+                <div>
+                    <label for="amountPaid" id="amountPaidLabel">Enter Amount:</label>
+                    <input type="text" id="amountPaid" name="amount_paid" placeholder="" required>
+                </div>
+                
+                <div id="remainingAmountBox" style="display: none;">
+                    <label for="remainingAmount">Remaining Amount:</label>
+                    <input type="text" id="remainingAmount" name="remaining_amount" readonly>
+                </div>
+                <div id="amountOptions" style="margin-top: 10px;"></div>
+
+                <div>
+                    <input type="radio" id="cashModal" name="payment_method_modal" checked value="cash" onchange="togglePaymentFields('paymentModal');">
+                    <label for="cashModal">Cash</label>
+                </div>
+                <div>
+                    <input type="radio" id="refIdModal" name="payment_method_modal" value="refId" onchange="togglePaymentFields('paymentModal');">
+                    <label for="refIdModal">Payment Reference ID</label>
+                    <input type="text" id="refIdInputModal" name="reference_id" style="display: none;" placeholder="Enter Reference ID">
+                </div>
+                <div>
+                    <input type="radio" id="screenshotModal" name="payment_method_modal" value="screenshot" onchange="togglePaymentFields('paymentModal');">
+                    <label for="screenshotModal">Payment Screenshot</label>
+                    <input type="file" id="screenshotInputModal" name="payment_screenshot" style="display: none;">
+                </div>
+
+                <br>
+                <button type="button" id="confirmPaymentBtn">Confirm Payment</button>
+                <button type="button" onclick="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<script>
+    // for the dailog box closing and open ,for clear payment dialog box and amount paid validations
+        // Get the modal
+    // When the user clicks on the button, open the modal
+// Function to open the payment modal with tenant details
+// Function to open the payment modal with tenant details
+function clearPayment(tenantId, tenantName, tenantRoomNumber, tenantRent, paymentType = 'full') {
+    document.getElementById('tenantName').textContent = tenantName;
+    document.getElementById('tenantRoom').textContent = tenantRoomNumber;
+    document.getElementById('tenantRent').textContent = tenantRent; // Display the rent
+    document.getElementById('tenantIdInput').value = tenantId; // Set tenant ID
+
+    const amountPaidInput = document.getElementById('amountPaid');
+    const formattedRent = Math.round(parseFloat(tenantRent));
+    amountPaidInput.setAttribute('data-max', formattedRent);
+
+    const amountPaidLabel = document.getElementById('amountPaidLabel');
+    const amountOptionsDiv = document.getElementById('amountOptions');
+    amountOptionsDiv.innerHTML = ''; // Clear previous options
+
+    // Set initial value and label text based on payment type
+    if (paymentType === 'full') {
+        amountPaidInput.value = formattedRent; // Full payment
+        amountPaidLabel.textContent = 'Amount Paid:';
+    } else {
+        amountPaidInput.value = ''; // Initial payment, let user enter value
+        amountPaidLabel.textContent = 'Enter Amount:';
+
+        // Generate checkboxes for amount options
+        const step = 1000;
+        for (let amount = step; amount < formattedRent; amount += step) {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = amount;
+            checkbox.id = `amountOption${amount}`;
+            checkbox.classList.add('amount-option-checkbox');
+            checkbox.addEventListener('change', function() {
+                // Uncheck all other checkboxes
+                document.querySelectorAll('.amount-option-checkbox').forEach(cb => {
+                    if (cb !== this) cb.checked = false;
+                });
+                amountPaidInput.value = this.checked ? this.value : '';
+                // Update remaining amount if necessary
+                const maxValue = parseInt(amountPaidInput.getAttribute('data-max'), 10);
+                const currentValue = parseInt(amountPaidInput.value, 10);
+                if (!isNaN(currentValue) && currentValue < maxValue) {
+                    const remainingAmount = maxValue - currentValue;
+                    remainingAmountInput.value = remainingAmount;
+                    remainingAmountBox.style.display = '';
+                } else {
+                    remainingAmountBox.style.display = 'none';
+                }
+            });
+
+            const label = document.createElement('label');
+            label.htmlFor = `amountOption${amount}`;
+            label.textContent = amount;
+            label.classList.add('amount-option-label');
+
+            amountOptionsDiv.appendChild(checkbox);
+            amountOptionsDiv.appendChild(label);
+        }
+    }
+
+    // Reset remaining amount
+    const remainingAmountInput = document.getElementById('remainingAmount');
+    remainingAmountInput.value = '';
+
+    // Hide the remaining amount box
+    const remainingAmountBox = document.getElementById('remainingAmountBox');
+    remainingAmountBox.style.display = 'none';
+
+    // Show the modal
+    document.getElementById('paymentModal').style.display = "block";
+}
+
+// Function to close the modal and reset input fields
+function closeModal() {
+    document.getElementById('paymentModal').style.display = "none";
+}
+
+// Get the modal and close elements
+var modal = document.getElementById('paymentModal');
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    closeModal();
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const amountPaidInput = document.getElementById('amountPaid');
+    const remainingAmountBox = document.getElementById('remainingAmountBox');
+    const remainingAmountInput = document.getElementById('remainingAmount');
+
+    amountPaidInput.addEventListener('input', function(e) {
+        const maxValue = parseInt(e.target.getAttribute('data-max'), 10);
+        const currentValue = parseInt(e.target.value, 10);
+
+        if (!isNaN(currentValue)) {
+            // Deselect all checkboxes if the input is manually edited
+            document.querySelectorAll('.amount-option-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+
+            if (currentValue > maxValue) {
+                e.target.value = maxValue;
+                remainingAmountBox.style.display = 'none';
+            } else if (currentValue < maxValue) {
+                const remainingAmount = maxValue - currentValue;
+                remainingAmountInput.value = remainingAmount;
+                remainingAmountBox.style.display = '';
+            } else {
+                remainingAmountBox.style.display = 'none';
+            }
+        } else {
+            e.target.value = '';
+            remainingAmountBox.style.display = 'none';
+        }
+    });
+
+    amountPaidInput.addEventListener('blur', function(e) {
+        if (e.target.value.trim() === '') {
+            const originalValue = parseInt(e.target.getAttribute('data-max'), 10);
+            e.target.value = originalValue;
+            remainingAmountBox.style.display = 'none';
+        }
+    });
+});
+
+</script>
+
+<script>
+    // Open and Close Modal Functions and dispaly the tenant details and functions like (sub inpput fields)
+    // example if we select the screenthot button its open the uplod photo option like this
+
+    // Toggle Payment Fields Based on Selected Payment Method
+    function togglePaymentFields(modalId) {
+        const modal = document.getElementById(modalId);
+        const paymentMethod = modal.querySelector('input[name="payment_method"]:checked, input[name="payment_method_modal"]:checked').value;
+        const refIdInput = modal.querySelector('#refIdInput, #refIdInputModal');
+        const screenshotInput = modal.querySelector('#screenshotInput, #screenshotInputModal');
+
+        refIdInput.style.display = paymentMethod === 'refId' ? 'block' : 'none';
+        screenshotInput.style.display = paymentMethod === 'screenshot' ? 'block' : 'none';
+    }
+
+    // Attach event listeners dynamically to avoid manual HTML modifications
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input[name="payment_method"], input[name="payment_method_modal"]').forEach(input => {
+            input.addEventListener('change', function() {
+                togglePaymentFields(this.closest('div.dialogBoxForPayment').id);
+            });
+        });
+    });
+</script>
+<!-------------------------------------------------------------------------- -->
+
+    
+<!-- ------------------------------------------------------ -->
+<!-- filter the date without sent the uurls with using and ajax 
+in views section have also associate lines in due-page views -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('filterForm');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent form from submitting traditionally
+        const date = form.querySelector('input[type=date]').value;
+
+        fetchDuesData(date); // Fetch the filtered data and update the page
+    });
+});
+
+function fetchDuesData(date) {
+    const propertyId = {{selected_property.id}}; // Ensure this is rendered by Django in the template
+    const url = `/DuesPage/${propertyId}/?date=${date}`;
+    
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest' // Indicate that this is an AJAX request
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+    })
+    .then(html => {
+        document.getElementById('duesContent').innerHTML = html;
+    })
+    .catch(error => {
+        console.error('Error fetching filtered data:', error);
+    });
+}
+
+</script>  
+
+<!-- ------------------------------------------------------ -->
+
+<!-- for sweet alert dialog box  for clear payment and control the redirect page -->
+<script>
+    
+ document.addEventListener('DOMContentLoaded', function() {
+    var confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+    var form = document.getElementById('paymentForm');
+
+    confirmPaymentBtn.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to confirm the payment?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, confirm it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken') // CSRF token header
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text || 'Server responded with error!') });
+                    }
+                    return response.text();  // We expect a text response here, not JSON
+                })
+                .then(text => {
+                    Swal.fire({
+                        title: 'Confirmed!',
+                        text: 'Your payment has been confirmed.',
+                        icon: 'success',
+                        timer: 1500, // The alert will close after 1500ms (1.5 seconds)
+                        timerProgressBar: true,
+                        didClose: () => {
+                            closeModal(); // This function will be called when the alert closes
+                            window.location.reload(); // Refresh the page to update data
+
+                        }
+                    });
+                })
+                .catch(error => {
+                    // If the server returns an HTML error page, log it and alert the user
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Error!',
+                        'There was an issue processing your payment.',
+                        'error'
+                    );
+                });
+            }
+        });
+    });
+
+    function getCookie(name) {
+        // Get CSRF token function
+        // ... (same function as before)
+    }
+
+    function closeModal() {
+        var modal = document.getElementById('paymentModal');
+        modal.style.display = "none";
+    }
+
+    // Add a click event listener to the close button of the modal
+    var span = document.getElementsByClassName("close")[0];
+    span.addEventListener('click', function() {
+        closeModal();
+    });
+
+    // Close the modal if the user clicks outside of it
+    window.addEventListener('click', function(event) {
+        var modal = document.getElementById('paymentModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    });
+});
+</script>
+
+    <!-- time stamp for success message -->
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.success');
+            messages.forEach(msg => msg.style.display = 'none');
+        }, 3000);  // 5000 milliseconds = 5 seconds
+    });
+</script>
+    
+
+</body>
+</html>
+{% endblock %}

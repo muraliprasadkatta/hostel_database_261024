@@ -1,0 +1,30 @@
+.container-bed{
+    border: red 2px solid;
+    margin-top:65px;
+    height: 100mvh;
+}
+h1{
+    margin-top: 100px;
+}
+.occupied-bed{
+    background-color:rgb(200, 226, 52);
+    margin-top: 10px;
+}
+.bed-list {
+    list-style: none;
+    display:  flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    border: blue solid 2px;
+}
+.bed-item{
+    flex: 1 1 30%;
+    margin: 5px;
+    padding: 7px;
+    border: 1px solid #ccc;
+}
+@media screen and (max-width: 1200px) {
+    .bed-list a{
+        width: 100%;
+    }
+}

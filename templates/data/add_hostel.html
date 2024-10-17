@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostels</title>
+</head>
+<body>
+    <h1>Add_hostel</h1>
+    
+    {% if username %}
+        <p>Welcome, {{ username }}!</p>
+    {% else %}
+        <p>Welcome, Guest!</p>
+    {% endif %}
+
+    {% if data %}
+        <p>Usernames: {% for user in data %}{{ user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    {% endif %}
+
+    <div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+
+    <button><a href="#">facebook</a></button>
+    <button><a href="{'provider_login_url 'google'method ='oauth2'}">Google</a></button>
+
+    
+</body>
+</html>

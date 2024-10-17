@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% if remaining_free_beds > 0 %}
+  <a id="addTenantsBtn" href="{% url 'AddTenants' property_id=selected_property.id room_number=room.room_number %}">
+    <button type="button" id="add_tenant_{{ room.room_number }}" class="add-tenant-button">
+      <img src="{% static 'images/displaybeds/add-file.png' %}" alt="Add Tenant">
+      <span>Add Tenant</span>
+    </button>
+  </a>
+{% else %}
+  <button type="button" id="add_tenant_{{ room.room_number }}" class="add-tenant-button" disabled>
+    <img src="{% static 'images/displaybeds/add-file.png' %}" alt="Room is Full">
+    <span>Room is Full</span>
+  </button>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- attach css files -->
+    <link rel="stylesheet" href="{% static 'css/add_rooms.css'%}">
+    <!-- <link rel="stylesheet" href="pop_up_page.css"> -->
+
+    <!-- attach js files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="{% static 'js/add_rooms.js' %}"></script>
+
+    <!-- for block the non unique room numbers -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- xmt for error -->
+
+    <!-- for sweetalert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- link for xmt -->
+    <script src="https://unpkg.com/htmx.org@1.8.0"
+    integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous">
+  </script>
+
+<!-- Include Axios in your HTML file.  -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Add Rooms</title> 
+
+</head>
+
+<body>  
+    <div id="generalerr" class="error"></div>
+    <h2>Add Rooms</h2>
+    <form name="Form" autocomplete="off" onsubmit="return validateForm()" method="post" action="{% url 'AddRooms' property_id=selected_property.id %}">
+        {% csrf_token %}
+        <!-- Your form fields go here -->
+
+            <div class="box">
+                <label>Room Number</label>
+                <!-- <input type="text" name="roomnumber" id="roomnumber">
+                <div class="error" id="roomnumberErr"></div> -->
+                <input type="hidden" id="userId" value="{{ user.id }}">
+
+                <input type="hidden" name="property_id" id="property_id" value="{{ selected_property.id }}">
+
+                <input type="text" name="roomnumber" id="roomnumber"
+                hx-post="{% url 'check_roomnumber' %}" hx-target="#roomnumberErr" hx-trigger="change">
+                <div id="roomnumberErr" class="error"></div>
+            </div>
+
+        <div class="box">
+            <label>Floor Type</label>
+            <input type="text" name="floortype" id="floortype">
+            <div class="error" id="floortypeErr"></div>
+        </div>
+        
+        <div class="box">
+            <label>Number of Share</label>
+            <input type="text" name="numberofshare" id="numberofshare">
+            <div class="error" id="numberofshareErr"></div>
+        </div>
+
+            <p>Is this Room available to Rent?</p>
+            <div class="radio-contaier">
+                <div class="radio-row-1">
+                    <input type="radio" id="available_yes" name="available_room_or_not" value="yes" checked>
+                </div>
+
+                <label for="available_yes">Yes</label>
+                    <div class="radio-row-2">
+                        <input type="radio" id="available_no" name="available_room_or_not" value="no">
+                    </div>
+                <label for="available_no">No</label>
+            </div>
+
+            <div class="box">
+                <label>Remarks</label>
+                <input type="text" name="remarks" id="remarks">
+                <div class="error" id="remarksErr"></div>
+            </div>
+
+
+          <p>Room Facilities</p>
+          <div class="container-facilities">
+            <div class="checkbox-tile-group">
+                <div class="input-container">
+                    <input id="cctv" type="checkbox" name="transportation" value="cctv">
+                    <div class="checkbox-tile">
+                        <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+                        <span class="material-symbols-outlined">
+                            nest_cam_iq_outdoor
+                            </span>
+                        <label for="cctv">CCTV</label>
+                    </div>
+                </div>
+
+                
+                <div class="input-container">
+                    <input id="food" type="checkbox" name="transportation" value="food">
+                    <div class="checkbox-tile">
+                        <span class="material-symbols-outlined">
+                            lunch_dining
+                            </span> 
+                         <label for="food">Food</label>
+                    </div>
+                </div>
+        
+                <div class="input-container">
+                    <input id="laundry" type="checkbox" name="transportation" value="laundry">
+                    <div class="checkbox-tile">
+                        <span class="material-symbols-outlined">
+                            local_laundry_service
+                            </span>
+                        <!-- <ion-icon name="bicycle"></ion-icon> -->
+                        <label for="laundry">Laundry</label>
+                    </div>
+                </div>
+
+        
+                <div class="input-container">
+                    <input id="washroom" type="checkbox" name="transportation" value="washroom">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="car-sport"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            bathtub
+                            </span>
+                        <label for="washroom">Washro..</label>
+                    </div>
+                </div>
+        
+                <div class="input-container">
+                    <input id="clean-service" type="checkbox" name="transportation" value="clean-service">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="airplane"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            cleaning_services
+                            </span>
+                        <label for="clean-service">Clean service</label>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input id="geyser" type="checkbox" name="transportation" value="geyser">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="airplane"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            water_heater
+                            </span>
+                        <label for="geyser">Geyser</label>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input id="fridge" type="checkbox" name="transportation" value="fridge">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="airplane"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            kitchen
+                            </span>
+                        <label for="fridge">Fridge</label>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input id="tv" type="checkbox" name="transportation" value="tv">
+                    <div class="checkbox-tile">
+                        <span class="material-symbols-outlined">
+                            tv
+                            </span><!-- <ion-icon name="airplane"></ion-icon> -->
+                        <label for="tv">TV</label>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input id="water" type="checkbox" name="transportation" value="water">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="airplane"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            water_drop
+                            </span>
+                        <label for="water">24/7 water</label>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input id="ac" type="checkbox" name="transportation" value="ac">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="airplane"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            ac_unit
+                            </span>
+                        <label for="ac">AC</label>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input id="locker" type="checkbox" name="transportation" value="locker">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="airplane"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            lock
+                            </span>
+                        <label for="locker">Lockers</label>
+                    </div>
+                </div>
+
+                <div class="input-container">
+                    <input id="wifi" type="checkbox" name="transportation" value="wifi">
+                    <div class="checkbox-tile">
+                        <!-- <ion-icon name="airplane"></ion-icon> -->
+                        <span class="material-symbols-outlined">
+                            wifi
+                            </span>
+                        <label for="wifi">Wifi</label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+            <div class="box">
+                <input type="submit" value="Submit" class="btn" id="submitBtn">
+
+                <!-- <input type="submit" value="Submit" onclick="return validateRoomNumberAndSubmitForm()"> -->
+                <!-- <input type="submit" value="Submit" class="btn" 
+                onclick="submitForm(event);" id="submitBtn"> -->
+
+            </div>
+        </form>
+
+
+
+<!-- 
+<script>
+
+$("#roomnumber").change(function() {
+    var roomnumber = $(this).val();
+    var userId = $("#userId").val(); // Retrieve the user ID
+    var hostelId = $("#hostelId").val(); // Retrieve the hostel ID
+    var property_id = $("#property_id").val(); // Retrieve the property ID from the hidden field
+    $.ajax({
+        url: checkRoomNumberUrl, // Use the variable from your template or directly the URL
+        type: "POST",
+        data: {
+            roomnumber: roomnumber,
+            user_id: userId, // Send the user ID
+            hostel_id: hostelId, // Send the hostel ID
+            property_id: property_id,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function(response) {
+            // Handle the response as before
+            if(response == "This room number is already exists") { 
+                isRoomNumberAvailable = false;
+                $("#roomnumberErr").html(response);
+            } else {
+                isRoomNumberAvailable = true;
+                $("#roomnumberErr").html(''); // Clear any error message
+            }
+        }
+    });
+});
+</script> -->
+
+      
+
+    <!-- for font-aswome -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+
+</body>
+</html>
+    

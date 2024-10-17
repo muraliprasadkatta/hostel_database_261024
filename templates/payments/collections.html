@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dues Page{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load humanize %}
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/dues_page.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .collectionContainer {
+        margin-top: 5%;
+        padding: 10px;
+        box-sizing: border-box;
+        height: 100%;
+    }
+
+    body.sidebar-open .collectionContainer {
+        margin-left: 280px; /* Adjust content when sidebar is open */
+        width: calc(100% - 280px);
+    }
+
+    .collectionContainer {
+        transition: margin-left 0.3s ease;
+    }
+
+    .mobile-header-collectionpage {
+        display: none;
+    }
+
+    .section {
+        display: none;
+        transition: opacity 0.5s ease;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .button-container button {
+        flex: 1;
+        margin-right: 10px;
+        padding: 10px;
+        font-size: 16px;
+        background-color: white;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .button-container button:last-child {
+        margin-right: 0;
+    }
+
+    .button-container button:hover {
+        background-color: #f4f4f4;
+    }
+
+    .button-container button.selected {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar, .header {
+            display: none;
+        }
+
+        .mobile-header-collectionpage {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-top: 0;
+        }
+
+        .mobile-header-collectionpage .back-button {
+            font-size: 20px;
+            cursor: pointer;
+            margin: 0 20px 0 5px;
+        }
+
+        .back-arrow-image {
+            width: 30px;
+            height: auto;
+        }
+
+        .mobile-header-collectionpage .title {
+            font-size: 18px;
+            font-weight: bold;
+            width: 65%;
+            text-align: center;
+        }
+    }
+</style>
+</head>
+<body>
+
+    <div class="mobile-header-collectionpage">
+        <span class="back-button" onclick="window.location.href='{% url 'DisplayRooms' property_id=selected_property.id %}'">
+            <img src="{% static 'images/displaybeds/free-back-arrow-bed.png' %}" alt="Back" class="back-arrow-image">
+        </span>
+        <span class="title">Tenant Dues</span>
+    </div>
+    
+
+<div class="collectionContainer">
+    <div class="button-container">
+        <button id="nameWithDuesButton" class="{% if section == 'nameWithDues' %}selected{% endif %}" onclick="toggleSections('nameWithDues')">Name with Dues</button>
+        <button id="remainderButton" class="{% if section == 'remainder' %}selected{% endif %}" onclick="toggleSections('remainder')">Remainder</button>
+    </div>
+    <div class="section" id="nameWithDues" style="display: {% if section == 'nameWithDues' %}block{% else %}none{% endif %};">
+        {% include 'payments/sections/dues_page.html' %}
+    </div>
+    <div class="section" id="remainder" style="display: {% if section == 'remainder' %}block{% else %}none{% endif %};">
+        {% include 'payments/sections/remainder_page.html' %}
+    </div>
+</div>
+
+<script>
+let currentSection = '{{ section }}';
+
+function toggleSections(newSectionId) {
+    if (currentSection === newSectionId) return;
+
+    const currentSectionElement = document.getElementById(currentSection);
+    const newSectionElement = document.getElementById(newSectionId);
+
+    currentSectionElement.style.display = 'none';
+    newSectionElement.style.display = 'block';
+
+    document.querySelectorAll('.button-container button').forEach(button => {
+        button.classList.remove('selected');
+    });
+    document.getElementById(newSectionId + 'Button').classList.add('selected');
+
+    currentSection = newSectionId;
+    // Update URL to reflect the current section
+    const url = new URL(window.location.href);
+    url.searchParams.set('section', newSectionId);
+    window.history.pushState({}, '', url);
+}
+</script>
+
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Display Rooms{% endblock %}
+{% block content %}
+<style> 
+    .payments-section {
+        margin: 65px 10px 0px 10px;
+        /* background: rgb(235, 206, 237); */
+        border-bottom: 1px solid black;
+        border-radius: 0px;
+        background: rgb(252, 235, 253);    
+    }
+
+
+    body.sidebar-open .sidebar {
+    transform: translateX(0); /* Show sidebar */
+}
+
+body.sidebar-open .payments-section{
+
+    margin-left: 280px; /* Adjust content when sidebar is open */
+    width: calc(100% - 250px);
+}
+
+.payments-section{
+    transition: margin-left 0.3s ease;
+}
+
+
+    .custom-button {
+        border: none;
+        color: black;
+        padding: 5px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px;
+        cursor: pointer;
+        border-radius: 30px;
+        background: transparent; /* Make the button background transparent */
+        position: relative;
+        z-index: 1;
+        width: 150px; /* Fixed width for buttons */
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+    }
+
+
+    .button-container span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100px; /* Adjusted width */
+        height: 40px; /* Adjusted height */
+        /* background: linear-gradient(45deg, #4f1919, #ff3333); */
+        /* background: linear-gradient(45deg, #fcfcfc, #ff9393); */
+        background: white;
+        border-radius: 30px;
+        transition: all .1s ease-in-out;
+        z-index: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    #collection-button:hover ~ span {
+        margin-left: -110px; /* Adjusted for button position */
+    }
+
+    #remainder-button:hover ~ span {
+        margin-left: 0;
+    }
+
+    #history-button:hover ~ span {
+        margin-left: 110px; /* Adjusted for button position */
+    }
+
+    @media screen and (max-width: 768px) {
+        .custom-button {
+            font-size: 12px;
+            padding: 5px 10px;
+            width: 100px; /* Adjusted width for mobile */
+
+        }
+
+        .button-container span {
+            width: 100px; /* Adjusted width for mobile */
+            height: 30px; /* Adjusted height for mobile */
+        }
+
+        #collection-button:hover ~ span {
+            margin-left: -125px; /* Adjusted for button position */
+        }
+
+        #dashboard-button:hover ~ span {
+            margin-left: 0;
+        }
+
+        #remainder-button:hover ~ span {
+            margin-left: 125px; 
+        }
+
+        body.sidebar-open .payments-section{
+            margin-left: 400px; /* Adjust content when sidebar is open */
+        width: calc(100% - 350px);
+        }
+
+    }
+
+    
+</style>
+
+
+<!-- Payments Section -->
+<div class="payments-section">
+    <div class="button-container">
+        <button id="collection-button" class="custom-button" onclick="location.href='{% url 'Collections' property_id=selected_property.id %}'">Collections</button>
+
+        <button id="dashboard-button" class="custom-button">Dashboard</button>
+        <button id="remainder-button" class="custom-button" onclick="location.href='{% url 'RemainderPage' property_id=selected_property.id %}'">Remainder</button>
+        <span></span>
+    </div>
+</div>
+
+<div class="image-section" style="position: relative; text-align: center; color: white;">
+    <img src="{% static 'images/displayrooms/hostel_peoples.jpg' %}" alt="Background Image" style="width: 100%;">
+</div>
+
+<div class="statistics">
+    <div class="stat-item">
+        <div>Total Rooms</div>
+        <div>{{ total_rooms }}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat-item">
+        <div>Occupied Beds</div>
+        <div>{{ occupied_beds }}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="stat-item">
+        <div>Free Beds</div>
+        <div>{{ free_beds }}</div>
+    </div>
+</div>
+
+<div class="addRoom">
+    <button id="add-room-button">Add Rooms</button>
+    <div class="admin-row"></div>
+    {% include 'includes/error_messages.html' %}
+</div>
+
+<div id="addRoomModal" class="modal">
+    <div class="modal-header">
+        <span class="close" onclick="document.getElementById('addRoomModal').style.display='none'">&times;</span>
+        <h2 class="modal-title">Add Rooms</h2>
+    </div>
+    <div class="modal-content">
+        <form name="Form" autocomplete="off" onsubmit="return validateForm()" method="post" action="{% url 'AddRooms' property_id=selected_property.id %}">
+            {% csrf_token %}
+            <!-- Your form fields go here -->
+            <div class="form-row">
+                <div class="box">
+                    <label for="roomnumber">Room Number</label>
+                    <input type="text" id="roomnumber" name="roomnumber">
+                </div>
+                <div class="box">
+                    <label for="floortype">Floor Type</label>
+                    <input type="text" id="floortype" name="floortype">
+                </div>
+                <div class="box">
+                    <label for="numberofshare">Number of Share</label>
+                    <input type="text" id="numberofshare" name="numberofshare">
+                </div>
+                <div class="box">
+                    <label for="remarks">Remarks</label>
+                    <input type="text" id="remarks" name="remarks">
+                </div>
+            </div>
+            <p>Is this Room available to Rent?</p>
+            <div class="radio-container">
+                <div class="radio-option">
+                    <input type="radio" id="available_yes" name="available_room_or_not" value="yes" checked>
+                    <label for="available_yes">Yes</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="available_no" name="available_room_or_not" value="no">
+                    <label for="available_no">No</label>
+                </div>
+            </div>
+            
+            <p>Room Facilities</p>
+            <div class="container-facilities">
+                <div class="checkbox-tile-group">
+                    <div class="input-container">
+                        <input id="cctv" type="checkbox" name="transportation" value="cctv">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">nest_cam_iq_outdoor</span>
+                            <label for="cctv">CCTV</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="food" type="checkbox" name="transportation" value="food">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">lunch_dining</span>
+                            <label for="food">Food</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="laundry" type="checkbox" name="transportation" value="laundry">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">local_laundry_service</span>
+                            <label for="laundry">Laundry</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="washroom" type="checkbox" name="transportation" value="washroom">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">bathtub</span>
+                            <label for="washroom">Washro..</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="clean-service" type="checkbox" name="transportation" value="clean-service">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">cleaning_services</span>
+                            <label for="clean-service">Clean service</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="geyser" type="checkbox" name="transportation" value="geyser">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">water_heater</span>
+                            <label for="geyser">Geyser</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="fridge" type="checkbox" name="transportation" value="fridge">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">kitchen</span>
+                            <label for="fridge">Fridge</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="tv" type="checkbox" name="transportation" value="tv">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">tv</span>
+                            <label for="tv">TV</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="water" type="checkbox" name="transportation" value="water">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">water_drop</span>
+                            <label for="water">24/7 water</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="ac" type="checkbox" name="transportation" value="ac">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">ac_unit</span>
+                            <label for="ac">AC</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="locker" type="checkbox" name="transportation" value="locker">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">lock</span>
+                            <label for="locker">Lockers</label>
+                        </div>
+                    </div>
+                    <div class="input-container">
+                        <input id="wifi" type="checkbox" name="transportation" value="wifi">
+                        <div class="checkbox-tile">
+                            <span class="material-symbols-outlined">wifi</span>
+                            <label for="wifi">Wifi</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <input type="submit" value="Submit" class="btn" id="submitBtn">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container-wrapper">
+    <div class="container-display">  
+        {% if user_rooms %}
+            <div class="display-room-row">
+                {% for room in user_rooms %}
+                    <div class="room-box">
+                        <a href="{% url 'DisplayBeds' property_id=selected_property.id room_number=room.room_number %}" style="text-decoration: none; color: inherit;">
+                            <div class="room-number">{{ room.room_number }}</div>
+                            <div class="shareNumbers" id="shareNumbers_{{ room.room_number }}">
+                                <!-- Bed icons will be inserted here -->
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No Rooms Added</p>
+        {% endif %} 
+    </div>  
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    $(document).ready(function() {
+        // Ensure the Add Rooms button is enabled when the page loads
+        $('#add-room-button').prop('disabled', false);
+
+        // Event listener for the Add Rooms button
+        $('#add-room-button').on('click', function() {
+            // Show the modal
+            $('#addRoomModal').css('display', 'block');
+
+            // Prevent multiple clicks by disabling the button temporarily
+            $(this).prop('disabled', true);
+            setTimeout(() => {
+                $(this).prop('disabled', false);
+            }, 1000); // Adjust the timeout as needed
+        });
+
+        // Close the modal when the user clicks on <span> (x)
+        $('.close').on('click', function() {
+            $('#addRoomModal').css('display', 'none');
+        });
+
+        // Close the modal when the user clicks anywhere outside of the modal
+        $(window).on('click', function(event) {
+            if (event.target.id === 'addRoomModal') {
+                $('#addRoomModal').css('display', 'none');
+            }
+        });
+
+        {% for room in user_rooms %}
+            var shareNumbersDiv = document.getElementById("shareNumbers_{{ room.room_number }}");
+            var number_of_share = {{ room.number_of_share }};
+            var hasData = {{ room.has_data|lower }};
+            var displayLimit = Math.min(number_of_share, 6);
+
+            for (var i = 1; i <= displayLimit; i++) {
+                var iconElement = document.createElement("i");
+                iconElement.className = "fas fa-bed";
+                if (i <= hasData) {
+                    iconElement.style.color = "red";
+                }
+                shareNumbersDiv.appendChild(iconElement);
+            }
+            if (number_of_share > displayLimit) {
+                var remainingBeds = number_of_share - displayLimit;
+                var readMoreLink = document.createElement("a");
+                readMoreLink.href = "#";
+                readMoreLink.innerText = remainingBeds + "..more";
+                readMoreLink.classList.add("read-more-link");
+                shareNumbersDiv.appendChild(readMoreLink);
+            }
+        {% endfor %}
+    });
+</script>
+{% endblock %}

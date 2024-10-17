@@ -1,0 +1,242 @@
+{% load static %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- attach css files -->
+        <link rel="stylesheet" href="{% static 'css/add_property.css' %}">
+        <link rel="stylesheet" href="{% static 'css/add_tenants.css' %}">
+
+        <!-- attach js files -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+        <!-- link with js -->
+        
+        <script src="{% static 'js/autocomplete.js' %}" defer></script>
+
+
+        <!-- for kit code for font aswome-->
+        <script src="https://kit.fontawesome.com/c4254e24a8.js" crossorigin="anonymous"></script>
+
+        <title>Add Tenants</title>
+        <style>
+        /* .input-1{
+        background-image: url({% static 'images/check.png' %});
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        border:1px solid #01cc40;
+            } */
+        /* .input-2{
+        background-image: url({% static 'images/cancel.png' %});
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        border:1px solid red;
+    } */
+
+    .container-search {
+                display: flex;
+                justify-content: space-between; /* Adjust as needed */
+                gap: 20px; /* Adjust as needed */
+            }
+        </style>
+    </head>
+    <body>
+        
+        <form name="Form" onsubmit="return validateForm()" method="post" action="{% url 'AddTenants' property_id=selected_property.id room_number=room.room_number %}"
+        enctype="multipart/form-data">
+            {% csrf_token %}
+        <h2>Add Tenants</h2>
+        
+        <div class="box">
+            <label for="name">Full Name</label>
+            <input type="text" name="name" id="name" autocomplete="given-name">
+            <div class="error" id="nameErr"></div>
+        </div>
+        
+        <div class="box">
+            <label for="email">Email Address</label>
+            <input type="text" name="email" id="email" autocomplete="given-email">
+            <div class="error" id="emailErr"></div>
+        </div>
+        
+        <div class="box">
+            <label for="mobile">Contact Number</label>
+            <input type="text" name="mobile" maxlength="10" id="mobile">
+            <div class="error" id="mobileErr"></div>
+        </div>
+
+        <div class="box">
+            <label for="Text">Adhar Number</label>
+            <input type="text" name="adhar_number" maxlength="12" id="adharNumber">
+            <div class="error" id="adharNumberErr"></div>
+        </div>
+        
+        <label for="">Govt ID (Adhar/Licence/pan/Voter..)</label>
+        <div class="container-search">
+            <div class="search-box-IDFront">
+                <label for="input-search-box-IDFront">Front</label>
+                <div class="search-box-row-IDFront">
+                    <input type="file" id="input-search-box-IDFront" autocomplete="off" name="govt_id_front">
+                </div>
+                <div class="result-box-IDFront"></div>
+            </div>
+
+            <div class="search-box-IDBack">
+                <label for="input-search-box-IDBack">Back</label>
+                <div class="search-box-row-IDBack">
+                    <input type="file" id="input-search-box-IDBack" autocomplete="off" name="govt_id_back">
+                </div>
+            <div class="result-box-IDBack"></div>
+            </div>
+        </div>
+        
+
+        <div class="container-search">
+
+            <div class="search-box-state">
+                <label for="input-search-box-state">State</label>
+                <div class="search-box-row-state">
+                    <input type="text" id="input-search-box-state" autocomplete="off" name="state">
+                </div>
+                <div class="result-box-state"></div>
+            </div>
+
+            <div class="search-box">
+                <label for="input-search-box">Dist</label>
+                <div class="search-box-row">
+                    <input type="text" id="input-search-box" autocomplete="off" name="dist">
+                </div>
+                <div class="result-box"></div>
+            </div>
+        </div>
+
+        <div class="container-search">
+            <div class="search-box-pincode">
+                <label for="input-search-box-pincode">Pincode</label>
+                <div class="search-box-row-pincode">
+                    <input type="text" id="input-search-box-pincode" autocomplete="off" name="pincode">
+                </div>
+                <div class="result-box-pincode"></div>
+            </div>
+
+            <div class="search-box-city">
+                <label for="input-search-box-city">City/Town/Village</label>
+                <div class="search-box-row-city">
+                    <input type="text" id="input-search-box-city" autocomplete="off" name="city">
+                </div>
+            <div class="result-box-city"></div>
+            </div>
+        </div>
+        
+
+
+        <div class="container-search">
+
+            <div class="search-box-doorno">
+                <label for="input-search-box-doorno">Door No</label>
+                <div class="search-box-row-doorno">
+                    <input type="text" id="input-search-box-doorno" autocomplete="off" name="door_no">
+                </div>
+            </div>
+
+            <div class="search-box-area">
+                <label for="input-search-box-area">Area</label>
+                <div class="search-box-row-area">
+                    <input type="text" id="input-search-box-area" autocomplete="off" name="area">
+                </div>
+            </div>
+        </div>
+
+        <div class="container-search">
+
+            <div class="search-box-street">
+                <label for="input-search-box-street">Street</label>
+                <div class="search-box-row-street">
+                    <input type="text" id="input-search-box-street" autocomplete="off" name="street">
+                </div>
+                <div class="result-box-street"></div>
+            </div>
+
+            <div class="search-box-landmark">
+                <label for="input-search-box-landmark">Landmark</label>
+                <div class="search-box-row-landmark">
+                    <input type="text" id="input-search-box-landmark" autocomplete="off" name="landmark">
+                </div>
+            <div class="result-box-landmark"></div>
+            </div>
+        </div>
+
+        <div class="box">
+            <label for="bikeNumber">If you have a vechicle</label>
+            <input type="text" name="bike_number" id="bikeNumber" autocomplete="given-name">
+            <div class="error" id="bikeNumberErr"></div>
+        </div>
+        
+
+        
+        Management:
+        <br><br>
+        <label for="joining-date">joining-date:</label>
+        <input type="date" name="joining_date" id="joining-date"><br>
+
+        <!-- <label for="due-date">Due-date:</label>  
+        <input type="date" name="due_date" id="due-date"> -->
+
+        <label for="">Allocated Room Number-{{room.room_number}}</label>
+        
+        <label for="allocated_bed">Allocated bed:</label>
+        <input type="text" name="allocated_bed" id="bed">
+
+        <label for="rent">Rent:</label>
+        <input type="text" name="rent" id="rent">
+
+        <label>Advance</label>
+        <input type="text" name="advance" id="advance">
+
+        <label for="tenant_image">Image</label>
+        <input type="file" name="tenant_image" id="tenant_image">
+        
+
+    </body>
+
+ <!-- <div class="box">
+            <label>Gender</label>
+            <div class="form-inline" id="gender">
+                <label><input type="radio" name="gender" value="male"> Male</label>
+                <label><input type="radio" name="gender" value="female"> Female</label> 
+            </div>
+            <div class="error" id="genderErr"></div>
+        </div> -->
+
+            <!-- These fields should be hidden and populated with the associated user and room -->
+            <input type="hidden" name="associated_user" value="{{ associated_user.id }}">
+            <input type="hidden" name="room" value="{{ room.id }}">
+            
+        <div class="box">
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+
+    <!-- ... previous HTML content ... -->
+
+<script>
+      // Get today's date
+  var today = new Date();
+  
+  // Format the date as YYYY-MM-DD (required by input type="date")
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+  var yyyy = today.getFullYear();
+
+  var todayFormatted = yyyy + '-' + mm + '-' + dd;
+
+  // Set the value of the input field to today's date
+  document.getElementById('joining-date').value = todayFormatted;
+
+
+</script>
+
+
+    </body>
+    </html>

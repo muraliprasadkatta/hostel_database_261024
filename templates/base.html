@@ -1,0 +1,393 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Document{% endblock %}</title>
+  <!-- CSS links -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  {% include 'includes/cdnlines.html' %}
+  <link rel="stylesheet" href="{% static 'css/display_rooms.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dialogbox/addroom_dialogbox.css' %}">
+  <!-- cnd lines for images like fecilities image -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <style>
+    /* Add your existing CSS code here */
+    .sidebar {
+      width: 250px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: #fff;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%); /* Initially hide sidebar */
+    }
+
+    .header, .image-section, .statistics, .container-wrapper, .addRoom {
+      transition: margin-left 0.3s ease;
+    }
+
+    body.sidebar-open .sidebar {
+      transform: translateX(0); /* Show sidebar */
+    }
+
+    body.sidebar-open .header {
+      margin-left: 280px; /* Adjust content when sidebar is open */
+      width: calc(100% - 300px);
+    }
+
+    body.sidebar-open .image-section,
+    body.sidebar-open .statistics,
+    body.sidebar-open .addRoom,
+    body.sidebar-open .container-wrapper {
+      margin-left: 280px; /* Adjust content when sidebar is open */
+      width: calc(100% - 285px);
+    }
+
+    .close-btn {
+      font-size: 24px;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .bottom-link {
+      width: 250px;
+      text-align: center;
+      margin-top: auto; /* Pushes the link to the bottom */
+      padding: 5px 0;
+      position: sticky;
+      bottom: 0;
+    }
+
+    .profile-image {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ccc;
+      border-radius: 50%;
+    }
+
+    .profile-image-container {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 10px; /* Add some space below the profile section */
+      padding-bottom: 20px;
+      border-bottom: dotted black 1px;
+    }
+
+    .profile-name {
+      margin-left: 20px;
+    }
+
+    .upload-icon {
+      position: absolute;
+      bottom: 0;
+      right: 0; /* Adjust this to place the icon at the desired location over the image */
+      background-color: white; /* Background to make the icon stand out */
+      border-radius: 50%;
+      padding: 5px; /* Padding around the icon for better visibility */
+      cursor: pointer;
+      color: #666; /* Icon color */
+    }
+
+    .sidebar-options {
+      padding-left: 0;
+      flex-grow: 1; /* Makes the options list take up available space */
+      overflow-y: auto; /* Enable vertical scrolling */
+    }
+
+    .sidebar-options li {
+      list-style: none;
+      padding: 8px 15px;
+    }
+
+    .sidebar-options a {
+      text-decoration: none;
+      color: #333;
+      display: block;
+    }
+
+    .sidebar-options a:hover {
+      background-color: #f4f4f4;
+    }
+
+    .property-item .property-name {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 130px; /* Adjust the max-width to ensure it fits within the sidebar */
+    }
+
+    .icon {
+      margin-right: 10px;
+    }
+
+    .property-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      background-color: #f5f5f5;
+    }
+
+    .properties-box {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      max-height: calc(100vh - 200px); /* Adjust to fit within the viewport height */
+      overflow-y: auto; /* Enable scrolling for properties box */
+    }
+
+    .property-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      position: relative;
+      max-width: 400px; /* Adjust based on your layout */
+    }
+
+    .property-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px; /* Adjust this value as needed */
+      display: inline-block;
+    }
+
+    .property-item:hover .property-name {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
+
+    .property-item:hover {
+      background-color: #f4f4f4;
+      border-radius: 5px;
+      padding: 0px 25px 0px 15px;
+    }
+
+    .scrollable-properties {
+      max-height: calc(100vh - 200px); /* Adjust to fit within the viewport height */
+      overflow-y: auto;
+    }
+
+    .property-image {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background-color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .tick-image {
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      right: 0px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .hrClass {
+      border: 1px solid black;
+      background: black;
+    }
+
+    @media (max-width: 768px) {
+      body.sidebar-open .header,
+      body.sidebar-open .image-section,
+      body.sidebar-open .statistics,
+      body.sidebar-open .container-wrapper,
+      body.sidebar-open .addRoom {
+        margin-left: 320px; /* Adjust content when sidebar is open */
+        width: calc(100% - 350px);
+      }
+
+      .sidebar {
+        width: 320px;
+        padding: 20px;
+      }
+
+      .bottom-link {
+        background: green;
+        width: 100%;
+        text-align: center;
+        margin-top: auto; /* Pushes the link to the bottom */
+        padding: 10px 0;
+        position: sticky;
+        bottom: 0;
+        border-radius: 10px;
+      }
+
+      .property-item .property-name {
+        max-width: 200px; /* Adjust the max-width to ensure it fits within the sidebar */
+      }
+
+      .tick-image {
+        right: 10px;
+      }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">×</span>
+    <div class="profile-section">
+      <div class="profile-image-container">
+        <div class="profile-image" id="profileImage">👤</div>
+        <label for="profile-upload" class="upload-icon">
+          <i class="fas fa-camera"></i>
+        </label>
+        <input type="file" id="profile-upload" style="display: none;"/>
+      </div>
+      <span class="profile-name">User Name</span>
+    </div>
+
+    <ul class="sidebar-options">
+      <li class="property-header">
+        <i class="fas fa-exchange-alt icon"></i> Switch Properties
+      </li>
+      <li class="properties-box">
+        <div class="scrollable-properties">
+          {% if user_properties %}
+            {% for property in user_properties %}
+              <div class="property-item" id="property-{{ property.id }}">
+                <div class="property-image">👤</div>
+                <a href="{% url 'DisplayRooms' property.id %}" onclick="saveSelectedHostel({{ property.id }})">
+                  <span class="property-name">{{ property.hostelname }}</span>
+                </a>
+                <img src="{% static 'images/displayroom_sidebar/3d-tick-image.png' %}" alt="Selected" class="tick-image" id="tick-{{ property.id }}" style="display: none;">
+              </div>
+            {% endfor %}
+          {% else %}
+            <div>No Properties Yet</div>
+          {% endif %}
+        </div>
+      </li>
+      <li><a href="#"><i class="fas fa-history icon"></i> History</a></li>
+      <li><a href="#"><i class="fas fa-question-circle icon"></i> Help</a></li>
+      <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt icon"></i> Logout</a></li>
+    </ul>
+    <div class="bottom-link">
+      <a href="#"><i class="fas fa-home icon"></i> Go to Home Page</a>
+    </div>
+  </div>
+   
+  <div class="header" id="header">
+    <div class="dispalyMenubar-icon" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="search-container header-search">
+      <input type="text" placeholder="Search..." class="search-box" id="search-header">
+      <i class="fa fa-search search-icon header-icon"></i>
+    </div>
+    <nav class="nav">
+      <ul class="nav-list">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Rooms</a></li>
+        <li><a href="#">Bookings</a></li>
+        <li><a href="#">Contacts</a></li>
+        <li><a href="#">Search</a></li>
+      </ul>
+    </nav>
+    <div class="dropdown-menu">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Rooms</a></li>
+        <li><a href="#">Bookings</a></li>
+        <li><a href="#">Contacts</a></li>
+        <li><a href="#">Search</a></li>
+      </ul>
+    </div>
+  </div>
+
+  {% block content %}
+  {% endblock %}
+
+  <script>
+    // Ensure the sidebar is open when the page loads on larger screens
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const sidebarState = localStorage.getItem('sidebarState');
+      if (window.innerWidth > 768 && (!sidebarState || sidebarState === 'open')) {
+        document.body.classList.add('sidebar-open');
+      }
+    });
+
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-open');
+      const sidebarState = document.body.classList.contains('sidebar-open') ? 'open' : 'closed';
+      localStorage.setItem('sidebarState', sidebarState);
+    }
+
+    function saveSelectedHostel(propertyId) {
+      fetch("{% url 'save_selected_hostel' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({ property_id: propertyId })
+      }).then(response => {
+        if (response.ok) {
+          document.querySelectorAll('.tick-image').forEach(img => img.style.display = 'none');
+          const tickImage = document.getElementById('tick-' + propertyId);
+          if (tickImage) {
+            tickImage.style.display = 'block';
+          }
+          localStorage.setItem('selectedHostelId', propertyId); // Store selected hostel ID in LocalStorage
+        }
+      });
+    }
+
+    // Ensure the selected hostel tick is displayed on page load
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const selectedHostelId = localStorage.getItem('selectedHostelId');
+      if (selectedHostelId) {
+        document.querySelectorAll('.tick-image').forEach(img => img.style.display = 'none');
+        const tickImage = document.getElementById('tick-' + selectedHostelId);
+        if (tickImage) {
+          tickImage.style.display = 'block';
+        }
+      }
+    });
+  </script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

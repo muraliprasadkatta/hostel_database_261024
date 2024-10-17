@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/modals/add_tenants_modal/add_tenants_modal.css'%}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/c4254e24a8.js" crossorigin="anonymous"></script>
+    <title>{% if tenant %} Edit Tenant {% else %} Add Tenant {% endif %}</title>
+
+</head>
+<body>
+    
+    <!-- Modal -->
+    <div id="addTenantModal" class="addTenantModalClass"  style="display: none;"> 
+        <div class="add-tenant-modal-content">
+            <span class="close">&times;</span>
+             
+            <div class="form-container">
+                <form id="tenantForm" name="Form" method="post" action="{% if tenant %}{% url 'AddTenants' property_id=selected_property.id room_number=room.room_number tenant_id=tenant.id %}{% else %}{% url 'AddTenants' property_id=selected_property.id room_number=room.room_number %}{% endif %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>{% if tenant %} Edit Tenant {% else %} Add Tenant {% endif %}</h2>
+
+                    <!-- Personal Information -->
+                    <fieldset class="form-section">
+                        <legend>Details</legend>
+                        <div class="container-search">
+                            <div class="box input-box">
+                                <input type="text" name="name" id="name" autocomplete="given-name" placeholder=" " value="{{ tenant.name|default_if_none:'' }}">
+
+                                <label for="name">Full Name</label>
+                                <div class="error" id="nameErr"></div>
+                            </div>
+                            <div class="box input-box">
+                                <input type="text" name="email" id="email" autocomplete="given-email" placeholder=" ">
+                                <label for="email">Email Address</label>
+                                <div class="error" id="emailErr"></div>
+                            </div>
+                            <div class="box input-box">
+                                <input type="text" name="mobile" maxlength="10" id="mobile" placeholder=" ">
+                                <label for="mobile">Contact Number</label>
+                                <div class="error" id="mobileErr"></div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Identification Information -->
+                    <fieldset class="form-section">
+                        <legend>Govt ID Proof</legend>
+                        <div class="container-search">
+                            <div class="box input-box">
+                                <input type="text" name="adhar_number" maxlength="12" id="adharNumber" placeholder=" ">
+                                <label for="adharNumber">Adhar Number</label>
+                                <div class="error" id="adharNumberErr"></div>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="file" id="input-search-box-IDFront" name="govt_id_front" placeholder=" ">
+                                <label for="input-search-box-IDFront">Govt ID Front</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="file" id="input-search-box-IDBack" name="govt_id_back" placeholder=" ">
+                                <label for="input-search-box-IDBack">Govt ID Back</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Address Information -->
+                    <fieldset class="form-section">
+                        <legend>Address</legend>
+                        <div class="container-search">
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box-pincode" autocomplete="off" name="pincode" placeholder=" ">
+                                <label for="input-search-box-pincode">Pincode</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box-state" autocomplete="off" name="state" placeholder=" ">
+                                <label for="input-search-box-state">State</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box" autocomplete="off" name="dist" placeholder=" ">
+                                <label for="input-search-box">Dist</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box-city" autocomplete="off" name="city" placeholder=" ">
+                                <label for="input-search-box-city">City/Town/Village</label>
+                            </div>
+                        </div>
+
+                        <div class="container-search">
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box-doorno" autocomplete="off" name="door_no" placeholder=" ">
+                                <label for="input-search-box-doorno">Door No</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box-area" autocomplete="off" name="area" placeholder=" ">
+                                <label for="input-search-box-area">Area</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box-street" autocomplete="off" name="street" placeholder=" ">
+                                <label for="input-search-box-street">Street</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" id="input-search-box-landmark" autocomplete="off" name="landmark" placeholder=" ">
+                                <label for="input-search-box-landmark">Landmark</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Management Information -->
+                    <fieldset class="form-section">
+                        <legend>Management</legend>
+                        <div class="container-search">
+                            <div class="box input-box">
+                                <input type="text" name="bike_number" id="bikeNumber" autocomplete="given-name" placeholder=" ">
+                                <label for="bikeNumber">If you have a vehicle</label>
+                                <div class="error" id="bikeNumberErr"></div>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="date" name="joining_date" id="joining-date" placeholder=" ">
+                                <label for="joining-date">Joining Date</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" name="allocated_bed" id="bed" placeholder=" ">
+                                <label for="bed">Allocated Bed</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" name="rent" id="rent" placeholder=" ">
+                                <label for="rent">Rent</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="text" name="advance" id="advance" placeholder=" ">
+                                <label for="advance">Advance</label>
+                            </div>
+
+                            <div class="box input-box">
+                                <input type="file" name="tenant_image" id="tenant_image" placeholder=" ">
+                                <label for="tenant_image">Image</label>
+                            </div>
+                        </div>
+                        <label>Allocated Room Number - {{room.room_number}}</label>
+                    </fieldset>
+
+                    <!-- Hidden Fields -->
+                    <input type="hidden" name="associated_user" value="{{ associated_user.id }}">
+                    <input type="hidden" name="room" value="{{ room.id }}">
+                    
+                    <div class="form-section action-button-box">
+                        <input type="submit" value="Submit">
+                        <input type="reset" value="Cancel">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+    // Function to populate tenant form with initial data
+    function populateTenantForm(initialData) {
+        $('#name').val(initialData.name);
+        $('#email').val(initialData.email);
+        $('#mobile').val(initialData.mobile);
+        $('#adharNumber').val(initialData.adhar_number);
+        $('#input-search-box-pincode').val(initialData.pincode);
+        $('#input-search-box-state').val(initialData.state);
+        $('#input-search-box').val(initialData.dist);
+        $('#input-search-box-city').val(initialData.city);
+        $('#input-search-box-doorno').val(initialData.door_no);
+        $('#input-search-box-area').val(initialData.area);
+        $('#input-search-box-street').val(initialData.street);
+        $('#input-search-box-landmark').val(initialData.landmark);
+        $('#bikeNumber').val(initialData.bike_number);
+        $('#joining-date').val(initialData.joining_date);
+        $('#bed').val(initialData.allocated_bed);
+        $('#rent').val(initialData.rent);
+        $('#advance').val(initialData.advance);
+    }
+
+
+// Function to fetch details like state, district, and city/town/village based on the provided pincode
+function fetchPincodeDetails(pincode) {
+    // Check if the pincode length is exactly 6 digits before making the request
+    if (pincode.length === 6) {
+        // Send an AJAX request to the Postal Pincode API to get the details
+        $.ajax({
+            url: `https://api.postalpincode.in/pincode/${pincode}`,  // API URL with the provided pincode
+            method: 'GET',  // HTTP method for the request
+            success: function (response) {
+                // Check if the API returns a successful response
+                if (response[0].Status === "Success") {
+                    var postOffice = response[0].PostOffice[0];  // Extract the first post office's details
+                    // Fill the input fields with the fetched state, district, and city/town/village
+                    $('#input-search-box-state').val(postOffice.State); 
+                    $('#input-search-box').val(postOffice.District);
+                    $('#input-search-box-city').val(postOffice.Name);  // Set city/town/village
+                } else {
+                    alert("Invalid Pincode");  // Show an alert if the pincode is invalid
+                }
+            },
+            error: function () {
+                // Handle errors like network issues or API failure
+                alert("An error occurred while fetching pincode details.");
+            }
+        });
+    }
+}
+
+// Event listener to trigger fetchPincodeDetails function whenever the pincode input field changes
+$('#input-search-box-pincode').on('input', function () {
+    var pincode = $(this).val();  // Get the entered pincode value
+    fetchPincodeDetails(pincode);  // Call the function to fetch the pincode details
+});
+
+
+// ----------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('tenantForm');  // Get the form element by ID
+    
+    // Check if the form exists on the page
+    if (form) {
+        // Ensure the submit button is not clicked more than once
+        var submitButton = form.querySelector('input[type="submit"]');
+        
+        // Attach an event listener to handle the form submission
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the default form submission (page reload)
+
+            // Disable the submit button to prevent double submission
+            submitButton.disabled = true;
+
+            var formData = new FormData(this);  // Collect all the form data using FormData API
+
+            // Use Fetch API to send the form data asynchronously
+            fetch(this.action, {
+                method: 'POST',  // Set the HTTP method to POST for form submission
+                body: formData,  // Attach the collected form data
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value  // Include the CSRF token for security
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // If the response is not successful, throw an error
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.json();  // Parse the JSON response
+            })
+            .then(data => {
+                if (data.success) {
+                    console.log('Tenant successfully added/updated.');
+                    location.reload();  // Refresh the page after successful submission
+                } else {
+                    console.error('Error:', data.error);
+                    alert(data.error);  // Show the error message if there are validation errors
+                    submitButton.disabled = false;  // Re-enable the button if there's an error
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                submitButton.disabled = false;  // Re-enable the button on fetch error
+            });
+        });
+    } else {
+        console.error("Form with id 'tenantForm' not found.");
+    }
+});
+
+
+    </script>
+</body>
+</html>

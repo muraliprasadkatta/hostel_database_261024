@@ -1,0 +1,327 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create PIN</title>
+    <style>
+        /* Styles for the PIN creation modal */
+        .pin-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 2000; /* Sit on top, higher than add property modal */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pin-modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 50px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center align content */
+            position: relative; /* Ensure the close button is positioned relative to the modal */
+            border: 3px solid #000; /* Full border */
+            background: rgb(255, 255, 70);
+        }
+
+        .pin-modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0px; /* Position it to attach to the bottom of the gif container */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95px;
+            height: 48px; /* Half of the circle's height */
+            background-color: transparent; /* Match the modal's background color */
+            z-index: 2; /* Ensure it is above the modal content */
+            border-radius: 0 0 50px 50px; /* Bottom half of the circle */
+            border: 3px solid #000; /* Border color and size */
+            border-top: none; /* Remove top border */
+            background: white;
+        }
+
+        .pin-modal-content h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px; /* Reduced title size */
+            position: relative; /* For z-index positioning */
+            z-index: 3; /* Above the gif-container */
+        }
+
+        .pin-modal-content .pin-input-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .pin-modal-content .pin-input-container input[type="password"],
+        .pin-modal-content .pin-input-container input[type="text"] {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 5px; /* Add margin between input boxes */
+        }
+
+        .pin-modal-content button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%; /* Increase button width */
+            margin-top: 20px; /* Add margin to the top */
+        }
+
+        .pin-modal-content button:hover {
+            background-color: #45a049;
+        }
+
+        .close-pin {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-pin:hover,
+        .close-pin:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .pin-modal-content .pin-input-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .pin-modal-content .pin-input-wrapper label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .pin-modal-content .gif-container-wrapper {
+            position: absolute;
+            top: -45px; /* Adjust to make it half inside and half outside */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px; /* Adjust as needed */
+            height: 90px; /* Ensure the GIF is a square for symmetry */
+            border-radius: 50%; /* Make the wrapper circular */
+            background: white; /* Background color for the container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Ensure the GIF is clipped if necessary */
+            z-index: 2; /* Above the modal content */
+        }
+
+        .pin-modal-content .gif-container {
+            width: 70px; /* Adjust as needed */
+            height: 70px; /* Ensure the GIF is a square for symmetry */
+            border-radius: 50%; /* Make the GIF circular */
+            background: white; /* Background color for the container */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add shadow to the container */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Ensure the GIF is clipped if necessary */
+        }
+
+        .pin-modal-content .gif-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%; /* Make the GIF circular */
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Shake animation */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="pinModal" class="pin-modal">
+    <div class="pin-modal-content">
+        <div class="gif-container-wrapper">
+            <div class="gif-container">
+                <img id="securityGif" src="{% static 'gif/security/pin/cyber-security-img-1.gif' %}" alt="Security GIF">
+            </div>
+        </div>
+        <span class="close-pin" onclick="closePinModal()">&times;</span>
+        <h2>Create a 4-Digit PIN</h2>
+        <form id="pinForm" method="post" action="#">
+            {% csrf_token %}
+            <div class="pin-input-wrapper">
+                <label for="pin">Enter PIN</label>
+                <div class="pin-input-container">
+                    <input type="password" maxlength="1" required>
+                    <input type="password" maxlength="1" required>
+                    <input type="password" maxlength="1" required>
+                    <input type="password" maxlength="1" required>
+                </div>
+            </div>
+            <div class="pin-input-wrapper">
+                <label for="confirm-pin">Confirm PIN</label>
+                <div class="pin-input-container">
+                    <input type="text" maxlength="1" required>
+                    <input type="text" maxlength="1" required>
+                    <input type="text" maxlength="1" required>
+                    <input type="text" maxlength="1" required>
+                </div>
+            </div>
+            <button type="submit">Save PIN</button>
+            <div id="error-message" class="error-message">PINs do not match. Please try again.</div>
+        </form>
+    </div>
+</div>
+
+<script>
+ document.addEventListener('DOMContentLoaded', (event) => {
+    const pinInputs = document.querySelectorAll('.pin-input-container input[type="password"]');
+    const confirmPinInputs = document.querySelectorAll('.pin-input-container input[type="text"]');
+    const errorMessage = document.getElementById('error-message');
+    const securityGif = document.getElementById('securityGif');
+    const setPinButton = document.getElementById('setPinButton');
+
+    function validateNumericInput(e) {
+        const keyCode = e.keyCode ? e.keyCode : e.which;
+        if ((keyCode < 48 || keyCode > 57) && keyCode !== 8) {
+            e.preventDefault();
+        }
+    }
+
+    function moveToNextInput(inputs, currentIndex) {
+        if (inputs[currentIndex].value.length === 1 && currentIndex < inputs.length - 1) {
+            inputs[currentIndex + 1].focus();
+        }
+    }
+
+    function moveToPreviousInput(inputs, currentIndex, e) {
+        if (e.key === 'Backspace' && inputs[currentIndex].value === '' && currentIndex > 0) {
+            inputs[currentIndex - 1].focus();
+        }
+    }
+
+    pinInputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            moveToNextInput(pinInputs, index);
+            validatePins();
+        });
+
+        input.addEventListener('keydown', (e) => {
+            validateNumericInput(e);
+            moveToPreviousInput(pinInputs, index, e);
+        });
+    });
+
+    confirmPinInputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            moveToNextInput(confirmPinInputs, index);
+            validatePins();
+        });
+
+        input.addEventListener('keydown', (e) => {
+            validateNumericInput(e);
+            moveToPreviousInput(confirmPinInputs, index, e);
+        });
+    });
+
+    function validatePins() {
+        const pin = Array.from(pinInputs).map(input => input.value).join('');
+        const confirmPin = Array.from(confirmPinInputs).map(input => input.value).join('');
+
+        if (pin.length < 4 || confirmPin.length < 4) {
+            securityGif.src = '{% static "gif/security/pin/cyber-security-img-1.gif" %}';
+        } else if (pin !== confirmPin) {
+            errorMessage.style.display = 'block';
+            errorMessage.classList.add('shake');
+            securityGif.src = '{% static "gif/security/pin/cyber-security-alert-img-2.gif" %}';
+            setTimeout(() => errorMessage.classList.remove('shake'), 500);
+        } else {
+            errorMessage.style.display = 'none';
+            securityGif.src = '{% static "gif/security/pin/cyber-security-shield-img-3.gif" %}';
+            document.getElementById('managementPin').value = pin; // Set the hidden input field with the PIN
+        }
+    }
+
+    document.getElementById('pinForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const pin = Array.from(pinInputs).map(input => input.value).join('');
+        const confirmPin = Array.from(confirmPinInputs).map(input => input.value).join('');
+
+        if (pin !== confirmPin) {
+            errorMessage.style.display = 'block';
+            errorMessage.classList.add('shake');
+            securityGif.src = '{% static "gif/security/pin/cyber-security-img-2.gif" %}';
+            setTimeout(() => errorMessage.classList.remove('shake'), 500);
+            return false;
+        }
+
+        // Set the hidden input field with the PIN
+        document.getElementById('managementPin').value = pin;
+
+        // Change the "Set PIN" button to "Set PIN Success"
+        setPinButton.classList.add('pin-success', 'pin-disabled');
+        setPinButton.textContent = 'Set PIN Success';
+
+        // Close the PIN modal
+        closePinModal();
+    });
+
+    function resetPinModalFields() {
+        pinInputs.forEach(input => input.value = '');
+        confirmPinInputs.forEach(input => input.value = '');
+        errorMessage.style.display = 'none';
+        securityGif.src = '{% static "gif/security/pin/cyber-security-img-1.gif" %}';
+    }
+
+    window.closePinModal = function () {
+        document.getElementById('pinModal').style.display = 'none';
+        resetPinModalFields();
+    };
+});
+
+</script>
+
+</body>
+</html>

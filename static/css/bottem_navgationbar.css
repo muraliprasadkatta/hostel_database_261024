@@ -1,0 +1,24 @@
+.container-navbar{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #ffffff;
+    animation:none;
+    background: red;
+    animation: none; /* Disable animation for the bottom navigation bar */
+
+}
+.checkbox-tile-grp{
+    display:  flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Equal space between items */
+    align-items: center; /* Center items vertically */
+
+}
+
+
+.nav-item {
+    text-align: center; /* Center text */
+    cursor: pointer; /* Change cursor to pointer */
+    margin: 5px; /* Add some margin */
+}

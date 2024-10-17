@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment History</title>
+</head>
+<body>
+    <h1>Payment History</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Room Number</th>
+                <th>Amount Paid</th>
+                <th>Date Paid</th>
+                <th>Time Paid</th>
+                <th>Payment Method</th>
+                <th>Screenshot</th>
+                <th>Reference Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for history in histories %}
+                <tr>
+                    <td>{{ history.tenant.name }}</td>
+                    <td>{{ history.tenant.room.room_number }}</td>
+                    <td>{{ history.amount_paid }}</td>
+                    <td>{{ history.date_paid }}</td>
+                    <td>{{ history.time_paid }}</td>
+                    <td>{{ history.get_payment_method_display }}</td>
+                    <td>
+                        {% if history.payment_screenshot %}
+                            <a href="{{ history.payment_screenshot.url }}">View Screenshot</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ history.payment_reference }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8">No payment history available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

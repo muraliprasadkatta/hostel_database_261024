@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="{% static 'css/modals/add_rooms_modal/add_rooms_modal.css'%}">
+<script src="{% static 'js/add_rooms/add_rooms_modal.js'%}"></script>
+
+<body>
+    <!-- add_room_modal.html -->
+    <div id="addRoomModal" class="add-room-modal">
+        <div class="add-room-modal-header">
+            <span class="close" onclick="document.getElementById('addRoomModal').style.display='none'">&times;</span>
+            <h2 class="modal-title">Add Rooms</h2>
+        </div>
+        <div class="add-room-modal-content">
+            <form id="roomForm" name="Form" autocomplete="off" method="post" action="{% url 'AddRooms' property_id=selected_property.id %}">
+                {% csrf_token %}
+
+                <input type="hidden" id="room_id" name="room_id">
+                <div class="form-row" hidden>
+                    <div class="box form-box">
+                        <label for="current_occupied_beds">Current Occupied Beds</label>
+                        <input type="hidden" id="current_occupied_beds" name="current_occupied_beds" value="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="box form-box">
+                        <label for="roomnumber">Room Number</label>
+                        <input type="text" id="roomnumber" name="roomnumber">
+                    </div>
+                    <div class="box form-box">
+                        <label for="floortype">Floor Type</label>
+                        <input type="text" id="floortype" name="floortype">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="box form-box">
+                        <label for="numberofshare">Number of Share</label>
+                        <input type="text" id="numberofshare" name="numberofshare">
+                    </div>
+                    <div class="box form-box">
+                        <label for="remarks">Remarks</label>
+                        <input type="text" id="remarks" name="remarks">
+                    </div>
+                </div>
+                <div class="roomavailable-container">
+                    <p>Is this Room available to Rent?</p>
+                    <div class="radio-container">
+                        <div class="radio-option">
+                            <input type="radio" id="available_yes" name="available_room_or_not" value="yes" checked>
+                            <label for="available_yes">Yes</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="available_no" name="available_room_or_not" value="no">
+                            <label for="available_no">No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="room-facilities-label">
+                    <p>Room Facilities</p>
+                </div>
+
+                <div class="select-all-container">
+                    <button type="button" class="select-all-button" onclick="toggleSelectAll()">
+                        <input type="checkbox" id="select_all">
+                        <label for="select_all">Select All</label>
+                    </button>
+                </div>
+
+                <div class="container-facilities">
+                    <div class="checkbox-tile-group">
+                        <div class="input-container">
+                            <input id="cctv" type="checkbox" name="transportation" value="cctv">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">nest_cam_iq_outdoor</span>
+                                <label for="cctv">CCTV</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="food" type="checkbox" name="transportation" value="food">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">lunch_dining</span>
+                                <label for="food">Food</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="laundry" type="checkbox" name="transportation" value="laundry">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">local_laundry_service</span>
+                                <label for="laundry">Laundry</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="washroom" type="checkbox" name="transportation" value="washroom">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">bathtub</span>
+                                <label for="washroom">Washro..</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="clean-service" type="checkbox" name="transportation" value="clean-service">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">cleaning_services</span>
+                                <label for="clean-service">Clean service</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="geyser" type="checkbox" name="transportation" value="geyser">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">water_heater</span>
+                                <label for="geyser">Geyser</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="fridge" type="checkbox" name="transportation" value="fridge">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">kitchen</span>
+                                <label for="fridge">Fridge</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="tv" type="checkbox" name="transportation" value="tv">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">tv</span>
+                                <label for="tv">TV</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="water" type="checkbox" name="transportation" value="water">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">water_drop</span>
+                                <label for="water">24/7 water</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="ac" type="checkbox" name="transportation" value="ac">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">ac_unit</span>
+                                <label for="ac">AC</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="locker" type="checkbox" name="transportation" value="locker">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">lock</span>
+                                <label for="locker">Lockers</label>
+                            </div>
+                        </div>
+
+                        <div class="input-container">
+                            <input id="wifi" type="checkbox" name="transportation" value="wifi">
+                            <div class="checkbox-tile">
+                                <span class="material-symbols-outlined">wifi</span>
+                                <label for="wifi">Wifi</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box form-box">
+                    <input type="submit" value="Submit" class="btn" id="submitBtn">
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Tenant Details</title>
+</head>
+<style>
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 5px;
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+    .button:hover {
+        background-color: #e0e0e0;
+    }
+    </style>
+    
+<body>
+
+    <h1>Tenant Details</h1>
+
+    <p><strong>Property ID:</strong> {{ room.property_id }}</p>
+    <p><strong>Room Number:</strong> {{ room.room_number }}</p>
+    <p><strong>Tenant ID:</strong> {{ tenant.id }}</p> <!-- This line added for debugging -->
+
+
+    
+    <strong>TENANT NAME:</strong> {{ tenant.name }}<br>
+    <strong>JOINING DATE:</strong> {{ tenant.joining_date }}<br>
+    
+    {% if past_dues %}
+    <strong>PAST DUES:</strong>
+    <ul>
+        {% for due in past_dues %}
+        <li>{{ due }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <strong>DUE DATE:</strong> {{ tenant.due_date }}<br><br>
+    <br><br>
+
+    <h2>Tenant Payment History</h2>
+
+    <ul>
+        {% for event in payment_history %}
+        <li style="color: green;">{{ event.date_paid }}: Full payment received, {{ event.amount_paid }}</li>
+        {% endfor %}
+        
+        {% for remainder in payment_remainders %}
+        <li style="color: orange;">
+            {{ remainder.date_paid }}: 
+            Partial payment received, {{ remainder.amount_paid }}
+            {% if remainder.remaining_amount %}(Remaining: {{ remainder.remaining_amount }}){% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    
+    {% if not payment_history and not payment_remainders %}
+    <p>No payment history available.</p>
+    {% endif %}
+    
+    <a href="#" class="button">Edit Tenant</a>
+    <form action="{% url 'DeleteTenant' tenant.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="button" onclick="return confirm('Are you sure?');">Delete Tenant</button>
+    </form>
+    
+    
+       
+</body>
+</html>

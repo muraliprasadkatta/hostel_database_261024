@@ -1,0 +1,421 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure it covers at least the full viewport height */
+    transition: margin-left 0.3s, width 0.3s;
+    background: linear-gradient(135deg, #fdbb2d, #b21f1f, #1a2a6c); /* Background gradient */
+
+}
+
+.header {
+    background: linear-gradient(135deg, #fdbb2d, #b21f1f, #1a2a6c); /* Background gradient */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    width: 100%;
+    z-index: 1000;
+    border: solid 2px black;
+    border-radius: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    color: white;
+}
+
+.menu-icon {
+    position: absolute;
+    left: 20px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.menu-icon div {
+    width: 30px;
+    height: 3px;
+    background-color: white;
+    margin: 5px 0;
+}
+
+.menu-icon.hidden {
+    display: none;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100%;
+    background-color: #f4f4f4;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: transform 0.3s;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    overflow-y: auto; /* Allows scrolling within the sidebar if needed */
+}
+
+.sidebar.open {
+    display: flex;
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: #a0a0a0;
+    position: relative;
+}
+
+.camera-icon {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+
+.camera-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.sidebar hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 10px 0;
+}
+
+.sidebar-options {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-options li {
+    margin-bottom: 10px;
+}
+
+.sidebar-options a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.close-btn {
+    cursor: pointer;
+    color: red;
+    font-size: 24px;
+    align-self: flex-end;
+}
+
+.content-container {
+    flex: 1;
+    transition: margin-left 0.3s, width 0.3s;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 80px; /* Adjust to make space for fixed header */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto; /* Allows scrolling within the content container */
+}
+
+.compressed {
+    margin-left: 250px;
+    width: calc(100% - 250px); /* Adjust width to account for sidebar */
+}
+
+.content-container.compressed {
+    margin-left: 0px;
+    width: calc(100% - 40px); 
+    /* width: 100%; */
+}
+
+.header-content {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.header-content.hidden {
+    display: none;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+}
+
+.button-container button {
+    padding: 10px 100px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 50px;
+    position: relative; /* Required for the pseudo-element to position correctly */
+}
+
+.add-property-btn {
+    background-color: #007bff;
+    border: 3px solid white; /* Single border with white color */
+    border-radius: 50px; /* Ensure the border has rounded corners */
+    color: white;
+}
+
+.add-property-btn::before {
+    content: '';
+    position: absolute;
+    top: -6px; /* Adjust to match the width of the second border */
+    right: -6px; /* Adjust to match the width of the second border */
+    bottom: -6px; /* Adjust to match the width of the second border */
+    left: -6px; /* Adjust to match the width of the second border */
+    border: 3px solid white; /* Second border */
+    border-radius: 50px; /* Match the border-radius of the button */
+    pointer-events: none; /* Ensure the pseudo-element doesn't interfere with button clicks */
+}
+
+.button-container-data {
+    display: flex;
+    gap: 10px;
+}
+
+.button-container-data button {
+    padding: 40px 90px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    position: relative; /* Required for the pseudo-element to position correctly */
+}
+
+.add-property-btn-data {
+    background-color: #007bff;
+    border: 3px solid white; /* Single border with white color */
+    border-radius: 50px; /* Ensure the border has rounded corners */
+    color: white;
+}
+
+.add-property-btn-data::before {
+    content: '';
+    position: absolute;
+    top: -6px; /* Adjust to match the width of the second border */
+    right: -6px; /* Adjust to match the width of the second border */
+    bottom: -6px; /* Adjust to match the width of the second border */
+    left: -6px; /* Adjust to match the width of the second border */
+    border: 3px solid white; /* Second border */
+    border-radius: 10px; /* Match the border-radius of the button */
+    pointer-events: none; /* Ensure the pseudo-element doesn't interfere with button clicks */
+}
+
+.logout-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0); 
+    background-color: rgba(0,0,0,0.4); 
+    padding-top: 10px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+    max-width: 600px; 
+    border-radius: 10px;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.form-container .box {
+    flex: 1 1 calc(50% - 20px);
+    display: flex;
+    flex-direction: column;
+}
+
+.box.full-width {
+    flex: 0 0 100%;
+}
+
+.box input[type="text"],
+.box input[type="email"],
+.box input[type="tel"],
+.box textarea {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-container .box textarea {
+    resize: none;
+}
+
+.form-container .box input[type="submit"] {
+    align-self: flex-end;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.blur {
+    filter: blur(5px);
+    transition: filter 0.3s;
+}
+
+.image-dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: white;
+}
+
+.properties-paragrap {
+    font-size: 40px;
+    font-style: italic;
+}
+
+.image-dashboard img {
+    max-width: 100%;
+    height: 200px;
+    border-radius: 50%; /* This creates a circular border */
+}
+
+.flex-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+    width: 100%;
+    justify-items: center;
+}
+
+.flexbox-item {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.flexbox-item a {
+    color: inherit; /* Ensure link color matches text color */
+    text-decoration: none;
+}
+
+.flexbox-item a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .flex-box {
+        grid-template-columns: 1fr;
+    }
+    .header-content {
+        text-align: center;
+    }
+    .header-content.mobile-hidden {
+        display: none !important;
+    }
+    .header {
+        background: linear-gradient(135deg, #fdbb2d, #b21f1f, #1a2a6c); /* Background gradient */
+
+    }
+    .main-container {
+        display: flex;
+        min-height: 100vh; /* Ensure it covers at least the full viewport height */
+        width: 100%;
+        flex-direction: column;
+        transition: margin-left 0.3s;
+        background: linear-gradient(135deg, #fdbb2d, #b21f1f, #1a2a6c); /* Background gradient */
+
+    }
+    .content-container {
+        overflow-y: auto; /* Allows scrolling within the content container */
+    }
+    .properties-paragrap {
+        font-size: 20px;
+        font-style: italic;
+    }
+
+    .button-container-data button {
+        margin-top: 5px;
+        padding: 40px 100px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        position: relative; /* Required for the pseudo-element to position correctly */
+    }
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add your CSS files -->
+    <link rel="stylesheet" href="{% static 'css/add_rooms.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'css/header.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/display_rooms.css' %}">
+    <!-- Add your JavaScript files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- for icons -->
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+    <!-- Title -->
+    <title>Document</title>
+    <!-- Include CDN lines -->
+    {% include 'includes/cdnlines.html' %}
+    <!-- Add your custom CSS -->
+
+<style>
+
+
+</style>
+</head>
+<body>
+    {% include 'includes/header.html' %}
+
+    {% include 'includes/bottem_navgationbar.html'%}
+
+<!-- Include the header -->
+
+<div class="row-1">
+    <a href="{% url 'AddRooms' property_id=selected_property.id %}"><button>Add Rooms</button></a>
+    <div class="admin-row"></div>
+    {% include 'includes/error_messages.html'%}
+
+</div>
+
+<div class="container-wrapper">
+    <!-- Room container -->
+    <div class="room-container">
+        
+        <h1>User - {{ username }}</h1>
+        {% if selected_property %}
+            <p>Your selected hostel : {{ selected_property.hostelname }}</p>
+        {% else %}
+            <p>No property selected.</p>
+        {% endif %}    
+    
+    </div>
+    <!-- Error messages -->
+    
+    <!-- Display room row -->
+    <div class="container-display">  
+        {% if user_rooms %}
+            <div class="display-room-row">
+                {% for room in user_rooms %}
+                    <a href="{% url 'DisplayBeds' property_id=selected_property.id room_number=room.room_number %}" style="text-decoration: none;">
+                        <div class="room-box slide-from-right-mobile">
+                            <!-- Apply the slide-from-right class -->
+                            
+                            <div class="room-number">{{ room.room_number }}</div>
+                            <div class="shareNumbers" id="shareNumbers_{{ room.room_number }}"></div>
+                        </div>
+                    </a>
+                    <!-- Move the shareNumbers div outside of the room-box -->
+                    <script>
+                        // JavaScript code
+                        $(document).ready(function() {
+                            var shareNumbersDiv = document.getElementById("shareNumbers_{{ room.room_number }}");
+                            var number_of_share = {{ room.number_of_share }}; // Assuming room.number_of_share contains the desired number of shares
+                            var hasData = {{ room.has_data|lower }}; // Assuming room.has_data is a boolean attribute indicating whether the room has data
+                            // Limit the number of beds displayed to 6
+                            var displayLimit = Math.min(number_of_share, 6);
+                            // Generating and displaying numbers as icons
+                            for (var i = 1; i <= displayLimit; i++) {
+                                // Create an <i> element with the appropriate classes for the icon font
+                                var iconElement = document.createElement("i");
+                                iconElement.className = "fas fa-bed"; // Use Font Awesome class for user icon
+                                // Check if the room has data and change color accordingly
+                                if (i <= hasData){
+                                    iconElement.style.color = "red"; // Change color to red
+                                }
+                                // Append the icon to the shareNumbersDiv
+                                shareNumbersDiv.appendChild(iconElement);
+                            }
+                            // If there are more beds than the display limit, add "Read more..." link
+                            if (number_of_share > displayLimit) {
+                                var remainingBeds = number_of_share - displayLimit;
+                                var readMoreLink = document.createElement("a");
+                                readMoreLink.href = "#"; // Add the appropriate href
+                                readMoreLink.innerText = remainingBeds + "..more";
+                                readMoreLink.classList.add("read-more-link"); // Add a class
+                                shareNumbersDiv.appendChild(readMoreLink);
+                            }
+                        });
+                    </script>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No Rooms Added</p>
+        {% endif %} 
+    </div>  
+</div>
+
+<!-- Animations -->
+    <script>
+   $(document).ready(function() {
+    // Function to apply the animation to room boxes
+    function applyAnimation() {
+        // Select all room boxes
+        var roomBoxes = $(".room-box");
+        // Calculate the number of groups based on the desired division
+        var numGroups = 1000; // Change this value to adjust the number of groups
+        var groupSize = Math.ceil(roomBoxes.length / numGroups);
+        // Set initial delay for each group
+        var delays = [];
+        for (var i = 0; i < numGroups; i++) {
+            delays.push(10);
+        }
+        // Iterate over each room box
+        roomBoxes.each(function(index, element) {
+            // Calculate the group index for the current room box
+            var groupIndex = Math.floor(index / groupSize);
+            // Apply the appropriate animation based on the group index
+            if (groupIndex % 2 === 0) {
+                $(element).delay(delays[groupIndex]).addClass("slide-from-left");
+            } else {
+                $(element).delay(delays[groupIndex]).addClass("slide-from-right");
+            }
+            // Increment the delay for the next box in the same group
+            delays[groupIndex] += 100; // Adjust the delay as needed
+        });
+    }
+
+    // Call the applyAnimation function when the document and all external resources are fully loaded
+    $(window).on("load", function() {
+        applyAnimation();
+    });
+});
+</script>
+
+        <!-- for font-aswome -->
+        <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+        <!-- for font-aswome -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+</body>
+</html>
+
+
+
