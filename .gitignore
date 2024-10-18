@@ -1,1 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.so
+db.sqlite3
+/media/
+staticfiles/
+
+# If you're using PostgreSQL locally
+*.pgdata
+
+# Environment variables
 .env
+
+# Ignore the entire virtual environment folder if you're using one
+venv/
+env/
+
+# Heroku
+Procfile
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# MacOS
+.DS_Store
