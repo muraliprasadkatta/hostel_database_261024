@@ -23,7 +23,7 @@ venv/
 env/
 
 # Heroku
-Procfile
+# Procfile
 
 # IDEs and Editors
 .idea/
