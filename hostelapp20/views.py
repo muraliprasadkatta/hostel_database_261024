@@ -408,6 +408,19 @@ def addproperty(request):
     return render(request, 'data/addproperty.html', {'user_pin_set': user_pin_set})
 
 
+def set_management_pin(request):
+    if request.method == 'POST':
+        managementPin = request.POST.get('managementPin')
+        
+        # Ensure PIN is valid and unique
+        if ManagementPin.objects.filter(user=request.user).exists():
+            messages.error(request, 'PIN already set.')
+        else:
+            ManagementPin.objects.create(user=request.user, pin=managementPin)
+            messages.success(request, 'Management PIN set successfully.')
+
+        return redirect('add_property')
+
 
 
 from django.views.decorators.cache import never_cache
