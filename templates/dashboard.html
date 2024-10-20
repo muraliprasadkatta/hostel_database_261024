@@ -47,13 +47,13 @@
                 {% for property in user_properties %}
                 <a href="{% url 'DisplayRooms' property.id %}" class="flexbox-item" onclick="saveSelectedHostel({{ property.id }})">
                     <div>
-                            <p>Hostel Name: {{ property.hostelname }}</p>
-                            <p>Owner Name: {{ property.ownername }}</p>  
-                        </div>
-                    </a>
+                        <p>Hostel Name: {{ property.hostelname }}</p>
+                        <p>Owner Name: {{ property.ownername }}</p>  
+                    </div>
+                </a>
                 {% endfor %}
                 <div class="button-container-data">
-                    <button class="add-property-btn-data" onclick="openModal()">Add Property +</button>
+                    <button class="add-property-btn-data" onclick="openAddPropertyModal()">Add Property +</button>
                 </div>
             </div>
         {% else %}
@@ -62,116 +62,92 @@
                 <p class="properties-paragrap">No Properties Added Yet</p>
             </div>
             <div class="button-container">
-                <button class="add-property-btn" onclick="openModal()">Add Property +</button>
+                <button class="add-property-btn" onclick="openAddPropertyModal()">Add Property +</button>
             </div>
         {% endif %}
-
-    </div>
-    
-    
-    
-</div>
-
-<div id="myModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Add New Property</h2>
-        <form name="Form" onsubmit="return validateForm()" method="post" action="{% url 'addproperty'%}">
-            {% csrf_token %}
-            <div class="form-container">
-                <div class="box">
-                    <label>Hostel Name</label>
-                    <input type="text" name="hostelname" id="hostelname">
-                    <div class="error" id="hostelnameErr"></div>
-                </div>
-                <div class="box">
-                    <label>Owner Name</label>
-                    <input type="text" name="ownername" id="ownername">
-                    <div class="error" id="ownernameErr"></div>
-                </div>
-                <div class="box">
-                    <label>Email Address</label>
-                    <input type="text" name="email" id="email">
-                    <div class="error" id="emailErr"></div>
-                </div>
-                <div class="box">
-                    <label>Mobile Number</label>
-                    <input type="text" name="mobile" maxlength="10" id="mobile">
-                    <div class="error" id="mobileErr"></div>
-                </div>
-                <div class="box full-width">
-                    <label>Address</label>
-                    <textarea name="address" id="address" cols="30" rows="5"></textarea>
-                    <div class="error" id="addressErr"></div>
-                </div>
-                <div class="box">
-                    <input type="submit" value="Submit">
-                </div>
-            </div>
-        </form>
     </div>
 </div>
+
+
+{% include 'data/add_property_modal.html' with user_pin_set=user_pin_set username=username management_pin_value=management_pin_value %}
 
 <!-- for include open and close side bar and auto adjust remaining window -->
+<!-- Toggle Sidebar Script -->
 <script>
-function toggleSidebar() {
-    var sidebar = document.getElementById('sidebar');
-    var mainContainer = document.getElementById('main-container');
-    var header = document.getElementById('header');
-    var menuIcon = document.getElementById('menuIcon');
-    var headerContent = document.getElementById('headerContent');
-    var contentContainer = document.getElementById('main-content'); // Adjusted to target the content container
-
-    sidebar.classList.toggle('open');
-    mainContainer.classList.toggle('compressed');
-    header.classList.toggle('compressed');
-    contentContainer.classList.toggle('compressed'); // Add this line
-
-    if (sidebar.classList.contains('open')) {
-        menuIcon.classList.add('hidden');
-        if (window.innerWidth <= 768) { // Check if it's mobile view
-            headerContent.classList.add('mobile-hidden');
-        }
-    } else {
-        menuIcon.classList.remove('hidden');
-        headerContent.classList.remove('mobile-hidden');
-    }
-}
-
-function openModal() {
-    document.getElementById('myModal').style.display = 'block';
-    document.getElementById('main-container').classList.add('blur');
-    document.getElementById('header').classList.add('blur');
-}
-
-function closeModal() {
-    document.getElementById('myModal').style.display = 'none';
-    document.getElementById('main-container').classList.remove('blur');
-    document.getElementById('header').classList.remove('blur');
-}
-
-</script>
-
-<!-- this is is link to dashboard.html also -->
-<!-- Add JavaScript to save the selected hostel ID in the session: for save the hostel id and reopen the same page when came from wuit from application -->
- <!-- and its working for tickmark which one u select from the page its going to make mark -->
-<script>
-    function saveSelectedHostel(propertyId) {
-        fetch("{% url 'save_selected_hostel' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
-            body: JSON.stringify({ property_id: propertyId })
-        }).then(response => {
-            if (response.ok) {
-                localStorage.setItem('selectedHostelId', propertyId); // Store selected hostel ID in LocalStorage
+    function toggleSidebar() {
+        var sidebar = document.getElementById('sidebar');
+        var mainContainer = document.getElementById('main-container');
+        var header = document.getElementById('header');
+        var menuIcon = document.getElementById('menuIcon');
+        var headerContent = document.getElementById('headerContent');
+        var contentContainer = document.getElementById('main-content');
+    
+        sidebar.classList.toggle('open');
+        mainContainer.classList.toggle('compressed');
+        header.classList.toggle('compressed');
+        contentContainer.classList.toggle('compressed');
+    
+        if (sidebar.classList.contains('open')) {
+            menuIcon.classList.add('hidden');
+            if (window.innerWidth <= 768) {
+                headerContent.classList.add('mobile-hidden');
             }
-        });
+        } else {
+            menuIcon.classList.remove('hidden');
+            headerContent.classList.remove('mobile-hidden');
+        }
     }
-</script>
-
+    
+    
+    </script>
+    
+    <!-- Open and Close Modal Scripts -->
+    
+    <script>
+    
+    function openAddPropertyModal() {
+        document.getElementById('addPropertyModal').style.display = 'block';
+        document.getElementById('main-container').classList.add('blur');
+        document.getElementById('header').classList.add('blur');
+    
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+    
+    function closeAddPropertyModal() {
+        document.getElementById('addPropertyModal').style.display = 'none';
+        document.getElementById('main-container').classList.remove('blur');
+        document.getElementById('header').classList.remove('blur');
+    }
+    
+    function showPosition(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+    
+        document.getElementById('latitude').value = latitude;
+        document.getElementById('longitude').value = longitude;
+    }
+    
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
+    </script>
     
 </body>
 </html>
