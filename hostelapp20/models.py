@@ -41,15 +41,36 @@ class CustomUser(AbstractUser):
 
 class AddProperty(models.Model):
     hostelname = models.CharField(max_length=100)
-    ownername =models.CharField(max_length=50)
+    ownername = models.CharField(max_length=50)
     email = models.EmailField()
     mobile = models.BigIntegerField()
     address = models.CharField(max_length=1000)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    image = models.ImageField(upload_to='property_images/', null=True, blank=True)
+    total_rooms = models.IntegerField(default=0)
+    occupied_beds = models.IntegerField(default=0)
+    free_beds = models.IntegerField(default=0)
+
 
 
     def __str__(self):
-        return self.hostelname
+        return f"{self.hostelname} - {self.ownername}"
+
+
+from django.db import models
+from django.conf import settings
+
+class ManagementPin(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    pin = models.CharField(max_length=4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Management PIN for {self.user.username}"
+
+
 
 class Room(models.Model):
     room_number = models.IntegerField() 

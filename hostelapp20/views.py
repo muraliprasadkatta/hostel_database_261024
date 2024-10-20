@@ -354,20 +354,25 @@ def check_roomnumber(request):
 
 # Login    
 @never_cache
-def Addproperty(request):
+def addproperty(request):
+    user = request.user
+    pin_exists = ManagementPin.objects.filter(user=user).exists()
+
     if request.method == 'POST':
         hostelname = request.POST.get('hostelname')
         ownername = request.POST.get('ownername')
         email = request.POST.get('email')
         mobile = request.POST.get('mobile')
         address = request.POST.get('address')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        image = request.FILES.get('image')
 
-        # Get the currently logged-in user
-        user = request.user
-
-        # Check if the user is authenticated
         if user.is_authenticated:
-            # Check if the property with the same details already exists
+            if not pin_exists:
+                managementPin = request.POST.get('managementPin')
+                ManagementPin.objects.create(user=user, pin=managementPin)
+
             existing_property = AddProperty.objects.filter(
                 hostelname=hostelname,
                 ownername=ownername,
@@ -380,27 +385,27 @@ def Addproperty(request):
             if existing_property:
                 messages.warning(request, 'Property with the same details already exists.')
             else:
-                # Associate the property with the logged-in user
                 new_property = AddProperty.objects.create(
                     hostelname=hostelname,
                     ownername=ownername,
                     email=email,
                     mobile=mobile,
                     address=address,
-                    user=request.user
+                    latitude=latitude,
+                    longitude=longitude,
+                    user=user,
+                    image=image
                 )
-
                 messages.success(request, 'Property added successfully.')
 
-            # Use the PRG pattern: redirect to a different URL after a successful POST
             return redirect('dashboard')
-
         else:
             messages.error(request, 'User is not authenticated')
 
-    # For GET request or when user is not authenticated
-    username = request.user.username if request.user.is_authenticated else "Guest"
-    return render(request, 'data/addproperty.html', {'username': username})
+    username = user.username if user.is_authenticated else "Guest"
+    user_pin_set = pin_exists if user.is_authenticated else False
+    
+    return render(request, 'data/addproperty.html', {'user_pin_set': user_pin_set})
 
 
 

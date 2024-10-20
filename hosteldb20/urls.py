@@ -41,7 +41,7 @@ urlpatterns = [
     # path('login/',views.Login,name='login'),
     path('logout/',views.Logout,name='logout'),
 
-    path('addproperty',views.Addproperty,name='addproperty'),
+    path('addproperty',views.addproperty,name='addproperty'),
 
     path('AddRooms/<int:property_id>',views.AddRooms,name='AddRooms'),
     

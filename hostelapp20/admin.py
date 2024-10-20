@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, AddProperty, Room, Tenant, PaymentHistory, PaymentRemainder,ChangedPassword
+from .models import CustomUser, AddProperty, Room, Tenant, PaymentHistory, PaymentRemainder,ChangedPassword,ManagementPin
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
@@ -23,6 +23,12 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('username', 'email')
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+class ManagementPinAdmin(admin.ModelAdmin):
+    list_display = ['user', 'pin', 'created_at']
+    search_fields = ['user__username', 'pin']
+
+admin.site.register(ManagementPin, ManagementPinAdmin)
 
 
 class AddPropertyAdmin(admin.ModelAdmin):
