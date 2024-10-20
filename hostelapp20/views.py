@@ -26,7 +26,7 @@ import logging
 import re
 
 
-from .models import CustomUser, AddProperty, Room, Tenant ,PaymentHistory,PaymentRemainder
+from .models import CustomUser, AddProperty, Room, Tenant ,PaymentHistory,PaymentRemainder,ManagementPin
 
 
 from django.contrib import messages
