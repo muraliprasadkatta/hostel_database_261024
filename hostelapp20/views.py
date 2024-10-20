@@ -405,7 +405,8 @@ def addproperty(request):
 
     username = user.username if user.is_authenticated else "Guest"
     user_pin_set = pin_exists if user.is_authenticated else False
-    
+    print(f"Pin exists: {pin_exists}")
+
     return render(request, 'data/addproperty.html', {'user_pin_set': user_pin_set})
 
 
