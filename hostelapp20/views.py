@@ -354,6 +354,7 @@ def check_roomnumber(request):
 
 # Login    
 @never_cache
+
 def addproperty(request):
     user = request.user
     pin_exists = ManagementPin.objects.filter(user=user).exists()

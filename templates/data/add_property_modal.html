@@ -72,6 +72,9 @@
                         <button type="button" id="setPinButton" onclick="openPinModal()">Set PIN</button>
                     </div>
                 {% endif %}
+                <script>
+                    console.log("User PIN set: {{ user_pin_set }}");
+                </script>
                 
                 <div class="box full-width">
                     <input type="submit" value="Submit" class="form-submit" id="formSubmitButton">
