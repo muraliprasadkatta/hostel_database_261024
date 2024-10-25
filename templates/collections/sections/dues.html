@@ -128,6 +128,34 @@
         </tbody>
     </table>
 
+        <!-- The Payment Modal -->
+        <div id="duesPaymentModal" class="dues-modal">
+            <div class="dues-modal-content">
+                <span class="dues-close" onclick="closeDuesPaymentModal()">&times;</span>
+                <form method="post" action="{% url 'record_payment' selected_property.id %}" id="duesPaymentForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="tenant_id" id="duesPaymentTenantIdInput">
+                    <input type="hidden" name="amount" id="duesPaymentAmountInput">
+                    <h2>Payment for <span id="duesPaymentTenantName"></span></h2>
+                    <p>Due Amount: <span id="duesPaymentTenantAmount"></span></p>
+                    <label for="paymentType">Payment Type:</label><br>
+                    <input type="radio" id="duesPaymentCash" name="payment_type" value="cash" checked onclick="toggleDuesPaymentReferenceInput()">
+                    <label for="duesPaymentCash">Cash</label><br>
+                    <input type="radio" id="duesPaymentScreenshot" name="payment_type" value="screenshot" onclick="toggleDuesPaymentReferenceInput()">
+                    <label for="duesPaymentScreenshot">Screenshot</label><br>
+                    <input type="radio" id="duesPaymentOnline" name="payment_type" value="online" onclick="toggleDuesPaymentReferenceInput()">
+                    <label for="duesPaymentOnline">Online Payment</label><br>
+                    <p id="duesPaymentReferenceNumberField" style="display:none;">
+                        Reference Number: <input type="text" name="reference_number" id="duesPaymentReferenceNumberInput" placeholder="Reference Number" maxlength="12" oninput="validateDuesPaymentReferenceInput()">
+                    </p>
+                    <p id="duesPaymentScreenshotUploadField" style="display:none;">
+                        Upload Screenshot: <input type="file" name="payment_screenshot" id="duesPaymentScreenshotInput" onchange="validateDuesPaymentScreenshotInput()">
+                    </p>
+                    <button type="button" id="duesPaymentPayButton" onclick="confirmDuesPayment()">Pay</button>
+                    <button type="button" class="dues-cancel" onclick="closeDuesPaymentModal()">Cancel</button>
+                </form>
+            </div>
+        </div>
 
 
     <!-- The Initial Payment Modal -->

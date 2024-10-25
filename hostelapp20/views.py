@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta, date
 from calendar import monthrange, isleap
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.contrib.auth import authenticate, login as django_login, logout
 from django.http import JsonResponse, HttpResponseBadRequest
