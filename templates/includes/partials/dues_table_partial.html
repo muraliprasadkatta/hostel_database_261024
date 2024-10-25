@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    {% block dues_table %}
+
+    <div id="duesContent">
+        {% if tenants %}
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Room Number</th>
+                    <th>Due Date</th>
+                    <th>Actions</th>
+                </tr>
+                {% for tenant in tenants %}
+                    <tr>
+                        <td>{{ tenant.name }}</td>
+                        <td>{{ tenant.room.room_number }}</td>
+                        <td>{{ tenant.due_date }}</td>
+                        <td>
+                            <button style="color: green;" onclick="clearPayment('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.room.room_number }}','{{ tenant.rent }}')">Clear the payment</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No tenants have dues as of {{ selected_date }}</p>
+        {% endif %}
+        </div>
+        {% endblock %}
+
+</body>
+</html>

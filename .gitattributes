@@ -1,0 +1,23 @@
+# Handle text files with correct line endings
+* text=auto
+
+# Ensure LF endings for scripts and code files
+*.sh text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# Force CRLF for Windows batch files
+*.bat text eol=crlf
+
+# Treat binary files properly
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.pdf binary
+*.exe binary
