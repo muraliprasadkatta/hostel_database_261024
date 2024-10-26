@@ -33,18 +33,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-
-# # settings.py
 # SESSION_COOKIE_SECURE = False  
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # ALLOWED_HOSTS = []
 
 
-
-
-
-
-# Database Configuration
+# # Database Configuration
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -60,16 +54,17 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # ______________________________________________
 # for production process
 
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
 # its should be ture in production 
-SESSION_COOKIE_SECURE = True  
-CSRF_COOKIE_SECURE = True  
+# SESSION_COOKIE_SECURE = True  
+# CSRF_COOKIE_SECURE = True  
 
 
 # Load allowed hosts from environment variable
 # ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
+# ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
 
 
 # this line use for both local and production
@@ -80,10 +75,19 @@ ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
 
 
 import dj_database_url
+DEBUG = False
+SESSION_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = True 
+
+import os
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 DATABASES = {
     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 
 # Application definition
@@ -101,8 +105,6 @@ INSTALLED_APPS = [
     'social_django', #add this
     'rest_framework',
     
-
-
 ]
 
 MIDDLEWARE = [
@@ -232,7 +234,7 @@ USE_TZ = True
 STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
 
 
 # for sicoal authanticatuon
