@@ -30,10 +30,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+# -----------------------------------------------------
+# for local host
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ooye-117fa12c1ff9.herokuapp.com']
+# settings.py
+SESSION_COOKIE_SECURE = False  # Should be True in production with HTTPS
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+
+ALLOWED_HOSTS = []
+
+
+# ______________________________________________
+# for production process
+
+# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+
+# # its should be ture in production 
+# SESSION_COOKIE_SECURE = True  
+# CSRF_COOKIE_SECURE = True  
+
+
+# ALLOWED_HOSTS = ['ooye-117fa12c1ff9.herokuapp.com']
+
+
 
 
 # Application definition
@@ -67,9 +91,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line
 
 ]
-# settings.py
-SESSION_COOKIE_SECURE = False  # Should be True in production with HTTPS
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 
 #social app custom settings
@@ -145,34 +166,19 @@ WSGI_APPLICATION = 'hosteldb20.wsgi.application'
 
 # settings.py
 
-# import dj_database_url
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default=f"postgres://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
-#         conn_max_age=600,
-#         ssl_require=os.getenv('DB_SSL_REQUIRE', 'False').lower() == 'true'
-#     )
-# }
-
-
-import dj_database_url
-
-DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
-}
 
 
 # Database Configuration
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD'),
-#         'HOST': os.environ.get('DB_HOST'),
-#         'PORT': os.environ.get('DB_PORT'),
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
+}
 
 
 
