@@ -67,7 +67,9 @@ CSRF_COOKIE_SECURE = True
 
 
 # Load allowed hosts from environment variable
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
+ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
 
 
 # this line use for both local and production
