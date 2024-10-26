@@ -34,28 +34,28 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # for local host
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-# settings.py
-SESSION_COOKIE_SECURE = False  # Should be True in production with HTTPS
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# # settings.py
+# SESSION_COOKIE_SECURE = False  # Should be True in production with HTTPS
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 
 # ______________________________________________
 # for production process
 
-# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 
-# # its should be ture in production 
-# SESSION_COOKIE_SECURE = True  
-# CSRF_COOKIE_SECURE = True  
+# its should be ture in production 
+SESSION_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = True  
 
 
-# ALLOWED_HOSTS = ['ooye-117fa12c1ff9.herokuapp.com']
+ALLOWED_HOSTS = ['ooye-59a192f7481a.herokuapp.com']
 
 
 
@@ -166,19 +166,24 @@ WSGI_APPLICATION = 'hosteldb20.wsgi.application'
 
 # settings.py
 
+import dj_database_url
+
+DATABASES = {
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+}
 
 
 # Database Configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': os.environ.get('DB_PORT'),
+#     }
+# }
 
 
 
