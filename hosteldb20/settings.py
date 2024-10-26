@@ -33,7 +33,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ooye-117fa12c1ff9.herokuapp.com']
 
 
 # Application definition
@@ -145,23 +145,34 @@ WSGI_APPLICATION = 'hosteldb20.wsgi.application'
 
 # settings.py
 
+# import dj_database_url
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=f"postgres://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}",
+#         conn_max_age=600,
+#         ssl_require=os.getenv('DB_SSL_REQUIRE', 'False').lower() == 'true'
+#     )
+# }
+
+
 import dj_database_url
+
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, default='postgres://murali:Hosteldb2024@localhost:5432/hostel_database_261024')
+    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
 }
 
 
 # Database Configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': os.environ.get('DB_PORT'),
+#     }
+# }
 
 
 
