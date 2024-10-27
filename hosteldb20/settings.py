@@ -80,7 +80,7 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True 
 
 import os
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
 
 DATABASES = {
     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
@@ -104,6 +104,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'social_django', #add this
     'rest_framework',
+    'django.contrib.sitemaps',
+
     
 ]
 
@@ -277,7 +279,6 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 # ztjh fdxk rytu vnef
 # Add logging
-
 
 
 

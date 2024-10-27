@@ -23,10 +23,20 @@ from django.conf.urls.static import static  ## for static or js
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 
+from django.contrib.sitemaps.views import sitemap
+from hostelapp20.sitemaps import StaticViewSitemap  # Update with your app name if needed
+
+
+# Sitemap configuration
+sitemaps = {
+    'static': StaticViewSitemap,
+}
 
 app_name = 'hostelapp20'
 
 urlpatterns = [
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap path
+
     path('admin/', admin.site.urls),
     path('', views.login_and_registration, name='login_and_registration'),
     path('check_username/', views.check_username, name='check_username'),
