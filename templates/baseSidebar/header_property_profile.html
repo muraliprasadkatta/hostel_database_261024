@@ -5,10 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Property Profile{% endblock %}</title>
-<<<<<<< HEAD
-=======
-    <link rel="stylesheet" href="{% static 'css/header_property_profile.css' %}">
->>>>>>> bacbf72fce74ab51533970e1462f2bf282e6e8f8
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -144,7 +140,6 @@
 <body>
     <div class="property-details-container">
         <h1>{{ property.hostelname }}</h1>
-<<<<<<< HEAD
         
         <!-- Error validation for image existence -->
         {% if property.image %}
@@ -160,24 +155,14 @@
         {% endif %}
         
         <!-- Property Information -->
-=======
-        {% if property.image %}
-            <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
-        {% else %}
-            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
-        {% endif %}
->>>>>>> bacbf72fce74ab51533970e1462f2bf282e6e8f8
         <div class="property-info">
             <p><span>Owner:</span> {{ property.ownername }}</p>
             <p><span>Email:</span> {{ property.email }}</p>
             <p><span>Mobile:</span> {{ property.mobile }}</p>
             <p><span>Address:</span> {{ property.address }}</p>
         </div>
-<<<<<<< HEAD
 
         <!-- Location Information -->
-=======
->>>>>>> bacbf72fce74ab51533970e1462f2bf282e6e8f8
         <div class="location-container">
             <h2>Location</h2>
             <table class="location-table">
@@ -191,11 +176,8 @@
                 </tr>
             </table>
         </div>
-<<<<<<< HEAD
 
         <!-- Edit/Delete Buttons -->
-=======
->>>>>>> bacbf72fce74ab51533970e1462f2bf282e6e8f8
         <div class="button-container">
             <button class="edit-button" onclick="window.location.href='#'">Edit</button>
             <button class="delete-button" onclick="#">Delete</button>
