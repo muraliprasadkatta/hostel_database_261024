@@ -104,15 +104,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',      ##for auto commos and ruppie symbol and chaekc duepage.html import   {% load humanize %}
+    'django.contrib.humanize',  # for auto commas and rupee symbol
     'hostelapp20',
     'django.contrib.sites',
-    'social_django', #add this
+    'social_django',  # add this
     'rest_framework',
     'django.contrib.sitemaps',
-
-    
+    'cloudinary',  # add this
+    'cloudinary_storage',  # add this
 ]
+
+# Cloudinary configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET')
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
