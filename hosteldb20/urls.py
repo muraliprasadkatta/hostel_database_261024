@@ -35,8 +35,8 @@ sitemaps = {
 app_name = 'hostelapp20'
 
 urlpatterns = [
-    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap path
-
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),  # Set to the root level
+    
     path('admin/', admin.site.urls),
     path('', views.login_and_registration, name='login_and_registration'),
     path('check_username/', views.check_username, name='check_username'),
