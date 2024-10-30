@@ -120,6 +120,10 @@ environ.Env.read_env()
 
 CLOUDINARY_URL = env('CLOUDINARY_URL')  # Load from .env file or environment variables
 
+CLOUDINARY_STORAGE = {
+    'folder': 'property_images'  # Set default folder here
+}
+
 # Cloudinary configuration
 # CLOUDINARY_STORAGE = {
 #     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
