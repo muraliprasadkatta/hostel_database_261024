@@ -313,3 +313,5 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
