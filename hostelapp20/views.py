@@ -296,9 +296,9 @@ def check_roomnumber(request):
     else:
         return HttpResponse('')  # Return an empty response if the room number field is empty
 
+
+
 from cloudinary.uploader import upload  # Ensure this import if not already
-
-
 
 def addproperty(request):
     user = request.user
@@ -331,18 +331,24 @@ def addproperty(request):
             if existing_property:
                 messages.warning(request, 'Property with the same details already exists.')
             else:
-                new_property = AddProperty.objects.create(
-                    hostelname=hostelname,
-                    ownername=ownername,
-                    email=email,
-                    mobile=mobile,
-                    address=address,
-                    latitude=latitude,
-                    longitude=longitude,
-                    user=user,
-                    image=image
-                )
-                messages.success(request, 'Property added successfully.')
+                # Upload image to Cloudinary and print the URL
+                if image:
+                    result = upload(image)
+                    image_url = result.get('url')
+                    print("Cloudinary URL:", image_url)  # Print Cloudinary URL to verify
+
+                    new_property = AddProperty.objects.create(
+                        hostelname=hostelname,
+                        ownername=ownername,
+                        email=email,
+                        mobile=mobile,
+                        address=address,
+                        latitude=latitude,
+                        longitude=longitude,
+                        user=user,
+                        image=image_url  # Save URL instead of the file itself
+                    )
+                    messages.success(request, 'Property added successfully.')
 
             return redirect('dashboard')
         else:

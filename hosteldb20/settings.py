@@ -277,8 +277,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
 
 MEDIA_URL = '/media/'  # Ensure MEDIA_URL is distinct from STATIC_URL
 STATIC_URL = '/static/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-  # Place media files in a directory outside of STATIC_ROOT
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')   # Place media files in a directory outside of STATIC_ROOT
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -316,6 +315,3 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 # Add logging
 
 
-
-import logging
-logging.basicConfig(level=logging.DEBUG)
