@@ -114,11 +114,20 @@ INSTALLED_APPS = [
     'cloudinary_storage',  # add this
 ]
 import environ
+import cloudinary
+
 
 env = environ.Env()
 environ.Env.read_env()
 
+
+# Direct URL Configuration (CLOUDINARY_URL)
+
 CLOUDINARY_URL = env('CLOUDINARY_URL')  # Load from .env file or environment variables
+
+cloudinary.config(secure=env.bool('CLOUDINARY_SECURE', default=True))
+
+# Separate Parameter Configuration (cloudinary.config(...))
 
 # Cloudinary configuration
 # CLOUDINARY_STORAGE = {
@@ -126,12 +135,9 @@ CLOUDINARY_URL = env('CLOUDINARY_URL')  # Load from .env file or environment var
 #     'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
 #     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 # }
-CLOUDINARY_STORAGE = { 'folder': 'property_images' }
 
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
 
 
 MIDDLEWARE = [
