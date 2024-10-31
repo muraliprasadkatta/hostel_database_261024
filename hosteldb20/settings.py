@@ -36,6 +36,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SESSION_COOKIE_SECURE = False  
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# SECURE_SSL_REDIRECT = False
 
 
 # # Database Configuration
@@ -275,7 +276,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
 
 MEDIA_URL = '/media/'  # Ensure MEDIA_URL is distinct from STATIC_URL
 STATIC_URL = '/static/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Place media files in a directory outside of STATIC_ROOT
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+  # Place media files in a directory outside of STATIC_ROOT
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
