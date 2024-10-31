@@ -126,6 +126,15 @@ CLOUDINARY_URL = env('CLOUDINARY_URL')  # Load from .env file or environment var
 #     'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
 #     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 # }
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dkvy141bt',
+    'API_KEY': '874815941261685',
+    'API_SECRET': 'TYrM78ydt8WXmhVUWbYvdo3BNZQ',
+}
+
+
 CLOUDINARY_STORAGE = { 'folder': 'property_images' }
 
 

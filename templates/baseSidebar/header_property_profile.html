@@ -145,8 +145,6 @@
         {% if property.image %}
             {% if property.image.url %}
                 <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
-                <p>Image URL: {{ property.image.url }}</p>
-
             {% else %}
                 <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
                 <p>Image URL is not valid.</p>
