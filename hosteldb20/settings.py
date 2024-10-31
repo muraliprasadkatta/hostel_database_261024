@@ -142,6 +142,7 @@ cloudinary.config(secure=env.bool('CLOUDINARY_SECURE', default=True))
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
