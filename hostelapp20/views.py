@@ -1065,3 +1065,19 @@ def save_selected_hostel(request):
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
 
+
+
+# views.py
+from django.shortcuts import render, redirect
+from cloudinary.uploader import upload
+from django.conf import settings
+from django.http import JsonResponse
+
+def upload_image(request):
+    if request.method == 'POST':
+        image = request.FILES.get('image')
+        if image:
+            result = upload(image)  # Upload image to Cloudinary
+            image_url = result.get('url')
+            return JsonResponse({"success": True, "image_url": image_url})
+    return JsonResponse({"success": False, "error": "Failed to upload image"})

@@ -35,7 +35,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # DEBUG = True
 # SESSION_COOKIE_SECURE = False  
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # # Database Configuration
@@ -79,7 +79,7 @@ DEBUG = False
 SESSION_COOKIE_SECURE = True  
 CSRF_COOKIE_SECURE = True 
 
-import os
+# import os
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
 
 DATABASES = {
@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     'cloudinary',  # add this
     'cloudinary_storage',  # add this
 ]
+
 import environ
 import cloudinary
 

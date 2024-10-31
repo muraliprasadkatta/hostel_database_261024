@@ -89,6 +89,8 @@ urlpatterns = [
     path('save_selected_hostel/', views.save_selected_hostel, name='save_selected_hostel'),
 
 
+    path('upload_image/', views.upload_image, name='upload_image'),
+
     # urls.py
 
 ]

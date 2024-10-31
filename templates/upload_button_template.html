@@ -1,0 +1,36 @@
+<!-- open_upload_button.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Button</title>
+</head>
+<body>
+    <!-- Button to open the modal -->
+    <button id="uploadButton" onclick="openUploadModal()">Upload Image</button>
+
+    <!-- Modal Structure -->
+    <div id="uploadModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background-color:white; padding:20px; border-radius:8px; box-shadow:0px 0px 10px rgba(0,0,0,0.5);">
+        <div>
+            <!-- Close button for the modal -->
+            <span onclick="closeUploadModal()" style="cursor:pointer; float:right;">&times;</span>
+            <h3>Upload Image</h3>
+            <form action="{% url 'upload_image' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="image" accept="image/*" required>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    function openUploadModal() {
+        document.getElementById("uploadModal").style.display = "block";
+    }
+
+    function closeUploadModal() {
+        document.getElementById("uploadModal").style.display = "none";
+    }
+</script>
+</html>
