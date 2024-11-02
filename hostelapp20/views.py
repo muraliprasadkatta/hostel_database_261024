@@ -478,6 +478,8 @@ def DisplayRooms(request, property_id):
     
     # Print statement to debug in development environment
     if selected_property.image:
+        selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
+
         print("Image URL:", selected_property.image.url)
 
     # Other code remains the same
