@@ -29,10 +29,8 @@
           <div class="profile-image-container">
               {% if selected_property.image_url %}
                   <img src="{{ selected_property.image_url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
-                  <p>Image URL: <a href="{{ selected_property.image_url }}" target="_blank">{{ selected_property.image_url }}</a></p>
               {% else %}
                   <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
-                  <p>No image available</p>
               {% endif %}
           </div>
           <span class="profile-name" id="selectedPropertyName">{{ selected_property.hostelname }}</span>
