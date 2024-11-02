@@ -475,13 +475,17 @@ def AddRooms(request, property_id):
 @never_cache
 def DisplayRooms(request, property_id):
     selected_property = get_object_or_404(AddProperty, id=property_id)
-    user_properties = AddProperty.objects.filter(user=request.user)
+    
+    # Print statement to debug in development environment
+    if selected_property.image:
+        print("Image URL:", selected_property.image.url)
 
-    # Fetch rooms related to the selected property and user
+    # Other code remains the same
+    user_properties = AddProperty.objects.filter(user=request.user)
     user_rooms = Room.objects.filter(user=request.user, property=selected_property).annotate(
         has_data=Count('tenant')
     ).order_by('room_number')
-
+    
     # Convert room data to list for use in JavaScript
     user_rooms_list = list(user_rooms.values(
         'id', 'room_number', 'floor_type', 'number_of_share', 
@@ -489,32 +493,25 @@ def DisplayRooms(request, property_id):
     ))
     user_rooms_json = json.dumps(user_rooms_list, cls=DjangoJSONEncoder)
 
-    # Calculate room and bed statistics
+    # Room and bed statistics
     total_rooms = user_rooms.count()
     total_beds = user_rooms.aggregate(total_beds=Sum('number_of_share'))['total_beds'] or 0
     occupied_beds = Tenant.objects.filter(room__in=user_rooms).count()
     free_beds = total_beds - occupied_beds
 
-
-    # For normal requests, render the template with context
     context = {
         'username': request.user.username,
         'selected_property': selected_property,
         'user_properties': user_properties,
-        'user_rooms': user_rooms,  # For template rendering
-        'user_rooms_json': user_rooms_json,  # For JavaScript use
-        'some_room_number': user_rooms.first().room_number if user_rooms.exists() else None,
+        'user_rooms': user_rooms,
+        'user_rooms_json': user_rooms_json,
         'total_rooms': total_rooms,
         'occupied_beds': occupied_beds,
         'free_beds': free_beds,
-        'error': None,
         'show_change_property_button': True,
-
-
     }
 
     return render(request, 'data/display_rooms.html', context)
-
 
 
 def AddTenants(request, property_id, room_number, tenant_id=None):
