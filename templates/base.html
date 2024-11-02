@@ -26,16 +26,18 @@
     <!-- Profile Section -->
     <a href="{% url 'propertyProfile' selected_property.id %}">
       <div class="profile-section">
-        <div class="profile-image-container">
-          {% if selected_property.image %}
-            <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
-          {% else %}
-            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
-          {% endif %}
-        </div>
-        <span class="profile-name" id="selectedPropertyName">{{ selected_property.hostelname }}</span>
+         <div class="profile-image-container">
+            {% if selected_property.image_url %}
+               <img src="{{ selected_property.image_url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
+            {% else %}
+               <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
+            {% endif %}
+         </div>
+         <span class="profile-name" id="selectedPropertyName">{{ selected_property.hostelname }}</span>
       </div>
-    </a>
+   </a>
+   
+    
 
     <!-- Properties List -->
     <ul class="sidebar-options">
