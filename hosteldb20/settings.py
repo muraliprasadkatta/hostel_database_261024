@@ -51,6 +51,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 #     }
 # }
 
+# this is not a mandatory for local prodution
+
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+  # Place media files in a directory outside of STATIC_ROOT
+
 
 # ______________________________________________
 # for production process
@@ -113,7 +118,16 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'cloudinary',  # add this
     'cloudinary_storage',  # add this
+    'django_csp',
+
 ]
+
+CSP_IMG_SRC = (
+    "'self'",
+    "https://res.cloudinary.com",  # Allow images from Cloudinary
+    # You can add other image sources if needed
+)
+
 
 import environ
 import cloudinary
@@ -277,8 +291,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
 
 MEDIA_URL = '/media/'  # Ensure MEDIA_URL is distinct from STATIC_URL
 STATIC_URL = '/static/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
-  # Place media files in a directory outside of STATIC_ROOT
+
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
