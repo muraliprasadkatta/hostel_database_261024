@@ -118,6 +118,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'cloudinary',  # add this
     'cloudinary_storage',  # add this
+    'django_csp',
 
 ]
 
