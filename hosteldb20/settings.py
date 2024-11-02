@@ -122,11 +122,6 @@ INSTALLED_APPS = [
 
 ]
 
-CSP_IMG_SRC = (
-    "'self'",
-    "https://res.cloudinary.com",  # Allow images from Cloudinary
-    # You can add other image sources if needed
-)
 
 
 import environ
