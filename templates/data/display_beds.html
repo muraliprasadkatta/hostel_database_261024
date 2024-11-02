@@ -238,7 +238,7 @@
                 <a href="{% url 'TenantDetails' property_id=selected_property.id room_number=room.room_number tenant_id=bed.id %}" style="text-decoration: none; display: flex; width: 100%;">
                     <div class="tenant-image-class">
                         {% if bed.tenant_image %}
-                        <img src="{{ bed.tenant_image_url }}" alt="Tenant Image" class="tenant-image">
+                            <img src="{{ bed.tenant_image }}" alt="Tenant Image" class="tenant-image">
                         {% else %}
                             <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Placeholder Image" class="tenant-image">
                         {% endif %}
