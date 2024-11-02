@@ -1059,12 +1059,16 @@ from django.shortcuts import render, get_object_or_404
 from .models import AddProperty
 
 # views.py లో
+
 from urllib.parse import unquote
+from django.shortcuts import render, get_object_or_404
 
 def propertyProfile(request, property_id):
     property = get_object_or_404(AddProperty, id=property_id)
     if property.image:
-        property.image_url = unquote(property.image.url)
+        property.image_url = unquote(property.image.url)  # URLని డీకోడ్ చేయడం
+    else:
+        property.image_url = None
     return render(request, 'baseSidebar/header_property_profile.html', {'property': property})
 
 
