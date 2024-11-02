@@ -28,7 +28,7 @@
       <div class="profile-section">
           <div class="profile-image-container">
               {% if selected_property.image %}
-                  <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
+                  <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image"><br><br>
                   <p>Image URL: {{ selected_property.image.url }}</p> <!-- Debugging line to display the URL -->
               {% else %}
                   <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
