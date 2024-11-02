@@ -234,46 +234,41 @@
         {% if beds %}
         <ul class="bed-list">
             {% for bed in beds %}
-                <li class="tenant-item {% if bed.name %} occupied-bed {% endif %}">
-                    <a href="{% url 'TenantDetails' property_id=selected_property.id room_number=room.room_number tenant_id=bed.id %}" style="text-decoration: none; display: flex; width: 100%;">
-                        <div class="tenant-image-class">
-                            {% if bed.tenant_image %}
-                                <img src="{{ bed.tenant_image.url }}" alt="Tenant Image" class="tenant-image">
-                            {% else %}
-                                <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Placeholder Image" class="tenant-image">
-                            {% endif %}
-                            <strong class="tenant-name">{{ bed.name }}</strong>
-                        </div>
-                        <div class="tenant-info">
-                            <div class="tenant-details">
-                                <div class="tenant-detail-box">
-                                    <div class="tenant-detail-title">JOINING DATE:</div>
-                                    <div class="tenant-detail-content">{{ bed.joining_date|date:"F j, Y" }}</div>
-                                </div>
-                                <div class="tenant-detail-box">
-                                    <div class="tenant-detail-title">DUE DATE:</div>
-                                    <div class="tenant-detail-content">
-                                        {% if bed.next_due_date %}
-                                            {{ bed.next_due_date|date:"F j, Y" }}
-                                        {% else %}
-                                            No upcoming due date.
-                                        {% endif %}
-                                    </div>
+            <li class="tenant-item {% if bed.name %} occupied-bed {% endif %}">
+                <a href="{% url 'TenantDetails' property_id=selected_property.id room_number=room.room_number tenant_id=bed.id %}" style="text-decoration: none; display: flex; width: 100%;">
+                    <div class="tenant-image-class">
+                        {% if bed.tenant_image %}
+                            <img src="{{ bed.tenant_image }}" alt="Tenant Image" class="tenant-image">
+                        {% else %}
+                            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Placeholder Image" class="tenant-image">
+                        {% endif %}
+                        <strong class="tenant-name">{{ bed.name }}</strong>
+                    </div>
+                    <div class="tenant-info">
+                        <div class="tenant-details">
+                            <div class="tenant-detail-box">
+                                <div class="tenant-detail-title">JOINING DATE:</div>
+                                <div class="tenant-detail-content">{{ bed.joining_date|date:"F j, Y" }}</div>
+                            </div>
+                            <div class="tenant-detail-box">
+                                <div class="tenant-detail-title">DUE DATE:</div>
+                                <div class="tenant-detail-content">
+                                    {% if bed.next_due_date %}
+                                        {{ bed.next_due_date|date:"F j, Y" }}
+                                    {% else %}
+                                        No upcoming due date.
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-                    </a>
-                    <!-- <div class="tenant-buttons">
-                        <button class="tenant-button pay-button">Pay</button>
-                        <button class="tenant-button initial-button">Initial</button>
-                    </div> -->
-                    <div class="bottemRow">
-                        <div class="tenantName">
-                            {{ bed.name }}
-                        </div>
                     </div>
-                </li>
-            {% endfor %}
+                </a>
+                <div class="bottemRow">
+                    <div class="tenantName">{{ bed.name }}</div>
+                </div>
+            </li>
+        {% endfor %}
+        
         </ul>
         {% else %}
         <img src="{% static 'images/displaybeds/feel_bed.png' %}" alt="No Tenants" class="no-tenants-image"> <!-- Replace with your actual image path -->
