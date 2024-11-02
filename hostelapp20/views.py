@@ -479,9 +479,9 @@ def DisplayRooms(request, property_id):
     # Print statement to debug in development environment
     if selected_property.image:
         selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
-
-        print("Image URL:", selected_property.image.url)
-
+    else:
+        selected_property.image_url = None
+        
     # Other code remains the same
     user_properties = AddProperty.objects.filter(user=request.user)
     user_rooms = Room.objects.filter(user=request.user, property=selected_property).annotate(
