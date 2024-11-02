@@ -516,6 +516,8 @@ def DisplayRooms(request, property_id):
     return render(request, 'data/display_rooms.html', context)
 
 
+from cloudinary.uploader import upload  # Ensure this import if not already
+
 def AddTenants(request, property_id, room_number, tenant_id=None):
     print(f"AddTenants view called for property: {property_id}, room: {room_number}, tenant: {tenant_id}")
 
@@ -526,7 +528,6 @@ def AddTenants(request, property_id, room_number, tenant_id=None):
 
     if tenant_id:
         tenant = get_object_or_404(Tenant, id=tenant_id)
-
 
     if request.method == 'POST':
         # Handle form submission
@@ -551,16 +552,30 @@ def AddTenants(request, property_id, room_number, tenant_id=None):
         advance = request.POST.get('advance')
         tenant_image = request.FILES.get('tenant_image')
 
+        # Upload images to Cloudinary if present
+        if govt_id_front:
+            govt_id_front_url = upload(govt_id_front).get('url')
+        else:
+            govt_id_front_url = tenant.govt_id_front if tenant else None
+
+        if govt_id_back:
+            govt_id_back_url = upload(govt_id_back).get('url')
+        else:
+            govt_id_back_url = tenant.govt_id_back if tenant else None
+
+        if tenant_image:
+            tenant_image_url = upload(tenant_image).get('url')
+        else:
+            tenant_image_url = tenant.tenant_image if tenant else None
+
         if tenant:
             # Update existing tenant
             tenant.name = name
             tenant.email = email
             tenant.mobile = mobile
             tenant.adhar_number = adhar_number
-            if govt_id_front:
-                tenant.govt_id_front = govt_id_front
-            if govt_id_back:
-                tenant.govt_id_back = govt_id_back
+            tenant.govt_id_front = govt_id_front_url
+            tenant.govt_id_back = govt_id_back_url
             tenant.state = state
             tenant.dist = dist
             tenant.pincode = pincode
@@ -574,8 +589,7 @@ def AddTenants(request, property_id, room_number, tenant_id=None):
             tenant.allocated_bed = allocated_bed
             tenant.rent = rent
             tenant.advance = advance
-            if tenant_image:
-                tenant.tenant_image = tenant_image
+            tenant.tenant_image = tenant_image_url
         else:
             # Create a new tenant
             tenant = Tenant(
@@ -583,8 +597,8 @@ def AddTenants(request, property_id, room_number, tenant_id=None):
                 email=email,
                 mobile=mobile,
                 adhar_number=adhar_number,
-                govt_id_front=govt_id_front,
-                govt_id_back=govt_id_back,
+                govt_id_front=govt_id_front_url,
+                govt_id_back=govt_id_back_url,
                 state=state,
                 dist=dist,
                 pincode=pincode,
@@ -598,7 +612,7 @@ def AddTenants(request, property_id, room_number, tenant_id=None):
                 allocated_bed=allocated_bed,
                 rent=rent,
                 advance=advance,
-                tenant_image=tenant_image,
+                tenant_image=tenant_image_url,
                 room=room,
                 property=selected_property,
                 user=associated_user
@@ -609,7 +623,6 @@ def AddTenants(request, property_id, room_number, tenant_id=None):
         return JsonResponse({'success': True, 'message': 'Tenant added/updated successfully.'})
 
     if request.method == 'GET':
-
         form_html = render_to_string('data/add_tenants_modal.html', {
             'selected_property': selected_property,
             'room': room,
