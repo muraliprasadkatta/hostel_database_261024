@@ -1090,6 +1090,7 @@ from cloudinary.uploader import upload
 from django.conf import settings
 from django.http import JsonResponse
 
+# this is for testing purpose we can remove any time  and template too upload_button_template.html
 def upload_image(request):
     if request.method == 'POST':
         image = request.FILES.get('image')

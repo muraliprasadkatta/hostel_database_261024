@@ -141,23 +141,21 @@
     <div class="property-details-container">
         <h1>{{ property.hostelname }}</h1>
         
-<!-- Error validation for image existence -->
-<!-- Error validation for image existence -->
-{% if property.image %}
-    {% if property.image_url %}
-        <p>Image URL: <a href="{{ property.image_url }}" target="_blank">{{ property.image_url }}</a></p>
-        <img src="{{ property.image_url }}" alt="{{ property.hostelname }} Image" class="property-image">
-    {% else %}
-        <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
-        <p>Image URL is not valid.</p>
-    {% endif %}
-{% else %}
-    <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
-    <p>No image available for this property.</p>
-{% endif %}
+        <!-- Error validation for image existence -->
+        {% if property.image %}
+            {% if property.image_url %}
+                <p>Image URL: <a href="{{ property.image_url }}" target="_blank">{{ property.image_url }}</a></p>
+                <img src="{{ property.image_url }}" alt="{{ property.hostelname }} Image" class="property-image">
+            {% else %}
+                <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
+                <p>Image URL is not valid.</p>
+            {% endif %}
+        {% else %}
+            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
+            <p>No image available for this property.</p>
+        {% endif %}
 
 
-        
         <!-- Property Information -->
         <div class="property-info">
             <p><span>Owner:</span> {{ property.ownername }}</p>
