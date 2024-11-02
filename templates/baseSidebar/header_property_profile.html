@@ -143,9 +143,10 @@
         
 <!-- Error validation for image existence -->
 <!-- Error validation for image existence -->
+<!-- Image URL Display with Correction -->
 {% if property.image %}
     {% if property.image.url %}
-        <p>Image URL: <a href="{{ property.image.url }}" target="_blank">{{ property.image.url }}</a></p>
+        <p>Image URL: <a href="{{ property.image.url|urlize }}" target="_blank">{{ property.image.url|safe }}</a></p>
         <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
     {% else %}
         <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
