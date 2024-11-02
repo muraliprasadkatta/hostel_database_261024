@@ -120,7 +120,8 @@
 
         <h2>Tenant Image</h2>
         {% if tenant_image %}
-            <img src="{{ tenant_image.url }}" alt="Tenant Image" width="100"><br>
+            <img src="{{ tenant.tenant_image.url }}" alt="Tenant Image" width="100"><br>
+
         {% else %}
             <span>No image available</span><br>
         {% endif %}
