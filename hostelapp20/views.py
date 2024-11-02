@@ -715,6 +715,7 @@ def DisplayBeds(request, property_id, room_number):
     else:
         selected_property.image_url = None
 
+
     # Get room and tenant information
     room = get_object_or_404(Room, property_id=property_id, room_number=room_number)
     beds = Tenant.objects.filter(room=room)
@@ -738,13 +739,6 @@ def DisplayBeds(request, property_id, room_number):
 
 def TenantDetails(request, property_id, room_number, tenant_id):
     selected_property = get_object_or_404(AddProperty, id=property_id)
-
-        # Format the image URL for selected_property
-    if selected_property.image:
-        selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
-    else:
-        selected_property.image_url = None
-
     room = get_object_or_404(Room, property_id=property_id, room_number=room_number)
     tenant = get_object_or_404(Tenant, id=tenant_id)
 
