@@ -28,9 +28,9 @@
       <div class="profile-section">
           <div class="profile-image-container">
               {% if selected_property.image %}
-                  <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image"><br><br>
-                  <p>Image URL: {{ selected_property.image.url }}</p> <!-- Debugging line to display the URL -->
-              {% else %}
+                  <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
+                  <p>Image URL: <a href="{{ property.image_url }}" target="_blank" class="image-url">{{ property.image_url }}</a></p>
+                  {% else %}
                   <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
                   <p>No image available</p> <!-- Debug message -->
               {% endif %}
