@@ -142,11 +142,12 @@
         <h1>{{ property.hostelname }}</h1>
         
 <!-- Error validation for image existence -->
+<!-- Error validation for image existence -->
 {% if property.image %}
     {% if property.image.url %}
-        <p>Image URL: {{ property.image.url }}</p> <!-- This line will print the URL for debugging -->
+        <p>Image URL: {{ property.image.url|safe }}</p>
         <img src="{{ property.image.url|safe }}" alt="{{ property.hostelname }} Image" class="property-image">
-        {% else %}
+    {% else %}
         <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
         <p>Image URL is not valid.</p>
     {% endif %}
@@ -154,6 +155,7 @@
     <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
     <p>No image available for this property.</p>
 {% endif %}
+
 
         
         <!-- Property Information -->
