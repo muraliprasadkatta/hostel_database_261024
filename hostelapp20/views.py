@@ -1058,8 +1058,13 @@ def test(request):
 from django.shortcuts import render, get_object_or_404
 from .models import AddProperty
 
+# views.py లో
+from urllib.parse import unquote
+
 def propertyProfile(request, property_id):
     property = get_object_or_404(AddProperty, id=property_id)
+    if property.image:
+        property.image_url = unquote(property.image.url)
     return render(request, 'baseSidebar/header_property_profile.html', {'property': property})
 
 
