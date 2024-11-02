@@ -119,13 +119,12 @@
         </p>
 
         <h2>Tenant Image</h2>
-        {% if tenant_image %}
+        {% if tenant.tenant_image %}
             <img src="{{ tenant.tenant_image.url }}" alt="Tenant Image" width="100"><br>
-
         {% else %}
             <span>No image available</span><br>
         {% endif %}
-
+        
         <!-- File Input for Image Upload (hidden by default) -->
         <input type="file" id="tenant_image" name="tenant_image" class="image-upload"><br>
 
