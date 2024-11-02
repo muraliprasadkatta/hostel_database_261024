@@ -141,18 +141,20 @@
     <div class="property-details-container">
         <h1>{{ property.hostelname }}</h1>
         
-        <!-- Error validation for image existence -->
-        {% if property.image %}
-            {% if property.image.url %}
-                <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
-            {% else %}
-                <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
-                <p>Image URL is not valid.</p>
-            {% endif %}
-        {% else %}
-            <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
-            <p>No image available for this property.</p>
-        {% endif %}
+<!-- Error validation for image existence -->
+{% if property.image %}
+    {% if property.image.url %}
+        <p>Image URL: {{ property.image.url }}</p> <!-- This line will print the URL for debugging -->
+        <img src="{{ property.image.url }}" alt="{{ property.hostelname }} Image" class="property-image">
+    {% else %}
+        <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
+        <p>Image URL is not valid.</p>
+    {% endif %}
+{% else %}
+    <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" alt="Default Image" class="property-image">
+    <p>No image available for this property.</p>
+{% endif %}
+
         
         <!-- Property Information -->
         <div class="property-info">
