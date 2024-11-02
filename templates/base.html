@@ -28,7 +28,7 @@
       <div class="profile-section">
         <div class="profile-image-container">
           {% if selected_property.image %}
-            <img src="{{ selected_property.image.url|replace:'/http%3A/', 'http://' }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
+            <img src="{{ selected_property.image.url }}" class="profile-image" id="selectedPropertyImage" alt="Property Image">
           {% else %}
             <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="profile-image" id="selectedPropertyImage" alt="Default Image">
           {% endif %}
@@ -36,7 +36,6 @@
         <span class="profile-name" id="selectedPropertyName">{{ selected_property.hostelname }}</span>
       </div>
     </a>
-    
 
     <!-- Properties List -->
     <ul class="sidebar-options">
