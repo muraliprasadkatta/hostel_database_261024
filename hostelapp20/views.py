@@ -1063,14 +1063,15 @@ from .models import AddProperty
 from urllib.parse import unquote
 from django.shortcuts import render, get_object_or_404
 
+from django.shortcuts import render, get_object_or_404
+
 def propertyProfile(request, property_id):
     property = get_object_or_404(AddProperty, id=property_id)
     if property.image:
-        property.image_url = unquote(property.image.url)  # URLని డీకోడ్ చేయడం
+        property.image_url = property.image.url.replace("/http%3A/", "http://")
     else:
         property.image_url = None
     return render(request, 'baseSidebar/header_property_profile.html', {'property': property})
-
 
 
 @csrf_exempt
