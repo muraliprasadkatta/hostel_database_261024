@@ -289,7 +289,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
 
 # for sicoal authanticatuon
 
-MEDIA_URL = '/media/'  # Ensure MEDIA_URL is distinct from STATIC_URL
+MEDIA_URL = '' 
+ # Ensure MEDIA_URL is distinct from STATIC_URL
 STATIC_URL = '/static/'
 
 
