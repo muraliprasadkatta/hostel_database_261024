@@ -484,6 +484,12 @@ def DisplayRooms(request, property_id):
         
     # Other code remains the same
     user_properties = AddProperty.objects.filter(user=request.user)
+
+    for property in user_properties:
+        if property.image:
+            property.image_url = property.image.url.replace("/http%3A/", "http://")
+        else:
+            property.image_url = None
     user_rooms = Room.objects.filter(user=request.user, property=selected_property).annotate(
         has_data=Count('tenant')
     ).order_by('room_number')
@@ -884,9 +890,9 @@ def ChangePassword(request, token):
 
 
 
-
 def Payments(request, property_id):
     selected_property = get_object_or_404(AddProperty, id=property_id)
+
     context = {
         'selected_property': selected_property,
         # Add other context data as needed
@@ -898,6 +904,12 @@ def Payments(request, property_id):
 def dues_view(request, property_id):
     selected_property = get_object_or_404(AddProperty, id=property_id)
     user_properties = AddProperty.objects.filter(user=request.user)
+
+    if selected_property.image:
+        selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
+    else:
+        selected_property.image_url = None
+
 
     date_str = request.GET.get('date')
     

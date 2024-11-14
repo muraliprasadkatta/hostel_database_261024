@@ -4,6 +4,12 @@
 
 {% block paymentsContent %}
 <style>
+
+    /* Blur background when modal is open */
+body.modal-open .blur-container {
+    filter: blur(5px); /* Adjust blur strength */
+    transition: filter 0.3s ease; /* Smooth transition */
+}
     .dues-modal {
         display: none; /* Hidden by default */
         position: fixed; /* Stay in place */
@@ -13,17 +19,24 @@
         width: 100%; /* Full width */
         height: 100%; /* Full height */
         overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        backdrop-filter: blur(5px); /* Apply blur effect */
+        /* background-color: rgba(0,0,0,0.4);  */
+        /* Black w/ opacity */
     }
 
     .dues-modal-content {
         background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
+        margin: 5% auto; /* Centered vertically with a top margin */
         padding: 20px;
         border: 1px solid #888;
-        width: 80%; /* Could be more or less, depending on screen size */
+        width: 60%; /* Adjust width as needed */
+        border-radius: 8px; /* Optional: adds rounded corners */
     }
+
+    /* Show modal and apply blur effect */
+.dues-modal.open {
+    display: block;
+}
 
     .dues-close, .dues-cancel {
         color: #aaa;

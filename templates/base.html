@@ -26,7 +26,13 @@
 
 
 </head>
+<style>
+  .blur {
+    filter: blur(5px); /* Adjust blur level as needed */
+    transition: filter 0.1s ease;
+}
 
+</style>
 
 <body>
   <!-- Sidebar for properties -->
@@ -58,11 +64,12 @@
           {% if user_properties %}
             {% for property in user_properties %}
               <div class="property-item {% if property.id == selected_property.id %}active{% else %}disabled{% endif %}" id="property-{{ property.id }}">
-                {% if property.image %}
-                  <img src="{{ property.image.url }}" class="property-image" alt="{{ property.hostelname }} Image">
-                {% else %}
-                  <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="property-image" alt="Default Image">
-                {% endif %}
+                {% if property.image_url %}
+                <img src="{{ property.image_url }}" class="property-image" alt="{{ property.hostelname }} Image">
+            {% else %}
+                <img src="{% static 'images/displaybeds/image-icon-placeholder.png' %}" class="property-image" alt="Default Image">
+            {% endif %}
+            
                 <span class="property-name">{{ property.hostelname }}</span>
                 {% if property.id == selected_property.id %}
                   <img src="{% static 'images/displayroom_sidebar/3d-tick-image.png' %}" alt="Selected" class="tick-image" id="tick-{{ property.id }}">
@@ -144,6 +151,43 @@ function switchProperty() {
 
     // Optionally reload the page to clear any session-related data
     window.location.replace('/dashboard/');
+}
+
+// blur the side bar and header wile open the the due modals is openend
+function openDuesPaymentModal() {
+    // Show the modal
+    document.getElementById("duesPaymentModal").style.display = "block";
+    // Add blur to the sidebar
+    document.getElementById("sidebar").classList.add("blur");
+    document.getElementById("header").classList.add("blur");
+
+}
+
+function closeDuesPaymentModal() {
+    // Hide the modal
+    document.getElementById("duesPaymentModal").style.display = "none";
+    // Remove blur from the sidebar
+    document.getElementById("sidebar").classList.remove("blur");
+    document.getElementById("header").classList.remove("blur");
+
+}
+
+// Function to open the Initial Payment Modal and blur sidebar and header
+function openDuesInitialPaymentModal() {
+    // Show the modal
+    document.getElementById("duesInitialPaymentModal").style.display = "block";
+    // Add blur to the sidebar and header
+    document.getElementById("sidebar").classList.add("blur");
+    document.getElementById("header").classList.add("blur");
+}
+
+// Function to close the Initial Payment Modal and remove blur from sidebar and header
+function closeDuesInitialPaymentModal() {
+    // Hide the modal
+    document.getElementById("duesInitialPaymentModal").style.display = "none";
+    // Remove blur from the sidebar and header
+    document.getElementById("sidebar").classList.remove("blur");
+    document.getElementById("header").classList.remove("blur");
 }
 
 
