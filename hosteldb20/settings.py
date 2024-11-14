@@ -60,11 +60,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # ______________________________________________
 # for production process
 
-# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # its should be ture in production 
-# SESSION_COOKIE_SECURE = True  
-# CSRF_COOKIE_SECURE = True  
+SESSION_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = True  
 
 
 # Load allowed hosts from environment variable
