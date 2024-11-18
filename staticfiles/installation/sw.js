@@ -1,10 +1,10 @@
 const CACHE_NAME = "ooye-cache-v1";
 const urlsToCache = [
-  "/registration",
+  "/",
   "/static/css/base.css",
-  "/static/js/main.js",
-  "/static/icons/icon-192x192.png",
-  "/static/icons/icon-512x512.png"
+  "/static/icons/appicon-192x192.png", // Updated to match the renamed image
+  "/static/icons/appicon-512x512.png", // Updated to match the renamed image
+  "/static/manifest.json", // Ensure this is included
 ];
 
 // Install Service Worker
