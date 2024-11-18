@@ -32,24 +32,24 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # for local host
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-SESSION_COOKIE_SECURE = False  
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app']
-SECURE_SSL_REDIRECT = False
+# DEBUG = True
+# SESSION_COOKIE_SECURE = False  
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost','da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app']
+# SECURE_SSL_REDIRECT = False
 
 
 # Database Configuration
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': os.environ.get('DB_PORT'),
+#     }
+# }
 
 # this is not a mandatory for local prodution
 
@@ -60,11 +60,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ______________________________________________
 # for production process
 
-# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # its should be ture in production 
-# SESSION_COOKIE_SECURE = True  
-# CSRF_COOKIE_SECURE = True  
+SESSION_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = True  
 
 
 # --------------------------------------------------------------
@@ -84,25 +84,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ------------------------------------------------------
 # for production process
 
-# import dj_database_url
-# DEBUG = False
-# SESSION_COOKIE_SECURE = True  
-# CSRF_COOKIE_SECURE = True 
+import dj_database_url
+DEBUG = False
+SESSION_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = True 
 
-# import os
-# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
+import os
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
 
-# DATABASES = {
-#     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-# }
+DATABASES = {
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+}
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # comment this line if we plan to run this in local terminal
-# SECURE_SSL_REDIRECT = True
-# SECURE_HSTS_SECONDS = 31536000
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 
 # Application definition
