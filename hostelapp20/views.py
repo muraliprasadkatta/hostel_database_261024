@@ -477,6 +477,7 @@ def DisplayRooms(request, property_id):
     selected_property = get_object_or_404(AddProperty, id=property_id)
     
     # Print statement to debug in development environment
+    # get the properties of images of profile section in sidebar
     if selected_property.image:
         selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
     else:
@@ -485,11 +486,13 @@ def DisplayRooms(request, property_id):
     # Other code remains the same
     user_properties = AddProperty.objects.filter(user=request.user)
 
+    # get the properties of images of properties in sidebar
     for property in user_properties:
         if property.image:
             property.image_url = property.image.url.replace("/http%3A/", "http://")
         else:
             property.image_url = None
+            
     user_rooms = Room.objects.filter(user=request.user, property=selected_property).annotate(
         has_data=Count('tenant')
     ).order_by('room_number')
@@ -716,16 +719,23 @@ def DisplayBeds(request, property_id, room_number):
     selected_property = get_object_or_404(AddProperty, id=property_id)
 
     # Format the image URL for selected_property
+    # get the properties of images of profile section in sidebar
     if selected_property.image:
         selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
     else:
         selected_property.image_url = None
 
-
     # Get room and tenant information
     room = get_object_or_404(Room, property_id=property_id, room_number=room_number)
     beds = Tenant.objects.filter(room=room)
+
     user_properties = AddProperty.objects.filter(user=request.user)
+    # get the properties of images of properties in sidebar
+    for property in user_properties:
+        if property.image:
+            property.image_url = property.image.url.replace("/http%3A/", "http://")
+        else:
+            property.image_url = None
 
     remaining_free_beds = room.number_of_share - beds.count()
     current_date = timezone.now().date()

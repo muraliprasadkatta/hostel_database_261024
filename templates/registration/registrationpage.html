@@ -6,8 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login and Registration Form</title>
 
+    <meta name="description" content="OOYE - Hostel management made easy. Manage tenants, payments, and property details all in one platform.">
+    <meta name="keywords" content="OOYE, Hostel Management, Tenant Management, Hostel Database, Property Management">
+    <meta name="author" content="Katta Muraliprasad">
+    <meta property="og:title" content="OOYE – Register Now" />
+    <meta property="og:description" content="Efficient hostel management system to manage tenants, payments, and property details." />
+    <meta property="og:url" content="https://ooye.in" />
+    <meta property="og:type" content="website" />
+    <!-- Add other meta tags if needed -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="https://unpkg.com/htmx.org@1.8.0" integrity="sha384-cZuAZ+ZbwkNRnrKi05G/fjBX+azI9DNOkNYysZ0I/X5ZFgsmMiBXgDZof30F5ofc" crossorigin="anonymous"></script>
+
+    <link rel="manifest" href="{% static 'manifest.json' %}">
 
     <style>
         body, html {
@@ -303,6 +314,8 @@
 </head>
 <body>
 
+    <button id="installButton" style="display: none;">Install App</button>
+
     <!-- <div class="lfslider">
         <div class="lfslides">
             <div class="slide"><img src="{% static 'images/hostel_login_image_a.png' %}" alt="a" id="lfimage_a"></div>
@@ -327,7 +340,7 @@
             <div class="slide"><img src="{% static 'images/hostel_login_image_r.png' %}" alt="r" id="lfimage_r"></div>
         </div>
     </div>     -->
-
+    
     <img src="{% static 'images/dashboard/regsitration_indicate.png'%}" alt="no image founded" class="registration-indicate-image">
     <div class="flip-card">
         <div class="flip-card-inner">
@@ -336,8 +349,6 @@
                     <form method="post" action="{% url 'login_and_registration' %}" id="loginForm">
                         {% csrf_token %}
                         <h1>Login</h1>
-
-
                         <div class="messages">
                             {% for message in messages %}
                                 {% if 'login_error' in message.tags %}
@@ -366,6 +377,8 @@
                                     <button type="button" class="social-login google-login">
                                         <img src="{% static 'images/google.jpg' %}" alt="Google Logo" class="social-icon">
                                         <span class="text-google">Sign up with Google</span>
+                                        
+
                                     </button>
                                 </a>
                                 
@@ -374,6 +387,7 @@
                     </form>
                 </div>
             </div>
+
 
 
             
@@ -426,8 +440,7 @@
                                         <img src="{% static 'images/google.jpg' %}" alt="Google Logo" class="social-icon">
                                         <span class="text-google">Sign up with Google</span>
                                     </button>
-                                </a>
-                                
+                                </a>                                
                             </div>
                         </div>                    
                     </form>
@@ -436,42 +449,118 @@
         </div>
     </div>
 
-    
 
-<!-- back change the color with image color automatically -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.umd.js"></script>
-    <script>
-        const slides = document.querySelectorAll('.slide img');
-        const body = document.body;
-        const colorThief = new ColorThief();
-    
-        let currentSlide = 0;
-        const slideInterval = 3000; // 4 seconds per slide
-    
-        function changeBackgroundColor() {
-            const currentImage = slides[currentSlide];
-            
-            // Ensure image is loaded before getting the color
-            if (currentImage.complete) {
-                const dominantColor = colorThief.getColor(currentImage);
-                body.style.backgroundColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
-            } else {
-                currentImage.addEventListener('load', () => {
-                    const dominantColor = colorThief.getColor(currentImage);
-                    body.style.backgroundColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
-                });
-            }
+
+<!-- Install App Button -->
+<button id="installButton" style="display: none;">Install App</button>
+
+<script>
+    console.log("JS file loaded successfully!");
+
+    let deferredPrompt;
+
+    // Listen for the beforeinstallprompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log("beforeinstallprompt event triggered");
+        e.preventDefault(); // Prevent automatic prompt
+        deferredPrompt = e; // Save the event for triggering later
+
+        // Check if the button exists in DOM
+        const installButton = document.getElementById('installButton');
+        if (!installButton) {
+            console.error("Install button not found in DOM!");
+            return;
         }
-    
-        setInterval(() => {
-            currentSlide = (currentSlide + 1) % slides.length;
-            changeBackgroundColor();
-        }, slideInterval);
-    
-        // Initial background color
-        changeBackgroundColor();
-    </script>
 
+        // Make the install button visible
+        installButton.style.display = 'block';
+        console.log("Install button made visible");
+
+        // Add click listener to the install button
+        installButton.addEventListener('click', () => {
+            console.log("Install button clicked!");
+
+            // Hide the button after click
+            installButton.style.display = 'none';
+
+            // Show the install prompt
+            deferredPrompt.prompt();
+
+            // Handle the user's response
+            deferredPrompt.userChoice.then((choiceResult) => {
+                console.log("User's response to install prompt:", choiceResult.outcome);
+
+                if (choiceResult.outcome === 'accepted') {
+                    console.log("User accepted the install prompt");
+                } else {
+                    console.log("User dismissed the install prompt");
+                }
+                deferredPrompt = null; // Reset the prompt
+            });
+        });
+    });
+
+    // Log if the beforeinstallprompt event does not trigger
+    window.addEventListener("load", () => {
+        if (!deferredPrompt) {
+            console.warn("beforeinstallprompt event did not trigger! Checking conditions...");
+            checkPWARequirements();
+        }
+    });
+
+    // Function to check PWA requirements
+    function checkPWARequirements() {
+        // Check if HTTPS is being used
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            console.error("App is not being served over HTTPS. Install prompt will not trigger.");
+        } else {
+            console.log("App is served over HTTPS or localhost.");
+        }
+
+        // Check if service worker is registered
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then((registration) => {
+                if (registration) {
+                    console.log("Service Worker is registered:", registration.scope);
+                } else {
+                    console.error("Service Worker is not registered. Install prompt will not trigger.");
+                }
+            });
+        } else {
+            console.error("Service Worker API not supported in this browser.");
+        }
+
+        // Check if the manifest file is accessible
+        fetch('/static/manifest.json')
+            .then((response) => {
+                if (response.ok) {
+                    console.log("Manifest file is accessible.");
+                } else {
+                    console.error("Manifest file is not accessible. Status:", response.status);
+                }
+            })
+            .catch((error) => {
+                console.error("Error accessing manifest file:", error);
+            });
+    }
+</script>
+
+<!-- Service Worker Registration Script -->
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("{% static 'installation/sw.js' %}")
+            .then((registration) => {
+                console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch((error) => {
+                console.error('Service Worker registration failed:', error);
+            });
+    } else {
+        console.error('Service Worker API is not supported in this browser.');
+    }
+</script>
+
+    
 
 <!-- ---------------------------------------------------- -->
 <!-- for the filpcard rotate block while refreshing -->

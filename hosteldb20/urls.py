@@ -29,12 +29,14 @@ from hostelapp20.sitemaps import StaticViewSitemap  # Update with your app name 
 
 # Sitemap configuration
 sitemaps = {
-    'static': StaticViewSitemap,
+    'static': StaticViewSitemap,  # StaticViewSitemap ni ikkada include chestunnaru
 }
 
 app_name = 'hostelapp20'
 
 urlpatterns = [
+    path('pwa/', include('pwa.urls')),  # PWA functionality
+
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),  # Set to the root level
     
     path('admin/', admin.site.urls),

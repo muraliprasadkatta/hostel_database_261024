@@ -22,6 +22,8 @@
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- for (manifest.json)  -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
 
 
 
@@ -96,6 +98,9 @@
       <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt icon"></i> Logout</a></li>
     </ul>
 
+    <button id="installButton" style="display: none;">Install App</button>
+
+
     <div class="bottom-link">
       <a href="#"><i class="fas fa-home icon"></i> Go to Home Page</a>
     </div>
@@ -140,7 +145,10 @@
   {% block paymentTemplate %}{% endblock %}
   {% block content %}{% endblock %}
 
+
 <script>
+
+
 
 function switchProperty() {
     // Clear session storage (if needed)
@@ -265,6 +273,47 @@ function closeDuesInitialPaymentModal() {
     }
   </script>
 
-  {% block extra_scripts %}{% endblock %}
+
+{% block extra_scripts %}
+
+<!-- for installation perpose -->
+
+<script>
+  if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register("{% static 'installation/sw.js' %}")
+          .then((registration) => {
+              console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch((error) => {
+              console.log('Service Worker registration failed:', error);
+          });
+  }
+
+  // for download perpose
+
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installButton = document.getElementById('installButton');
+      installButton.style.display = 'block';
+
+      installButton.addEventListener('click', () => {
+          installButton.style.display = 'none';
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                  console.log('User accepted the install prompt');
+              } else {
+                  console.log('User dismissed the install prompt');
+              }
+              deferredPrompt = null;
+          });
+      });
+  });
+</script>
+{% endblock %}
+
 </body>
 </html>
