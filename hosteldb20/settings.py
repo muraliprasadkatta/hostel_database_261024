@@ -143,8 +143,6 @@ CLOUDINARY_URL = env('CLOUDINARY_URL')  # Load from .env file or environment var
 
 cloudinary.config(secure=env.bool('CLOUDINARY_SECURE', default=True))
 
-# this lines belong to coudanry for store the images in online
-
 # Separate Parameter Configuration (cloudinary.config(...))
 
 # Cloudinary configuration
