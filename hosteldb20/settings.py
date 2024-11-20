@@ -129,7 +129,6 @@ INSTALLED_APPS = [
 ]
 
 
-
 import environ
 import cloudinary
 
