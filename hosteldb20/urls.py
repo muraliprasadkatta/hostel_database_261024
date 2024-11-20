@@ -25,6 +25,7 @@ from django.contrib.auth import views as auth_views
 
 from django.contrib.sitemaps.views import sitemap
 from hostelapp20.sitemaps import StaticViewSitemap  # Update with your app name if needed
+from django.views.generic import TemplateView
 
 
 # Sitemap configuration
@@ -38,7 +39,8 @@ urlpatterns = [
     path('pwa/', include('pwa.urls')),  # PWA functionality
 
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),  # Set to the root level
-    
+    path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
+
     path('admin/', admin.site.urls),
     path('', views.login_and_registration, name='login_and_registration'),
     path('check_username/', views.check_username, name='check_username'),
