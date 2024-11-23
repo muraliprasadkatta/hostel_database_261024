@@ -79,8 +79,13 @@ urlpatterns = [
     path('redirectpage', views.redirectpage, name='redirectpage'),
 
 
-    path('change-password/<str:token>/', views.ChangePassword, name='ChangePassword'),
-    path('forget-password/', views.ForgetPassword, name='ForgetPassword'),
+    path('change-password/<str:token>/', views.ChangePassword, name='change_password'),
+    
+    path('reset-password/<str:token>/', views.ChangePassword, name='reset_password'),
+
+    
+    path('forget-password/', views.ForgetPassword, name='forget_password'),
+
 
     path('test-email/',views.test_email, name='test_email'),
 

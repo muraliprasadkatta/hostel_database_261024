@@ -29,7 +29,6 @@ from uuid import uuid4
 from .models import History, Tenant, Remainder, Room, AddProperty, ManagementPin, CustomUser, ChangedPassword
 
 # Import custom helpers
-from .helpers import send_forget_password_mail
 
 
 # def base(request):
@@ -848,56 +847,107 @@ def test_email(request):
 
 User = get_user_model()  # Get the user model
 
+from hostelapp20.forgot_password_helpers.email_helper import send_reset_email
+
+# from .helpers import send_forget_password_mail
+
+
+from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.shortcuts import redirect, render
+import uuid
+
+
+User = get_user_model()
+
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
+
+
+
+from uuid import uuid4  # For generating unique tokens
+from django.shortcuts import redirect, render
+from django.contrib import messages
+from .models import ChangedPassword
+
 def ForgetPassword(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        identifier = request.POST.get('username')  # Fetch email or mobile number
+        print(f"Received identifier: {identifier}")  # Debug statement
 
-        if not User.objects.filter(username=username).exists():
-            messages.error(request, 'No user found with this username')
-            return redirect('forget_password')
+        # Validate if input is empty
+        if not identifier:
+            messages.error(request, 'Please enter your email or mobile number.')
+            return render(request, 'registration/forgot_password_modal.html')
 
-        user = User.objects.get(username=username)
-        token = str(uuid.uuid4())
-        
-        # Create or update the ChangedPassword with the token
-        changed_password, created = ChangedPassword.objects.get_or_create(user=user)
-        changed_password.forget_password_token = token
-        changed_password.save()
+        # Find user by email
+        try:
+            user = User.objects.get(email=identifier)
+            print(f"User found with email: {user.email}")
+        except User.DoesNotExist:
+            messages.error(request, 'No user found with this email.')
+            return render(request, 'registration/forgot_password_modal.html')
 
-        send_forget_password_mail(user.email, token)
-        messages.success(request, 'An email has been sent.')
-        return redirect('ForgetPassword')
+        # Generate token and save to ChangedPassword model
+        token = str(uuid4())  # Generate unique token
+        try:
+            # Delete old tokens for the user
+            ChangedPassword.objects.filter(user=user).delete()
+            # Create a new token
+            ChangedPassword.objects.create(user=user, forget_password_token=token)
+            print(f"Token Saved Successfully: {token}")  # Debug statement
+        except Exception as e:
+            print(f"Error While Saving Token: {e}")  # Debug error
 
-    return render(request, 'registration/forget_password.html')
+        # Send reset email
+        send_reset_email(user.email, token)
+        messages.success(request, 'Password reset link sent to your email.')
+        return redirect('login_and_registration')  # Redirect to login
+
+    return render(request, 'registration/forgot_password_modal.html')
+
+
+
+from django.shortcuts import redirect, render
+from django.contrib import messages
+
+from django.urls import reverse
+from django.shortcuts import redirect, render
+from django.contrib import messages
+from .models import ChangedPassword
 
 def ChangePassword(request, token):
-    context = {}
-
     try:
+        # Fetch the ChangedPassword object using the token
         changed_password = ChangedPassword.objects.get(forget_password_token=token)
-        if request.method == 'POST':
-            new_password = request.POST.get('new_password')
-            confirm_password = request.POST.get('confirm_password')
-
-            if new_password != confirm_password:
-                messages.error(request, 'Passwords do not match')
-                return redirect(f'/change-password/{token}/')
-
-            user = changed_password.user
-            user.set_password(new_password)  # Properly hash the new password
-            user.save()
-            changed_password.forget_password_token = None  # Clear the token after successful reset
-            changed_password.save()
-            messages.success(request, 'Password has been changed successfully')
-            return redirect('login_and_registration')
-
-        context = {'token': token}
+        user = changed_password.user
     except ChangedPassword.DoesNotExist:
-        messages.error(request, 'Invalid or expired token')
-        return redirect('ForgetPassword')
+        messages.error(request, 'Invalid or expired token.')
+        return redirect('forget_password')  # Redirect to Forgot Password modal
 
-    return render(request, 'registration/change_password.html', context)
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
 
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'registration/change_password.html', {'token': token})
+
+        # Update the user's password
+        user.set_password(new_password)
+        user.save()
+
+        # Clear the token after successful password change
+        changed_password.forget_password_token = None
+        changed_password.save()
+
+        # Add success message
+        messages.success(request, 'Your password has been successfully changed. You can now log in.')
+
+        # Redirect to registration page with a flag
+        return redirect(reverse('login_and_registration') + '?reset_success=true')
+
+    return render(request, 'registration/change_password.html', {'token': token})
 
 
 def Payments(request, property_id):

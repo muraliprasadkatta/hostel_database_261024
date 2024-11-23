@@ -1,3 +1,5 @@
+// this is current is not use only use for in the future we move to develop the mobile app that helped this file
+
 [
     {
         "relation": ["delegate_permission/common.handle_all_urls"],

@@ -1,4 +1,4 @@
-body, html {
+    body, html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -184,11 +184,22 @@ body, html {
     position: relative; /* Required for the pseudo-element to position correctly */
 }
 
-.add-property-btn {
-    background-color: #007bff;
-    border: 3px solid white; /* Single border with white color */
-    border-radius: 50px; /* Ensure the border has rounded corners */
-    color: white;
+
+
+.add-property-btn,
+.add-property-btn-data {
+    width: 100%; /* Make the button span the full width of its container */
+    max-width: 400px; /* Set a maximum width for larger screens */
+    padding: 15px; /* Add padding for better appearance */
+    font-size: 16px; /* Adjust the text size */
+    cursor: pointer;
+    border: none;
+    border-radius: 10px; /* Rounded corners */
+    background-color: #007bff; /* Blue color for the button */
+    color: white; /* White text */
+    text-align: center;
+    box-sizing: border-box; /* Include padding and border in width */
+    margin: auto; /* Center the button inside the container */
 }
 
 .add-property-btn::before {
@@ -217,12 +228,6 @@ body, html {
     position: relative; /* Required for the pseudo-element to position correctly */
 }
 
-.add-property-btn-data {
-    background-color: #007bff;
-    border: 3px solid white; /* Single border with white color */
-    border-radius: 50px; /* Ensure the border has rounded corners */
-    color: white;
-}
 
 .add-property-btn-data::before {
     content: '';
@@ -364,7 +369,7 @@ body, html {
     padding: 20px;
     border-radius: 10px;
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     text-align: left;
 }
@@ -381,6 +386,9 @@ body, html {
 @media (max-width: 768px) {
     .flex-box {
         grid-template-columns: 1fr;
+    }
+    .flexbox-item{
+        max-width: 300px;
     }
     .header-content {
         text-align: center;
@@ -418,4 +426,6 @@ body, html {
         border-radius: 10px;
         position: relative; /* Required for the pseudo-element to position correctly */
     }
+
 }
+
