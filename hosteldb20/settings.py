@@ -34,11 +34,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app (this kepis use for ngrok service its helps to run the server locally for some specific time )
 
-DEBUG = True
-SESSION_COOKIE_SECURE = False  
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app']
-SECURE_SSL_REDIRECT = False
+# DEBUG = True
+# SESSION_COOKIE_SECURE = False  
+# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost','da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app']
+# SECURE_SSL_REDIRECT = False
 
 
 # Database Configuration
@@ -79,10 +79,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# its should be ture in production 
-# SESSION_COOKIE_SECURE = True  
-# CSRF_COOKIE_SECURE = True  
-
 
 # ______________________________________________
 
@@ -101,25 +97,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ------------------------------------------------------
 # for production process
 
-# import dj_database_url
-# DEBUG = False
-# SESSION_COOKIE_SECURE = True  
-# CSRF_COOKIE_SECURE = True 
+import dj_database_url
+DEBUG = False
+SESSION_COOKIE_SECURE = True  
+CSRF_COOKIE_SECURE = True 
 
-# import os
-# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
+import os
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
 
-# DATABASES = {
-#     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-# }
+DATABASES = {
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+}
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # comment this line if we plan to run this in local terminal
-# SECURE_SSL_REDIRECT = True
-# SECURE_HSTS_SECONDS = 31536000
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
