@@ -957,7 +957,7 @@ def testing_template_view(request, token):
     # You can add optional debugging information
     print(f"Received Token: {token}")
     
-    return render(request, 'testing_template.html', {'token': token})
+    return render(request, 'registration/testing_template.html', {'token': token})
 
 
 def Payments(request, property_id):
