@@ -83,7 +83,6 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Load allowed hosts from environment variable
 
-ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
 
 
 # this line use for both local and production
@@ -104,6 +103,8 @@ DATABASES = {
 }
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
 
 # comment this line if we plan to run this in local terminal
 SECURE_SSL_REDIRECT = True
