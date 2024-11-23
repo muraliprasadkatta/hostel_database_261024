@@ -71,7 +71,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # SITE_URL = 'http://127.0.0.1:8000'
 
 
-# after keep this in also .env file
 
 
 # --------------------------------------------------------------
