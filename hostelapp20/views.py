@@ -931,7 +931,9 @@ def ChangePassword(request, token):
 
         if new_password != confirm_password:
             messages.error(request, 'Passwords do not match.')
-            return render(request, 'registration/change_password.html', {'token': token})
+            # return render(request, 'registration/change_password.html', {'token': token})
+            return render(request, 'registration/testing_template.html', {'token': token})
+
 
         # Update the user's password
         user.set_password(new_password)
@@ -947,7 +949,8 @@ def ChangePassword(request, token):
         # Redirect to registration page with a flag
         return redirect(reverse('login_and_registration') + '?reset_success=true')
 
-    return render(request, 'registration/change_password.html', {'token': token})
+    # return render(request, 'registration/change_password.html', {'token': token})
+    return render(request, 'registration/testing_template.html', {'token': token})
 
 
 def Payments(request, property_id):
