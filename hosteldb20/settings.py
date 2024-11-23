@@ -82,16 +82,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ______________________________________________
 
 # Load allowed hosts from environment variable
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
-ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
+# ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
 
 
 # this line use for both local and production
-
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
-
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # ------------------------------------------------------
 # for production process

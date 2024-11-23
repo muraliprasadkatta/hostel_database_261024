@@ -81,8 +81,6 @@ urlpatterns = [
 
     path('change-password/<str:token>/', views.ChangePassword, name='change_password'),
     
-    path('reset-password/<str:token>/', views.ChangePassword, name='reset_password'),
-
     
     path('forget-password/', views.ForgetPassword, name='forget_password'),
 
