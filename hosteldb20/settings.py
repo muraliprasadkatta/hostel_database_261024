@@ -139,6 +139,7 @@ INSTALLED_APPS = [
     'social_django',  # add this
     'rest_framework',
     'django.contrib.sitemaps',
+    'django_extensions',
     'cloudinary',  # add this
     'cloudinary_storage',  # add this
     'pwa',
