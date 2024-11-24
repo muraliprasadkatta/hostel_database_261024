@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 def send_reset_email(email, token):
     subject = "Reset Your Password"
     # reset_link = f"{settings.SITE_URL}/change-password/{token}/"
-    reset_link = f"{settings.SITE_URL}/testing-template/{token}/"
+    reset_link = f"{settings.SITE_URL}/forget-password/{token}/"
 
     text_content = (
         f"Hi,\n\n"
