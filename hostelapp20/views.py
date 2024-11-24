@@ -953,10 +953,20 @@ def ChangePassword(request, token):
 
 from django.shortcuts import render
 
+import os
+from django.conf import settings
+
 def testing_template_view(request, token):
-    # You can add optional debugging information
+    # Print token for verification
     print(f"Received Token: {token}")
     
+    # Debug to check template path
+    template_path = os.path.join(settings.BASE_DIR, 'templates', 'registration', 'testing_template.html')
+    if not os.path.exists(template_path):
+        print(f"Template Missing: {template_path}")
+        return HttpResponse(f"Template not found at: {template_path}")
+
+    # Render normally if template exists
     return render(request, 'registration/testing_template.html', {'token': token})
 
 
