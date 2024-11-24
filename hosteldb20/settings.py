@@ -34,7 +34,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app (this kepis use for ngrok service its helps to run the server locally for some specific time )
 
-DEBUG = True
+# DEBUG = True
 # SESSION_COOKIE_SECURE = False  
 # SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost','da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app']
@@ -91,7 +91,7 @@ DEBUG = True
 # for production process
 
 import dj_database_url
-# DEBUG = False
+DEBUG = False
 SESSION_COOKIE_SECURE = True  
 CSRF_COOKIE_SECURE = True 
 
