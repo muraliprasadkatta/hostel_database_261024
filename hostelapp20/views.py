@@ -967,7 +967,7 @@ def testing_template_view(request, token):
         return HttpResponse(f"Template not found at: {template_path}")
 
     # Render normally if template exists
-    return render(request, 'registration/testing_template.html', {'token': token})
+    return render(request, 'testing_template.html', {'token': token})
 
 
 def Payments(request, property_id):
