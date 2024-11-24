@@ -53,13 +53,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 #     }
 # }
 
-# this is not a mandatory for local prodution
+# # this is not a mandatory for local prodution
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
-  # Place media files in a directory outside of STATIC_ROOT
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+#   # Place media files in a directory outside of STATIC_ROOT
 
 
-# password reset setting
+# # password reset setting
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'  # Use your email service provider's SMTP server
@@ -76,7 +76,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # --------------------------------------------------------------
 # for production process
 
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 
 # ______________________________________________
@@ -334,21 +334,21 @@ AUTH_USER_MODEL = 'hostelapp20.CustomUser'  ## for abstract user
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }
 
 
 
