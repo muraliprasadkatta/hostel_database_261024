@@ -953,11 +953,23 @@ def ChangePassword(request, token):
 
 from django.shortcuts import render
 
+from django.shortcuts import render
+import logging
+
+logger = logging.getLogger(__name__)
+
 def testing_template_view(request, token):
-    # You can add optional debugging information
-    print(f"Received Token: {token}")
-    
-    return render(request, 'registration/testing_template.html', {'token': token})
+    try:
+        # Log token access to console
+        print(f"Testing template accessed with token: {token}")
+        
+        # Render the testing template
+        return render(request, 'registration/testing_template.html', {'token': token})
+    except Exception as e:
+        # Log the error directly to console
+        print(f"Error rendering testing template: {e}")
+        logger.error(f"Error rendering testing template for token {token}: {e}")
+        return render(request, 'error_page.html', {'error': str(e)})
 
 
 def Payments(request, property_id):

@@ -8,6 +8,12 @@
 <body>
     <h1>Testing Password Reset</h1>
     <p>Token: {{ token }}</p>
-    <a href="{{ token }}" target="_blank">Use this token for testing</a>
+    <a href="#" id="reset-button" onclick="logClick()">Use this token for testing</a>
+
+    <script>
+        function logClick() {
+            console.log("Reset button clicked");
+        }
+    </script>
 </body>
 </html>
