@@ -73,10 +73,12 @@
                             <button type="submit" name="login">Login</button>
                             <p><a href="javascript:void(0);" onclick="flipCard()">Need an account? Register</a></p>
                             
-                            <!-- <p><a href="{% url 'forget_password'%}">Forgot Password?</a></p> -->
 
-                            <p><a href="javascript:void(0);" id="open-forgot-password-modal">Forgot Password?</a></p>
-
+                                <!-- Add the Forgot Password link -->
+                                <p>
+                                    <a href="javascript:void(0);" onclick="openModal()">Forgot Password?</a>
+                                </p>
+                            
                                 <!-- Why Login Tooltip -->
                                 <div class="why-login-tooltip">
                                     <span>Why Login?</span>
@@ -169,7 +171,9 @@
             </div>
         </div>
 
-        {% include 'registration/forgot_password_modal.html' %}
+        {% include 'registration/verification_codes/send_otp_modal.html' %}
+
+
 
     <!-- Install App Button -->
     <!-- <button id="installButton" style="display: none;">Install App</button> -->

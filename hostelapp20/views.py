@@ -816,158 +816,7 @@ def DeleteTenant(request, tenant_id):
 
 
 
-# views.py
 
-
-def test_email(request):
-    context = {
-        'uid': 'dummy-uid',
-        'token': 'dummy-token',
-        'user': request.user,
-        'site_name': 'Example Site',
-        'protocol': 'http',
-        'domain': 'example.com',
-    }
-    print(context)
-    try:
-        send_mail(
-            'Test Subject',
-            'This is a test message.',
-            'muraliprasad996.996.mp@gmail.com',  # Ensure this matches DEFAULT_FROM_EMAIL
-            ['muraliprasad142@gmail.com'],  # Replace with a valid recipient email
-            fail_silently=False,
-        )
-        return HttpResponse('Test email sent.')
-    except Exception as e:
-        return HttpResponse(f'Error: {e}')
-
-
-
-
-
-User = get_user_model()  # Get the user model
-
-from hostelapp20.forgot_password_helpers.email_helper import send_reset_email
-
-# from .helpers import send_forget_password_mail
-
-
-from django.contrib.auth import get_user_model
-from django.contrib import messages
-from django.shortcuts import redirect, render
-import uuid
-
-
-User = get_user_model()
-
-from django.shortcuts import get_object_or_404
-from django.core.exceptions import ObjectDoesNotExist
-
-
-
-from uuid import uuid4  # For generating unique tokens
-from django.shortcuts import redirect, render
-from django.contrib import messages
-from .models import ChangedPassword
-
-def ForgetPassword(request):
-    if request.method == 'POST':
-        identifier = request.POST.get('username')  # Fetch email or mobile number
-        print(f"Received identifier: {identifier}")  # Debug statement
-
-        # Validate if input is empty
-        if not identifier:
-            messages.error(request, 'Please enter your email or mobile number.')
-            return render(request, 'registration/forgot_password_modal.html')
-
-        # Find user by email
-        try:
-            user = User.objects.get(email=identifier)
-            print(f"User found with email: {user.email}")
-        except User.DoesNotExist:
-            messages.error(request, 'No user found with this email.')
-            return render(request, 'registration/forgot_password_modal.html')
-
-        # Generate token and save to ChangedPassword model
-        token = str(uuid4())  # Generate unique token
-        try:
-            # Delete old tokens for the user
-            ChangedPassword.objects.filter(user=user).delete()
-            # Create a new token
-            ChangedPassword.objects.create(user=user, forget_password_token=token)
-            print(f"Token Saved Successfully: {token}")  # Debug statement
-        except Exception as e:
-            print(f"Error While Saving Token: {e}")  # Debug error
-
-        # Send reset email
-        send_reset_email(user.email, token)
-        messages.success(request, 'Password reset link sent to your email.')
-        return redirect('login_and_registration')  # Redirect to login
-
-    return render(request, 'registration/forgot_password_modal.html')
-
-
-
-from django.shortcuts import redirect, render
-from django.contrib import messages
-
-from django.urls import reverse
-from django.shortcuts import redirect, render
-from django.contrib import messages
-from .models import ChangedPassword
-
-def ChangePassword(request, token):
-    try:
-        # Fetch the ChangedPassword object using the token
-        changed_password = ChangedPassword.objects.get(forget_password_token=token)
-        user = changed_password.user
-    except ChangedPassword.DoesNotExist:
-        messages.error(request, 'Invalid or expired token.')
-        return redirect('forget_password')  # Redirect to Forgot Password modal
-
-    if request.method == 'POST':
-        new_password = request.POST.get('new_password')
-        confirm_password = request.POST.get('confirm_password')
-
-        if new_password != confirm_password:
-            messages.error(request, 'Passwords do not match.')
-            return render(request, 'registration/change_password.html', {'token': token})
-
-        # Update the user's password
-        user.set_password(new_password)
-        user.save()
-
-        # Clear the token after successful password change
-        changed_password.forget_password_token = None
-        changed_password.save()
-
-        # Add success message
-        messages.success(request, 'Your password has been successfully changed. You can now log in.')
-
-        # Redirect to registration page with a flag
-        return redirect(reverse('login_and_registration') + '?reset_success=true')
-
-    return render(request, 'registration/change_password.html', {'token': token})
-
-
-
-from django.shortcuts import render
-
-import os
-from django.conf import settings
-
-def testing_template_view(request, token):
-    # Print token for verification
-    print(f"Received Token: {token}")
-    
-    # Debug to check template path
-    template_path = os.path.join(settings.BASE_DIR, 'templates', 'registration', 'testing_template.html')
-    if not os.path.exists(template_path):
-        print(f"Template Missing: {template_path}")
-        return HttpResponse(f"Template not found at: {template_path}")
-
-    # Render normally if template exists
-    return render(request, 'testing_template.html', {'token': token})
 
 
 def Payments(request, property_id):
@@ -983,13 +832,20 @@ def Payments(request, property_id):
 
 def dues_view(request, property_id):
     selected_property = get_object_or_404(AddProperty, id=property_id)
-    user_properties = AddProperty.objects.filter(user=request.user)
-
+     # Print statement to debug in development environment
     if selected_property.image:
         selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
     else:
         selected_property.image_url = None
 
+    user_properties = AddProperty.objects.filter(user=request.user)
+
+    # get the properties of images of properties in sidebar
+    for property in user_properties:
+        if property.image:
+            property.image_url = property.image.url.replace("/http%3A/", "http://")
+        else:
+            property.image_url = None
 
     date_str = request.GET.get('date')
     
@@ -1219,3 +1075,144 @@ def upload_image(request):
             image_url = result.get('url')
             return JsonResponse({"success": True, "image_url": image_url})
     return JsonResponse({"success": False, "error": "Failed to upload image"})
+
+
+
+
+
+import uuid  # Add this for generating the token
+import random
+from urllib.parse import urlencode
+
+# here we use the email_helper.py file
+import random
+import uuid
+from urllib.parse import urlencode
+from django.shortcuts import redirect
+from django.http import HttpResponse
+from .models import OtpValidation
+from hostelapp20.forgot_password_helpers.email_helper import send_otp_email
+
+def send_otp(request):
+    """
+    Handles OTP generation and sending it via email.
+    """
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        # Check if email is provided
+        if not email:
+            return HttpResponse("Email is required!", status=400)
+
+        # Generate OTP and token
+        otp = f"{random.randint(100000, 999999)}"
+        token = str(uuid.uuid4())  # Generate a unique token
+
+        # Delete old records for the same email (Modification 1)
+        OtpValidation.objects.filter(email=email).delete()
+
+        # Save OTP and token in the database
+        try:
+            OtpValidation.objects.create(email=email, otp=otp, token=token)  # Modification 2
+            print(f"Generated OTP: {otp}, Token: {token}")  # Optional: For debugging
+        except Exception as e:
+            print(f"Error saving OTP and token: {e}")
+            return HttpResponse("Error saving OTP to the database.", status=500)
+
+        # Send OTP to the user's email
+        response = send_otp_email(email, otp)
+        if response.get('success'):
+            # Redirect back to the previous page with a success message
+            query_params = urlencode({'otp_sent': 'true', 'email': email})
+            return redirect(f"{request.META.get('HTTP_REFERER')}?{query_params}")
+        else:
+            # Return error if email sending fails
+            return HttpResponse(f"Error: {response.get('error')}", status=500)
+
+    # If request method is not POST
+    return HttpResponse("Invalid request method", status=405)
+
+
+
+def validate_otp(request):
+    """
+    Handles OTP validation logic.
+    """
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        otp = request.POST.get('otp')
+
+        if not email or not otp:
+            return HttpResponse("Both email and OTP are required!", status=400)
+
+        try:
+            otp_record = OtpValidation.objects.get(email=email, otp=otp)
+
+            # OTP validated successfully
+            if otp_record:
+                # Redirect to Set New Password Page with the token
+                return redirect(f"/set-new-password/?token={otp_record.token}")
+            else:
+                return HttpResponse("Invalid OTP!", status=400)
+        except OtpValidation.DoesNotExist:
+            return HttpResponse("Invalid email or OTP!", status=400)
+
+    return HttpResponse("Invalid request method", status=405)
+
+
+
+
+
+
+from django.http import HttpResponse
+from django.shortcuts import render
+from .models import OtpValidation
+from django.contrib.auth import get_user_model
+
+User = get_user_model()  # Reference the custom user model
+def set_new_password(request):
+    """
+    Handles setting a new password for the user.
+    """
+    if request.method == 'GET':
+        # Fetch the token from the query parameters
+        token = request.GET.get('token')
+
+        if not token:
+            return HttpResponse("Token is required!", status=400)
+
+        # Fetch the OTP record using the token
+        try:
+            otp_record = OtpValidation.objects.get(token=token)
+        except OtpValidation.DoesNotExist:
+            return HttpResponse("Invalid token!", status=400)
+
+        # Render the password reset form with the email
+        return render(request, 'registration/verification_codes/set_new_password_modal.html', {'email': otp_record.email})
+
+    elif request.method == 'POST':
+        # Handle password update logic
+        email = request.POST.get('email')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if not email or not new_password or not confirm_password:
+            return HttpResponse("All fields are required!", status=400)
+
+        if new_password != confirm_password:
+            return HttpResponse("Passwords do not match!", status=400)
+
+        try:
+            # Update the user's password
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+
+            # Clean up OTP records
+            OtpValidation.objects.filter(email=email).delete()
+
+            return HttpResponse("Password updated successfully!")
+        except User.DoesNotExist:
+            return HttpResponse("User does not exist!", status=400)
+
+    return HttpResponse("Invalid request method", status=405)

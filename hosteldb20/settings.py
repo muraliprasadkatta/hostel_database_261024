@@ -53,13 +53,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 #     }
 # }
 
-# # this is not a mandatory for local prodution
+# this is not a mandatory for local prodution
 
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
-#   # Place media files in a directory outside of STATIC_ROOT
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+  # Place media files in a directory outside of STATIC_ROOT
 
 
-# # password reset setting
+# password reset setting
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'  # Use your email service provider's SMTP server
@@ -76,7 +76,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # --------------------------------------------------------------
 # for production process
 
-# DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 
 # ______________________________________________
@@ -302,9 +302,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_ROOT=os.path.join(BASE_DIR, 'staticfiles')
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
 
 

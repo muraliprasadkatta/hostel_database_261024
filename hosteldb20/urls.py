@@ -79,14 +79,11 @@ urlpatterns = [
     path('redirectpage', views.redirectpage, name='redirectpage'),
 
 
-    path('change-password/<str:token>/', views.ChangePassword, name='change_password'),
+    path('send-otp/', views.send_otp, name='send_otp'),
 
-    path('testing-template/<str:token>/', views.testing_template_view, name='testing_template'),
-    
-    path('forget-password/', views.ForgetPassword, name='forget_password'),
+    path('validate-otp/',views.validate_otp, name='validate_otp'),
 
-
-    path('test-email/',views.test_email, name='test_email'),
+    path('set-new-password/',views.set_new_password, name='set_new_password'),
 
 
 

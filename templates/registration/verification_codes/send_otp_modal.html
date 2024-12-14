@@ -1,0 +1,85 @@
+<div id="send-otp-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Forgot Password</h2>
+
+        <!-- Success message and OTP Validation -->
+        {% if request.GET.otp_sent == "true" %}
+            <p style="color: green; text-align: center;">
+                OTP has been sent to your email: {{ request.GET.email }}
+            </p>
+            <form method="post" action="{% url 'validate_otp' %}" style="margin-top: 20px;">
+                {% csrf_token %}
+                <!-- Hidden field for email -->
+                <input  name="email" value="{{ request.GET.email }}">
+                <label for="otp">Enter OTP:</label>
+                <input type="text" id="otp" name="otp" required>
+                <button type="submit">Validate OTP</button>
+            </form>
+        {% else %}
+            <!-- Normal form submission -->
+            <form method="post" action="{% url 'send_otp' %}">
+                {% csrf_token %}
+                <label for="email">Enter your email:</label>
+                <input type="email" id="email" name="email" required>
+                <button type="submit">Send OTP</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+
+<script>
+    // Open the modal
+    function openModal() {
+        document.getElementById("send-otp-modal").style.display = "block";
+    }
+
+    // Close the modal
+    function closeModal() {
+        document.getElementById("send-otp-modal").style.display = "none";
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if the success message is displayed
+        if (window.location.search.includes("otp_sent=true")) {
+            // Open the modal
+            document.getElementById("send-otp-modal").style.display = "block";
+
+            // Clear the query parameters from the URL
+            const url = new URL(window.location);
+            url.searchParams.delete("otp_sent");
+            url.searchParams.delete("email");
+            window.history.replaceState({}, document.title, url.pathname);
+        }
+    });
+</script>
+
+<style>
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    position: relative;
+    margin: 5% auto;
+    padding: 20px;
+    width: 30%;
+    background-color: #fff;
+    border-radius: 5px;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+</style>

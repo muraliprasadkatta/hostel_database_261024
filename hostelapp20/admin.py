@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, AddProperty, Room, Tenant, ChangedPassword, History, Remainder, ManagementPin
+from .models import CustomUser, AddProperty, Room, Tenant, ChangedPassword, History, Remainder, ManagementPin ,OtpValidation
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
@@ -73,3 +73,12 @@ class RemainderAdmin(admin.ModelAdmin):
     list_filter = ['tenant__property', 'payment_type', 'payment_date', 'due_date']
 
 admin.site.register(Remainder, RemainderAdmin)
+
+
+class OtpValidationAdmin(admin.ModelAdmin):
+    list_display = ['email', 'otp', 'token', 'created_at']  # Add 'token' if it's included in the model
+    search_fields = ['email', 'otp']
+    list_filter = ['created_at']
+
+# Register the model with the admin site
+admin.site.register(OtpValidation, OtpValidationAdmin)

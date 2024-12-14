@@ -4,7 +4,9 @@
         box-sizing: border-box;
         height: 100%;
         transition: margin-left 0.3s ease; /* Add transition */
-    }
+        /* background-color: white !important; */
+
+}
 
         /* display: none; */
     .header {
@@ -106,15 +108,6 @@
         cursor: pointer;
     }
 
-    .pay-button {
-        background-color: #4CAF50; /* Green */
-        color: white;
-    }
-
-    .initial-button {
-        background-color: #008CBA; /* Blue */
-        color: white;
-    }
 
     .add-tenant-button {
         position: fixed;
@@ -211,3 +204,4 @@
             width: 300px;
         }
     }
+

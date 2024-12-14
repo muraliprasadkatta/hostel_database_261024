@@ -98,7 +98,8 @@
       <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt icon"></i> Logout</a></li>
     </ul>
 
-    <button id="installButton" style="display: none;">Install App</button>
+        <!-- <button id="installButton" style="display: none;">Install App</button> -->
+        <a href="#" id="installLink" style="display: none;">Install App</a>
 
 
     <div class="bottom-link">
@@ -145,10 +146,30 @@
   {% block paymentTemplate %}{% endblock %}
   {% block content %}{% endblock %}
 
-
 <script>
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installLink = document.getElementById('installLink');
+    installLink.style.display = 'block';
 
+    installLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        installLink.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            deferredPrompt = null;
+        });
+    });
+});
 
+</script>
+<script>
 
 function switchProperty() {
     // Clear session storage (if needed)
@@ -160,44 +181,6 @@ function switchProperty() {
     // Optionally reload the page to clear any session-related data
     window.location.replace('/dashboard/');
 }
-
-// blur the side bar and header wile open the the due modals is openend
-function openDuesPaymentModal() {
-    // Show the modal
-    document.getElementById("duesPaymentModal").style.display = "block";
-    // Add blur to the sidebar
-    document.getElementById("sidebar").classList.add("blur");
-    document.getElementById("header").classList.add("blur");
-
-}
-
-function closeDuesPaymentModal() {
-    // Hide the modal
-    document.getElementById("duesPaymentModal").style.display = "none";
-    // Remove blur from the sidebar
-    document.getElementById("sidebar").classList.remove("blur");
-    document.getElementById("header").classList.remove("blur");
-
-}
-
-// Function to open the Initial Payment Modal and blur sidebar and header
-function openDuesInitialPaymentModal() {
-    // Show the modal
-    document.getElementById("duesInitialPaymentModal").style.display = "block";
-    // Add blur to the sidebar and header
-    document.getElementById("sidebar").classList.add("blur");
-    document.getElementById("header").classList.add("blur");
-}
-
-// Function to close the Initial Payment Modal and remove blur from sidebar and header
-function closeDuesInitialPaymentModal() {
-    // Hide the modal
-    document.getElementById("duesInitialPaymentModal").style.display = "none";
-    // Remove blur from the sidebar and header
-    document.getElementById("sidebar").classList.remove("blur");
-    document.getElementById("header").classList.remove("blur");
-}
-
 
 
     // Toggle dropdown menu

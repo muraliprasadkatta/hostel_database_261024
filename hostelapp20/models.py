@@ -9,6 +9,7 @@ from django.db.models import Sum
 from decimal import Decimal
 import os
 from django.utils.text import slugify
+from django.utils.timezone import now
 
 
 
@@ -231,6 +232,27 @@ class History(models.Model):
 
     def __str__(self):
         return f"{self.tenant.name} - {self.amount_paid}"
+
+
+
+from django.db import models
+from django.utils.timezone import now
+
+class OtpValidation(models.Model):
+    email = models.EmailField()  # The email address associated with the OTP
+    otp = models.CharField(max_length=6)  # The 6-digit OTP
+    token = models.CharField(max_length=36, unique=True, blank=True, null=True)  # Unique token
+    created_at = models.DateTimeField(default=now)  # When the OTP was created
+
+    def __str__(self):
+        return f"{self.email} - {self.otp}"
+
+    def is_valid(self):
+        """
+        Check if the OTP is still valid (e.g., 10 minutes).
+        """
+        from datetime import timedelta
+        return now() - self.created_at <= timedelta(minutes=10)
 
 
 

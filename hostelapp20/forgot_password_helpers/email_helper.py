@@ -1,36 +1,36 @@
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import send_mail
 from django.conf import settings
-import logging
 
-# Create a logger
-logger = logging.getLogger(__name__)
-
-def send_reset_email(email, token):
-    subject = "Reset Your Password"
-    # reset_link = f"{settings.SITE_URL}/change-password/{token}/"
-    reset_link = f"{settings.SITE_URL}/forget-password/{token}/"
-
-    text_content = (
-        f"Hi,\n\n"
-        f"You requested to reset your password. Click the link below to reset it:\n\n"
-        f"{reset_link}\n\n"
-        f"If you did not make this request, you can ignore this email."
-    )
-    html_content = f"""
-    <p>Hi,</p>
-    <p>You requested to reset your password. Click the link below to reset it:</p>
-    <a href="{reset_link}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; font-size: 16px;">Reset Password</a>
-    <p>If you did not make this request, you can ignore this email.</p>
+def send_otp_email(email, otp):
     """
-    email_from = settings.DEFAULT_FROM_EMAIL
-    recipient_list = [email]
-
+    Sends an OTP to the specified email.
+    
+    Args:
+        email (str): The recipient's email address.
+        otp (str): The one-time password to be sent.
+    
+    Returns:
+        dict: A dictionary with the success status and a message or error.
+    """
     try:
-        msg = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-        logger.info(f"Password reset email sent to {email} successfully.")
-        return {"success": True, "message": "Email sent successfully."}
+        # Email subject and message
+        subject = "Your OTP for Password Reset"
+        message = f"Your OTP is {otp}. It is valid for 10 minutes."
+        
+        # Sending email using Django's send_mail function
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,  # Sender's email from settings
+            [email],  # Recipient email list
+        )
+
+        # If email is sent successfully
+        return {"success": True, "message": "OTP sent successfully!"}
+
     except Exception as e:
-        logger.error(f"Error sending email to {email}. Token: {token}, Reset link: {reset_link}. Error: {e}")
-        return {"success": False, "message": f"Error: {e}"}
+        # Log the exception for debugging
+        print(f"Error while sending email: {e}")
+        
+        # Return error response
+        return {"success": False, "error": str(e)}
