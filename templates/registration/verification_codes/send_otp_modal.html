@@ -1,85 +1,460 @@
+<!-- Forgot Password Modal -->
 <div id="send-otp-modal" class="modal">
     <div class="modal-content">
+        <!-- Close Button -->
         <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Forgot Password</h2>
 
-        <!-- Success message and OTP Validation -->
+        <!-- Title -->
+        <h2 class="modal-title">Forgot your password?</h2>
+        <p class="modal-subtitle">We'll email you an OTP to reset your password.</p>
+
+        <!-- General Backend Error Message -->
+        {% if request.GET.error_message and not request.GET.otp_sent %}
+        <p style="color: red; text-align: center; font-size: 0.9em; margin-bottom: 15px;">
+            {{ request.GET.error_message }}
+        </p>
+        {% endif %}
+
         {% if request.GET.otp_sent == "true" %}
-            <p style="color: green; text-align: center;">
-                OTP has been sent to your email: {{ request.GET.email }}
+        <p style="color: green; text-align: center;">
+            OTP has been sent to your email: {{ request.GET.email }}
+        </p>
+
+        <!-- OTP Validation Form -->
+        <form method="post" action="{% url 'validate_otp' %}" style="margin-top: 20px;">
+            {% csrf_token %}
+            <!-- Hidden Email Field -->
+            <input type="hidden" name="email" value="{{ request.GET.email }}">
+
+            <label for="otp">Enter OTP:</label>
+            <div class="otp-input-container">
+                <input type="text" class="otp-input" maxlength="1" required>
+                <input type="text" class="otp-input" maxlength="1" required>
+                <input type="text" class="otp-input" maxlength="1" required>
+                <input type="text" class="otp-input" maxlength="1" required>
+                <input type="text" class="otp-input" maxlength="1" required>
+                <input type="text" class="otp-input" maxlength="1" required>
+            </div>
+
+            <input type="hidden" name="otp" id="otp-hidden" value="">
+
+            <!-- OTP-Specific Error Message -->
+            {% if request.GET.error_message and request.GET.otp_sent == "true" %}
+            <p style="color: red; font-size: 0.9em; margin: 5px 0;">
+                {{ request.GET.error_message }}
             </p>
-            <form method="post" action="{% url 'validate_otp' %}" style="margin-top: 20px;">
-                {% csrf_token %}
-                <!-- Hidden field for email -->
-                <input  name="email" value="{{ request.GET.email }}">
-                <label for="otp">Enter OTP:</label>
-                <input type="text" id="otp" name="otp" required>
-                <button type="submit">Validate OTP</button>
-            </form>
+            {% endif %}
+
+            <button type="submit" class="modal-button validate-otp-button">Validate OTP</button>
+        </form>
+
+        <!-- Resend OTP Form -->
+        <form method="post" action="{% url 'send_otp' %}">
+            {% csrf_token %}
+            <!-- Hidden Email Field -->
+            <input type="hidden" name="email" value="{{ request.GET.email }}">
+            <!-- Resend OTP Section -->
+            <div id="resend-otp-section" style="text-align: center; margin-top: 10px; font-size: 0.9em;">
+                <span>Didn't get the OTP?</span>
+                <span id="resend-timer-text" style="color: gray; margin-left: 5px;">Resend OTP in 30s</span>
+                <a id="resend-otp-link" style="color: #007bff; cursor: pointer; font-weight: bold; display: none; margin-left: 5px;" onclick="resendOtp()">Resend</a>
+            </div>
+            
+            
+
+        </form>
+        <p id="timer-text" style="font-size: 0.9em; color: gray; margin-top: 10px;"></p>
+
         {% else %}
-            <!-- Normal form submission -->
-            <form method="post" action="{% url 'send_otp' %}">
-                {% csrf_token %}
-                <label for="email">Enter your email:</label>
-                <input type="email" id="email" name="email" required>
-                <button type="submit">Send OTP</button>
-            </form>
+        <!-- Normal Email Submission Form -->
+        <form method="post" action="{% url 'send_otp' %}">
+            {% csrf_token %}
+            <input type="email" id="email" name="email" class="modal-input" placeholder="Email" required>
+            <button type="submit" id="send-otp-button" class="modal-button send-otp-button">Send OTP</button>
+            <button type="button" class="modal-button otp-cancel" onclick="closeModal()">Cancel</button>
+        </form>
         {% endif %}
     </div>
 </div>
 
-
+<!-- it remove the error message after refres -->
 <script>
-    // Open the modal
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get the current URL
+        const currentUrl = new URL(window.location.href);
+
+        // Check if "error_message" query param exists
+        if (currentUrl.searchParams.has('error_message')) {
+            // Remove only the "error_message" query parameter
+            currentUrl.searchParams.delete('error_message');
+
+            // Update the URL in the browser without reloading
+            window.history.replaceState({}, document.title, currentUrl.toString());
+        }
+    });
+</script>
+
+<!-- this script is use for to run the timer for otp resend  -->
+<script>
+let timerInterval;
+
+function startTimer(duration) {
+    const timerText = document.getElementById("resend-timer-text");
+    const resendLink = document.getElementById("resend-otp-link");
+
+    let timer = duration;
+
+    // Show the timer and hide the Resend link initially
+    timerText.style.display = "inline";
+    resendLink.style.display = "none";
+
+    timerInterval = setInterval(() => {
+        // Update the timer text
+        timerText.textContent = `Resend OTP in ${timer}s`;
+
+        if (--timer < 0) {
+            clearInterval(timerInterval);
+
+            // When the timer ends, hide the timer and show the Resend link
+            timerText.style.display = "none";
+            resendLink.style.display = "inline";
+        }
+    }, 1000);
+}
+
+function resendOtp() {
+    // Implement your resend logic here (e.g., submitting the resend form programmatically)
+    const resendForm = document.querySelector("#resend-otp-section").closest("form");
+    if (resendForm) {
+        resendForm.submit(); // Submit the form without reloading the page
+    }
+    
+    // Restart the timer after resending
+    startTimer(30);
+}
+
+
+// Start the timer when the page loads
+document.addEventListener("DOMContentLoaded", function () {
+    startTimer(30); // Start with a 30-second timer
+});
+
+</script>
+
+<!-- this script is used to open and close the this main modal and open when click the manually  -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Prevent modal opening if redirected from "Done" button
+        if (urlParams.get("redirected_from") === "success") {
+            sessionStorage.setItem("email_modal_open", "false"); // Mark modal as closed
+            // Clear the query parameter to ensure it doesn't affect future behavior
+            const url = new URL(window.location);
+            url.searchParams.delete("redirected_from");
+            window.history.replaceState({}, document.title, url.pathname);
+            return; // Exit early to prevent modal opening
+        }
+
+        // Open the modal only if manually triggered
+        if (sessionStorage.getItem("email_modal_open") === "true") {
+            openModal();
+        }
+    });
+
+    // Open the modal (Manual Trigger Only)
     function openModal() {
         document.getElementById("send-otp-modal").style.display = "block";
+        sessionStorage.setItem("email_modal_open", "true"); // Mark modal as open
     }
 
     // Close the modal
     function closeModal() {
         document.getElementById("send-otp-modal").style.display = "none";
+        sessionStorage.setItem("email_modal_open", "false"); // Mark modal as closed
+
+        // Clear query parameters to prevent reopening on refresh
+        const url = new URL(window.location);
+        url.searchParams.delete("otp_sent");
+        url.searchParams.delete("email");
+        url.searchParams.delete("error_message");
+        window.history.replaceState({}, document.title, url.pathname);
+    }
+</script>
+
+
+<!-- this script is used to manage the otp input fields -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const otpInputs = document.querySelectorAll(".otp-input");
+    const otpHidden = document.getElementById("otp-hidden");
+    const validateButton = document.querySelector(".validate-otp-button"); // For OTP validation
+
+    // Add event listeners to OTP input fields
+    otpInputs.forEach((input, index) => {
+        input.addEventListener("input", (event) => {
+            if (event.target.value.length === 1) {
+                // Move to the next input box
+                if (index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            }
+            // Update hidden OTP field and validate button state
+            updateHiddenOtp();
+            checkOtpFields();
+        });
+
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Backspace" && !input.value) {
+                // Move to the previous input box
+                if (index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            }
+            // Update hidden OTP field and validate button state
+            updateHiddenOtp();
+            checkOtpFields();
+        });
+    });
+
+    // Function to update the hidden OTP field
+    function updateHiddenOtp() {
+        let otpValue = "";
+        otpInputs.forEach((input) => {
+            otpValue += input.value;
+        });
+        otpHidden.value = otpValue; // Update hidden field with complete OTP
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Check if the success message is displayed
-        if (window.location.search.includes("otp_sent=true")) {
-            // Open the modal
-            document.getElementById("send-otp-modal").style.display = "block";
+    // Function to check OTP fields and enable/disable Validate OTP button
+    function checkOtpFields() {
+        const allFilled = Array.from(otpInputs).every((input) => input.value.length === 1);
+        validateButton.disabled = !allFilled; // Enable button only if all fields are filled
 
-            // Clear the query parameters from the URL
-            const url = new URL(window.location);
-            url.searchParams.delete("otp_sent");
-            url.searchParams.delete("email");
-            window.history.replaceState({}, document.title, url.pathname);
+        // Update button styles based on the disabled state
+        if (allFilled) {
+            validateButton.classList.add("enabled"); // Add enabled styles
+            validateButton.classList.remove("disabled"); // Remove disabled styles
+        } else {
+            validateButton.classList.add("disabled"); // Add disabled styles
+            validateButton.classList.remove("enabled"); // Remove enabled styles
         }
-    });
+    }
+
+    // Initially disable the Validate OTP button
+    validateButton.disabled = true;
+});
+
 </script>
 
 <style>
-/* Modal Styles */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
+    /* Modal Overlay */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
 
-.modal-content {
-    position: relative;
-    margin: 5% auto;
-    padding: 20px;
-    width: 30%;
-    background-color: #fff;
-    border-radius: 5px;
-}
+    /* Modal Content */
+    .modal-content {
+        background-color: #fff;
+        border-radius: 12px;
+        width: 400px;
+        margin: 0 auto; /* Ensure center alignment for web view */
+        text-align: center;
+        padding: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        top: 50%; /* Center align vertically */
+        transform: translateY(-50%); /* Adjust for vertical centering */
+    }
 
-.close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
+    /* Close Button */
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.5em;
+        color: #aaa;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: #000;
+    }
+
+    /* Title and Subtitle */
+    .modal-title {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #000;
+        margin-bottom: 10px;
+    }
+
+    .modal-subtitle {
+        font-size: 1em;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    /* Input Fields */
+    .modal-input {
+        width: 90%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+
+    /* Buttons */
+    .modal-button {
+        width: 90%;
+        padding: 12px;
+        margin: 10px 0;
+        font-size: 1em;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+
+    /* Send OTP Button Styles */
+.modal-button.send-otp-button {
+    background-color: #573b8a; /* Default black */
+    color: white;
     cursor: pointer;
+    transition: all 0.3s ease; /* Smooth hover transition */
 }
+
+.modal-button.send-otp-button:hover {
+    background-color: #004494; /* Darker on hover */
+}
+
+.modal-button.otp-cancel{
+    background-color: #c90202fe; /* Default black */
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth hover transition */
+}
+
+
+    /* OTP Input Field Styles */
+.otp-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Spacing between the input boxes */
+    margin: 15px;
+
+}
+.otp-input {
+    width: 50px;
+    height: 60px;
+    text-align: center;
+    font-size: 1.8em;
+    border: 2px solid transparent; /* Default border */
+    border-radius: 8px;
+    background: linear-gradient(#fff, #fff) padding-box, 
+                linear-gradient(90deg, #573b8a, #004494) border-box; /* Default Gradient border */
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* Focus effect */
+.otp-input:focus {
+    border-color: transparent;
+    background: linear-gradient(#fff, #fff) padding-box,
+                linear-gradient(90deg, #00c6ff, #0072ff) border-box; /* Bright glow */
+    box-shadow: 0 0 8px rgba(0, 114, 255, 0.6); /* Glow shadow */
+}
+
+/* Filled state using :valid */
+.otp-input:valid {
+    background: linear-gradient(#e02a2a, #84f4a2) padding-box, 
+                linear-gradient(90deg, #e02a2a, #84f4a2) border-box; /* Completed state gradient */
+}
+
+/* Disable hover effect */
+.otp-input:hover {
+    cursor: default; /* No hover effect */
+}
+
+    /* Mobile-Specific Adjustments for Modal */
+    @media screen and (max-width: 768px) {
+        .modal-content {
+            height: 50%; /* Allow dynamic height adjustment for content */
+            margin:auto; /* Space from top in mobile */
+            width: 90%; /* Adjust width for smaller screens */
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 0.95em;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+        }
+
+        .modal-subtitle {
+            font-size: 0.9em;
+        }
+
+        .modal-input {
+            font-size: 0.95em;
+            padding: 10px;
+        }
+
+        .modal-button {
+            font-size: 0.95em;
+            padding: 10px;
+        }
+
+        .otp-input {
+        width: 35px;
+        height: 45px;
+        font-size: 1.2em;
+    }
+}
+    
+
+    @media screen and (max-width: 480px) {
+        .modal-content {
+            /* margin-top: 20%; */
+            width: 90%;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .modal-title {
+            font-size: 1.3em;
+        }
+
+        .modal-subtitle {
+            font-size: 0.85em;
+        }
+
+        .modal-input {
+            font-size: 0.9em;
+            padding: 8px;
+        }
+
+        .modal-button {
+            font-size: 0.9em;
+            padding: 8px 10px;
+        }
+
+        .otp-input {
+        width: 35px;
+        height: 45px;
+        font-size: 1.2em;
+    }
+}
+    
 </style>

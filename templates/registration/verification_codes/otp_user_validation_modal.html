@@ -1,0 +1,155 @@
+<!-- OTP and User Validation Modal -->
+<div id="otp-user-validation-modal" class="otp-user-validation-modal">
+    <div class="otp-user-validation-modal-content">
+        <div class="icon-container">
+            <span class="icon">&#9888;</span> <!-- Warning icon -->
+        </div>
+        <p id="otp-user-validation-message">
+            {{ error_message|default:"Invalid OTP or User Validation Failed! Please try again." }}
+        </p>
+        <button id="redirect-to-registration" class="action-button">
+            OK
+        </button>
+    </div>
+</div>
+
+<script>
+    // Function to open the OTP and User Validation modal
+    function openOtpUserValidationModal(message) {
+        document.getElementById('otp-user-validation-message').innerText = message;
+        document.getElementById('otp-user-validation-modal').style.display = 'flex';
+    }
+
+    // Automatically open the modal if error_message exists
+    document.addEventListener('DOMContentLoaded', function () {
+        const errorMessage = "{{ error_message|default:'' }}";
+        if (errorMessage) {
+            openOtpUserValidationModal(errorMessage);
+        }
+    });
+
+    // Redirect to registration page when OK is clicked
+    document.getElementById('redirect-to-registration').addEventListener('click', function () {
+        window.location.href = "{% url 'login_and_registration' %}"; // Adjust the URL name if needed
+    });
+</script>
+
+<style>
+    /* Modal Overlay */
+    .otp-user-validation-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    /* Modal Content */
+    .otp-user-validation-modal-content {
+        width: 90%;
+        max-width: 400px;
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        animation: fadeIn 0.5s ease;
+    }
+
+    /* Icon */
+    .icon-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .icon {
+        font-size: 60px;
+        color: #dc3545; /* Red for warning */
+    }
+
+    /* Message */
+    #otp-user-validation-message {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Action Button */
+    .action-button {
+        padding: 12px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%; /* Make button full-width on mobile */
+    }
+
+    .action-button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Responsive Design */
+    @media screen and (max-width: 768px) {
+        .otp-user-validation-modal-content {
+            width: 90%;
+            padding: 15px;
+        }
+
+        .icon {
+            font-size: 50px;
+        }
+
+        #otp-user-validation-message {
+            font-size: 14px;
+        }
+
+        .action-button {
+            font-size: 14px;
+            padding: 10px 15px;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .otp-user-validation-modal-content {
+            width: 95%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .icon {
+            font-size: 45px;
+        }
+
+        #otp-user-validation-message {
+            font-size: 13px;
+        }
+
+        .action-button {
+            font-size: 14px;
+            padding: 10px;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>

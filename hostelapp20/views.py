@@ -51,6 +51,19 @@ def normalize_mobile_number(mobile):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login as django_login, get_user_model
+from django.contrib import messages
+from django.views.decorators.cache import never_cache
+from django.urls import reverse
+from urllib.parse import urlencode
+
+User = get_user_model()  # Custom user model reference
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as django_login, get_user_model
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.views.decorators.cache import never_cache
 @never_cache
 def login_and_registration(request):
     show_signup = request.GET.get('show_signup', 'false')  # Default to 'false' to show the login form
@@ -111,11 +124,15 @@ def login_and_registration(request):
                     django_login(request, user)
                     return redirect('dashboard')
                 else:
-                    messages.error(request, 'Invalid username, email, or mobile number, or password.')
+                    # Add logic to handle incorrect password
+                    try:
+                        existing_user = get_user_model().objects.get(username=username)
+                        messages.error(request, 'Incorrect password. Please try again.', extra_tags='login_error')
+                    except get_user_model().DoesNotExist:
+                        messages.error(request, 'Invalid login credentials.', extra_tags='login_error')
 
             if not user:
                 return render(request, 'registration/registrationpage.html')
-            pass
 
         elif 'signup' in request.POST:
             context['show_signup'] = 'false'  # Ensure the signup form remains visible after form submission
@@ -175,25 +192,17 @@ def login_and_registration(request):
 
                 return render(request, 'registration/registrationpage.html', context)
 
-            # Ensure no duplicate check is performed twice
-            if username_exists or email_exists or mobile_exists:
-                return render(request, 'registration/registrationpage.html', {
-                    'username': username,
-                    'email': email,
-                    'mobile': mobile,
-                    'show_signup': True,  # Tell the template to show the signup form
-                })
-
             # Create new user if no conflicts
             user = get_user_model().objects.create_user(username=username, email=email, mobile_number=mobile, password=password)
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             django_login(request, user, backend=user.backend)
             return redirect('dashboard')
 
-    # for auto redirect to dashboard page when the applications is close again he open the page its start form dashboard page
+    # Automatically redirect to the dashboard if the user is already logged in
     if request.user.is_authenticated:
         return redirect('dashboard')
     return render(request, 'registration/registrationpage.html', context)
+
 
 
 from django.http import JsonResponse
@@ -233,7 +242,7 @@ def check_username(request):
     if username:
         time.sleep(0.1)  # Introduce a delay (1 second) to simulate processing time
         if get_user_model().objects.filter(username=username).exists():
-            return HttpResponse('<div style="color: red;"> This username already exists </div>')
+            return HttpResponse('<div class="live-error-message">This username already exists</div>')
         else:
             return HttpResponse('')  # Return an empty response if the username is available
             # return HttpResponse('<div style="color: green; "> This username is available </div>')  # Return an empty response if the username is available
@@ -250,7 +259,7 @@ def check_email(request):
     if email:
         time.sleep(0.1)  # Introduce a delay to simulate processing time
         if get_user_model().objects.filter(email=email).exists():
-            return HttpResponse('<div style="color: red;">This email is already in use</div>')
+            return HttpResponse('<div class="live-error-message">This email is already in use</div>')
         else:
             return HttpResponse('')
 
@@ -271,7 +280,7 @@ def check_mobile(request):
         mobile = normalize_mobile_number(mobile)
         time.sleep(0.1)  # Introduce a delay to simulate processing time
         if get_user_model().objects.filter(mobile_number=mobile).exists():
-            return HttpResponse('<div style="color: red;">This mobile number is already in use</div>')
+            return HttpResponse('<div class="live-error-message">This mobile number is already in use</div>')
         else:
             return HttpResponse('')
     else:
@@ -1093,6 +1102,7 @@ from django.http import HttpResponse
 from .models import OtpValidation
 from hostelapp20.forgot_password_helpers.email_helper import send_otp_email
 
+
 def send_otp(request):
     """
     Handles OTP generation and sending it via email.
@@ -1102,37 +1112,49 @@ def send_otp(request):
 
         # Check if email is provided
         if not email:
-            return HttpResponse("Email is required!", status=400)
+            query_params = urlencode({'error_message': 'Email is required!'})
+            return redirect(f"{reverse('login_and_registration')}?{query_params}")
+
+        # Check if user exists in the database
+        if not User.objects.filter(email=email).exists():
+            query_params = urlencode({'error_message': 'User does not exist! Please check your email.'})
+            return redirect(f"{reverse('login_and_registration')}?{query_params}")
 
         # Generate OTP and token
         otp = f"{random.randint(100000, 999999)}"
         token = str(uuid.uuid4())  # Generate a unique token
 
-        # Delete old records for the same email (Modification 1)
+        # Delete old records for the same email
         OtpValidation.objects.filter(email=email).delete()
 
         # Save OTP and token in the database
         try:
-            OtpValidation.objects.create(email=email, otp=otp, token=token)  # Modification 2
-            print(f"Generated OTP: {otp}, Token: {token}")  # Optional: For debugging
+            OtpValidation.objects.create(email=email, otp=otp, token=token)
         except Exception as e:
-            print(f"Error saving OTP and token: {e}")
-            return HttpResponse("Error saving OTP to the database.", status=500)
+            query_params = urlencode({'error_message': 'Error saving OTP to the database!'})
+            return redirect(f"{reverse('login_and_registration')}?{query_params}")
 
         # Send OTP to the user's email
         response = send_otp_email(email, otp)
         if response.get('success'):
-            # Redirect back to the previous page with a success message
             query_params = urlencode({'otp_sent': 'true', 'email': email})
-            return redirect(f"{request.META.get('HTTP_REFERER')}?{query_params}")
+            return redirect(f"{reverse('login_and_registration')}?{query_params}")
         else:
-            # Return error if email sending fails
-            return HttpResponse(f"Error: {response.get('error')}", status=500)
+            query_params = urlencode({'error_message': 'Failed to send OTP. Please try again later.'})
+            return redirect(f"{reverse('login_and_registration')}?{query_params}")
 
     # If request method is not POST
-    return HttpResponse("Invalid request method", status=405)
+    query_params = urlencode({'error_message': 'Invalid request method!'})
+    return redirect(f"{reverse('login_and_registration')}?{query_params}")
 
 
+
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.http import HttpResponse
+from .models import OtpValidation
+
+from django.shortcuts import render, redirect, reverse
 
 def validate_otp(request):
     """
@@ -1143,76 +1165,130 @@ def validate_otp(request):
         otp = request.POST.get('otp')
 
         if not email or not otp:
-            return HttpResponse("Both email and OTP are required!", status=400)
+            # Redirect with error message for missing email or OTP
+            query_params = urlencode({'otp_sent': 'true', 'email': email, 'error_message': 'Both email and OTP are required!'})
+            return redirect(f"{reverse('login_and_registration')}?{query_params}")
 
         try:
+            # Fetch the OTP record
             otp_record = OtpValidation.objects.get(email=email, otp=otp)
 
-            # OTP validated successfully
-            if otp_record:
-                # Redirect to Set New Password Page with the token
-                return redirect(f"/set-new-password/?token={otp_record.token}")
-            else:
-                return HttpResponse("Invalid OTP!", status=400)
+            # Check if OTP is valid (10 minutes check)
+            if not otp_record.is_valid():  # Check if the OTP has expired
+                # Redirect with 'OTP expired' message
+                query_params = urlencode({'otp_sent': 'true', 'email': email, 'error_message': 'OTP expired! Please request a new OTP.'})
+                return redirect(f"{reverse('login_and_registration')}?{query_params}")
+
+            # OTP validated successfully, redirect to set new password page
+            return redirect(f"/set-new-password/?token={otp_record.token}")
+
         except OtpValidation.DoesNotExist:
-            return HttpResponse("Invalid email or OTP!", status=400)
+            # Redirect to registration page with 'otp_sent' and 'email' in query params for invalid OTP
+            query_params = urlencode({'otp_sent': 'true', 'email': email, 'error_message': 'Invalid OTP! Please try again.'})
+            return redirect(f"{reverse('login_and_registration')}?{query_params}")
 
-    return HttpResponse("Invalid request method", status=405)
+    # For non-POST requests, redirect to registration page
+    return redirect(reverse('login_and_registration'))
 
 
 
-
-
-
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
-from .models import OtpValidation
 from django.contrib.auth import get_user_model
+from django.views.decorators.csrf import csrf_exempt
+from .models import OtpValidation
+import time
 
-User = get_user_model()  # Reference the custom user model
+
+User = get_user_model()
+
 def set_new_password(request):
     """
     Handles setting a new password for the user.
     """
+
     if request.method == 'GET':
         # Fetch the token from the query parameters
         token = request.GET.get('token')
+        print(f"Token: {token}")
 
         if not token:
-            return HttpResponse("Token is required!", status=400)
+            return render(request, 'error_page.html', {
+                'error_message': 'Token is required!',
+                'additional_message': 'Please ensure you have the correct link.',
+            })
 
-        # Fetch the OTP record using the token
         try:
+            # Fetch the OTP record using the token
             otp_record = OtpValidation.objects.get(token=token)
         except OtpValidation.DoesNotExist:
-            return HttpResponse("Invalid token!", status=400)
+            # Log for debugging
+            print(f"Invalid token: {token}")
+            return render(request, 'error_page.html', {
+                'error_message': 'Invalid token!',
+                'additional_message': 'Please try again later or request a new password reset.',
+            })
+        except Exception as e:
+            # Catch other exceptions and log them
+            print(f"Unexpected error: {e}")
+            return render(request, 'error_page.html', {
+                'error_message': 'An unexpected error occurred!',
+                'additional_message': 'Please try again later or contact support if the issue persists.',
+            })
 
         # Render the password reset form with the email
-        return render(request, 'registration/verification_codes/set_new_password_modal.html', {'email': otp_record.email})
+        return render(request, 'registration/verification_codes/set_new_password_modal.html', {
+            'email': otp_record.email,
+            'token': token,  # Ensure token is passed here
+        })
 
     elif request.method == 'POST':
-        # Handle password update logic
-        email = request.POST.get('email')
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
+        email = request.POST.get('email')
 
-        if not email or not new_password or not confirm_password:
-            return HttpResponse("All fields are required!", status=400)
+        if not new_password or not confirm_password:
+            return JsonResponse({
+                "success": False,
+                "error_message": "All fields are required! Please ensure both passwords are filled in.",
+            })
 
         if new_password != confirm_password:
-            return HttpResponse("Passwords do not match!", status=400)
+            return JsonResponse({
+                "success": False,
+                "error_message": "Passwords do not match! Please ensure both passwords are identical.",
+            })
 
         try:
-            # Update the user's password
             user = User.objects.get(email=email)
             user.set_password(new_password)
             user.save()
 
-            # Clean up OTP records
+            # Clean up OTP records for the user
             OtpValidation.objects.filter(email=email).delete()
 
-            return HttpResponse("Password updated successfully!")
+            # Send JSON response for success to JavaScript
+            return JsonResponse({
+                "success": True,
+                "message": "Password reset successfully! You can now log in with your new password.",
+            })
         except User.DoesNotExist:
-            return HttpResponse("User does not exist!", status=400)
+            return JsonResponse({
+                "success": False,
+                "error_message": "User does not exist! Please check your email and try again.",
+            })
+        except TimeoutError:
+            # Handle specific timeout-related issues
+            print("Timeout error during password reset.")
+            return JsonResponse({
+                "success": False,
+                "error_message": "Request timed out! Please check your network connection and try again.",
+            })
+        except Exception as e:
+            print(f"Unexpected error during password reset: {e}")
+            return JsonResponse({
+                "success": False,
+                "error_message": "An unexpected error occurred! Please try again later or contact support.",
+            })
 
-    return HttpResponse("Invalid request method", status=405)
+    return JsonResponse({"success": False, "error_message": "Invalid request method."}, status=405)

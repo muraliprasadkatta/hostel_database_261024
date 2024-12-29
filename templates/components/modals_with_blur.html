@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reusable Blur Modal</title>
+    <style>
+        /* Blur Effect */
+        .blur {
+            filter: blur(5px); /* Adjust the blur intensity */
+            transition: filter 0.3s ease; /* Smooth transition for blur */
+        }
+
+        /* Modal Overlay */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fff;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        /* Close Button */
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Content -->
+    <div id="main-content">
+        <h1>Reusable Blur Modal</h1>
+        <p>This is the main content of the page. Open the modal to see the blur effect.</p>
+        <button onclick="openModal('example-modal')">Open Example Modal</button>
+        <button onclick="openModal('second-modal')">Open Second Modal</button>
+    </div>
+
+    <!-- Example Modal -->
+    <div id="example-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('example-modal')">&times;</span>
+            <h2>Example Modal</h2>
+            <p>This is an example of a reusable modal with background blur.</p>
+        </div>
+    </div>
+
+    <!-- Second Modal -->
+    <div id="second-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('second-modal')">&times;</span>
+            <h2>Second Modal</h2>
+            <p>This is another example modal using the same reusable blur effect.</p>
+        </div>
+    </div>
+
+    <script>
+        // Open a modal and apply blur to the background
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "flex"; // Show the modal
+            document.getElementById("main-content").classList.add("blur"); // Apply blur to the background
+        }
+
+        // Close a modal and remove blur from the background
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none"; // Hide the modal
+            document.getElementById("main-content").classList.remove("blur"); // Remove blur from the background
+        }
+    </script>
+</body>
+</html>

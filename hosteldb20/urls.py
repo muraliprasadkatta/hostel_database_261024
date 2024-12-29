@@ -83,6 +83,7 @@ urlpatterns = [
 
     path('validate-otp/',views.validate_otp, name='validate_otp'),
 
+    
     path('set-new-password/',views.set_new_password, name='set_new_password'),
 
 

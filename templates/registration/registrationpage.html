@@ -40,9 +40,8 @@
         <link rel="manifest" href="{% static 'manifest.json' %}">
         <link rel="stylesheet" href="{% static 'css/registration/registartionpage.css' %}">
 
-
-
     </head>
+
     <body>
         
         <!-- <button id="installButton" style="display: none;">Install App</button> -->
@@ -119,23 +118,14 @@
                             {% csrf_token %}
                             <h1>Register</h1>
 
-                            <div class="messages">
-                                {% for message in messages %}
-                                    {% if 'signup_error' in message.tags %}
-                                        <div class="{{ message.tags }}" style="color: red;">
-                                            {{ message }}
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                
+
                             
                             <input type="text" name="username" placeholder="Username" id="username" required oninput="removeSpaces(this)" hx-post="{% url 'check_username' %}" hx-target="#username-check" hx-trigger="change" value="{{ username|default:'' }}">
-                            <div id="username-check"></div>
+                            <div id="username-check" class="live-error-message"></div>
                         
                             
                             <input type="text" name="email_or_mobile" id="email_or_mobile" placeholder="Email or Mobile" required value="{{ email|default_if_none:'' }}{{ mobile|default_if_none:'' }}">
-                            <div id="data-check"></div>
+                            <div id="data-check" class="live-error-message" ></div>
                             
                             <input type="hidden" name="email" id="email" value="{{ email|default:'' }}">
                             <input type="hidden" name="mobile" id="mobile" value="{{ mobile|default:'' }}" minlength="10">
@@ -173,7 +163,12 @@
 
         {% include 'registration/verification_codes/send_otp_modal.html' %}
 
+        {% include 'registration/verification_codes/otp_user_validation_modal.html' %}
 
+        
+
+
+<!-- This script is used to maintain the both otp error and invalid user value modal validation -->        
 
     <!-- Install App Button -->
     <!-- <button id="installButton" style="display: none;">Install App</button> -->
