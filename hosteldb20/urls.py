@@ -78,13 +78,14 @@ urlpatterns = [
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('redirectpage', views.redirectpage, name='redirectpage'),
 
-
+    # This is forgot passwod otp
     path('send-otp/', views.send_otp, name='send_otp'),
 
     path('validate-otp/',views.validate_otp, name='validate_otp'),
 
     
     path('set-new-password/',views.set_new_password, name='set_new_password'),
+
 
 
 

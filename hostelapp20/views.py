@@ -65,91 +65,63 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
 @never_cache
-def login_and_registration(request):
-    show_signup = request.GET.get('show_signup', 'false')  # Default to 'false' to show the login form
 
-    if request.session.get('first_visit', True):
-        request.session['first_visit'] = False
-        context = {
-            'show_signup': 'true',  # Show the registration form by default on the first visit
-            'username': '',
-            'email': '',
-            'mobile': '',
-            'password': '',
-            'confirmPassword': ''
-        }
-    else:
-        context = {
-            'show_signup': show_signup,  # Use the query parameter to decide which form to show
-            'username': '',
-            'email': '',
-            'mobile': '',
-            'password': '',
-            'confirmPassword': ''
-        }
+
+@never_cache
+def login_and_registration(request):
+    # Determine whether to show the signup or login form
+    show_signup = request.GET.get('show_signup', 'false')  # Default to 'false'
+
+    # Default context to clear fields on GET requests
+    context = {
+        'show_signup': show_signup,
+        'username': '',
+        'email': '',
+        'mobile': '',
+        'password': '',
+        'confirmPassword': ''
+    }
 
     if request.method == 'POST':
+        # Handle Login
         if 'login' in request.POST:
             identifier = request.POST.get('identifier')
             password = request.POST.get('password')
             user, username = None, None
 
-            # Normalize mobile number if it's a digit
+            # Normalize and determine identifier type
             if identifier.isdigit():
                 identifier = normalize_mobile_number(identifier)
-
-            # Determine if identifier is email or mobile number or username
             if '@' in identifier:
-                try:
-                    user = get_user_model().objects.get(email=identifier)
-                    username = user.username
-                except get_user_model().DoesNotExist:
-                    messages.error(request, 'Invalid email or password.', extra_tags='login_error')
+                user = get_user_model().objects.filter(email=identifier).first()
             elif identifier.isdigit():
-                try:
-                    user = get_user_model().objects.get(mobile_number=identifier)
-                    username = user.username
-                except get_user_model().DoesNotExist:
-                    messages.error(request, 'Invalid mobile number or password.', extra_tags='login_error')
+                user = get_user_model().objects.filter(mobile_number=identifier).first()
             else:
-                try:
-                    user = get_user_model().objects.get(username=identifier)
-                    username = user.username
-                except get_user_model().DoesNotExist:
-                    messages.error(request, 'Invalid username or password.', extra_tags='login_error')
+                user = get_user_model().objects.filter(username=identifier).first()
 
-            if username:
-                user = authenticate(request, username=username, password=password)
+            if user:
+                user = authenticate(request, username=user.username, password=password)
                 if user:
                     django_login(request, user)
                     return redirect('dashboard')
                 else:
-                    # Add logic to handle incorrect password
-                    try:
-                        existing_user = get_user_model().objects.get(username=username)
-                        messages.error(request, 'Incorrect password. Please try again.', extra_tags='login_error')
-                    except get_user_model().DoesNotExist:
-                        messages.error(request, 'Invalid login credentials.', extra_tags='login_error')
-
-            if not user:
-                return render(request, 'registration/registrationpage.html')
-
-        elif 'signup' in request.POST:
-            context['show_signup'] = 'false'  # Ensure the signup form remains visible after form submission
-
-            username = request.POST.get('username')
-            email = request.POST.get('email').strip() if request.POST.get('email').strip() else None
-            mobile = request.POST.get('mobile').strip() if request.POST.get('mobile').strip() else None
-            password = request.POST.get('password')
-            confirm_password = request.POST.get('confirmPassword')
-
-            # Ensure email field is reset correctly to avoid concatenation
-            if email:
-                context['email'] = email
+                    messages.error(request, 'Incorrect password. Please try again.', extra_tags='login_error')
             else:
-                context['email'] = ''
+                messages.error(request, 'User not found.', extra_tags='login_error')
 
-            # Update context with the received values to repopulate the form
+            # Return login page with error messages
+            return render(request, 'registration/registrationpage.html', context)
+
+        # Handle Signup
+        elif 'signup' in request.POST:
+            # Get form data
+            username = request.POST.get('username', '').strip()
+            email = request.POST.get('email', '').strip()
+            mobile = request.POST.get('mobile', '').strip()
+            password = request.POST.get('password', '')
+            confirm_password = request.POST.get('confirmPassword', '')
+
+            # Update context to preserve data for invalid cases
             context.update({
                 'username': username,
                 'email': email,
@@ -158,7 +130,7 @@ def login_and_registration(request):
                 'confirmPassword': confirm_password
             })
 
-            # Check if passwords match
+            # Check password match
             if password != confirm_password:
                 messages.error(request, 'Passwords do not match.', extra_tags='signup_error')
                 return render(request, 'registration/registrationpage.html', context)
@@ -168,40 +140,37 @@ def login_and_registration(request):
             email_exists = get_user_model().objects.filter(email=email).exists() if email else False
             mobile_exists = get_user_model().objects.filter(mobile_number=mobile).exists() if mobile else False
 
-            if username_exists:
-                if email_exists and mobile_exists:
-                    messages.error(request, 'This username, email, and mobile are already in use.', extra_tags='signup_error')
-                elif email_exists:
-                    messages.error(request, 'This username and email are already in use.', extra_tags='signup_error')
-                elif mobile_exists:
-                    messages.error(request, 'This username and mobile are already in use.', extra_tags='signup_error')
-                else:
+            # Handle validation errors
+            if username_exists or email_exists or mobile_exists:
+                if username_exists:
                     messages.error(request, 'This username is already in use.', extra_tags='signup_error')
-                return render(request, 'registration/registrationpage.html', context)
-
-            elif email_exists:
+                    context['username'] = ''  # Clear username if invalid
+                if email_exists:
+                    messages.error(request, 'This email is already in use.', extra_tags='signup_error')
+                    context['email'] = ''  # Clear email if invalid
                 if mobile_exists:
-                    messages.error(request, 'This email and mobile are already in use. Please log in.', extra_tags='signup_error')
-                else:
-                    messages.error(request, 'This email is already in use. Please log in.', extra_tags='signup_error')
+                    messages.error(request, 'This mobile number is already in use.', extra_tags='signup_error')
+                    context['mobile'] = ''  # Clear mobile if invalid
 
                 return render(request, 'registration/registrationpage.html', context)
 
-            elif mobile_exists:
-                messages.error(request, 'This mobile number is already in use. Please log in.', extra_tags='signup_error')
-
-                return render(request, 'registration/registrationpage.html', context)
-
-            # Create new user if no conflicts
-            user = get_user_model().objects.create_user(username=username, email=email, mobile_number=mobile, password=password)
+            # Create a new user
+            user = get_user_model().objects.create_user(
+                username=username, email=email, mobile_number=mobile, password=password
+            )
             user.backend = 'django.contrib.auth.backends.ModelBackend'
-            django_login(request, user, backend=user.backend)
+            django_login(request, user)
             return redirect('dashboard')
 
-    # Automatically redirect to the dashboard if the user is already logged in
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    return render(request, 'registration/registrationpage.html', context)
+    # For GET requests, reset the form context to empty
+    return render(request, 'registration/registrationpage.html', {
+        'show_signup': show_signup,
+        'username': '',
+        'email': '',
+        'mobile': '',
+        'password': '',
+        'confirmPassword': ''
+    })
 
 
 
@@ -1202,16 +1171,16 @@ import time
 
 User = get_user_model()
 
+
+from hostelapp20.forgot_password_helpers.email_helper import send_password_reset_confirmation_email
+
+
 def set_new_password(request):
     """
     Handles setting a new password for the user.
     """
-
     if request.method == 'GET':
-        # Fetch the token from the query parameters
         token = request.GET.get('token')
-        print(f"Token: {token}")
-
         if not token:
             return render(request, 'error_page.html', {
                 'error_message': 'Token is required!',
@@ -1219,27 +1188,22 @@ def set_new_password(request):
             })
 
         try:
-            # Fetch the OTP record using the token
             otp_record = OtpValidation.objects.get(token=token)
         except OtpValidation.DoesNotExist:
-            # Log for debugging
-            print(f"Invalid token: {token}")
             return render(request, 'error_page.html', {
                 'error_message': 'Invalid token!',
                 'additional_message': 'Please try again later or request a new password reset.',
             })
         except Exception as e:
-            # Catch other exceptions and log them
             print(f"Unexpected error: {e}")
             return render(request, 'error_page.html', {
                 'error_message': 'An unexpected error occurred!',
                 'additional_message': 'Please try again later or contact support if the issue persists.',
             })
 
-        # Render the password reset form with the email
         return render(request, 'registration/verification_codes/set_new_password_modal.html', {
             'email': otp_record.email,
-            'token': token,  # Ensure token is passed here
+            'token': token,
         })
 
     elif request.method == 'POST':
@@ -1264,10 +1228,14 @@ def set_new_password(request):
             user.set_password(new_password)
             user.save()
 
-            # Clean up OTP records for the user
+            # Delete OTP record
             OtpValidation.objects.filter(email=email).delete()
 
-            # Send JSON response for success to JavaScript
+            # Send confirmation email
+            email_response = send_password_reset_confirmation_email(email)
+            if not email_response["success"]:
+                print(f"Failed to send confirmation email: {email_response['error']}")
+
             return JsonResponse({
                 "success": True,
                 "message": "Password reset successfully! You can now log in with your new password.",
@@ -1276,13 +1244,6 @@ def set_new_password(request):
             return JsonResponse({
                 "success": False,
                 "error_message": "User does not exist! Please check your email and try again.",
-            })
-        except TimeoutError:
-            # Handle specific timeout-related issues
-            print("Timeout error during password reset.")
-            return JsonResponse({
-                "success": False,
-                "error_message": "Request timed out! Please check your network connection and try again.",
             })
         except Exception as e:
             print(f"Unexpected error during password reset: {e}")

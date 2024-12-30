@@ -234,7 +234,7 @@ class History(models.Model):
         return f"{self.tenant.name} - {self.amount_paid}"
 
 
-
+# This validation is forgot passwod validation
 from django.db import models
 from django.utils.timezone import now
 
@@ -255,7 +255,7 @@ class OtpValidation(models.Model):
         return now() - self.created_at <= timedelta(minutes=10)
 
 
-
+# This is also forgot password validation
 class ChangedPassword(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     forget_password_token = models.CharField(max_length=100, blank=True, null=True)
