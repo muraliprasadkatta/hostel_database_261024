@@ -158,6 +158,23 @@ button:disabled {
     color: red;
 }
 
+.login_error {
+    font-size: 12px; /* Adjust font size as needed */
+    color: red; /* Customize color */
+    margin: 5px 0; /* Optional: add spacing */
+    text-align: left; /* Align text to the left */
+
+}
+
+
+.live-error-message {
+    color: red; /* Error message color */
+    font-size: 12px; /* Consistent font size */
+    margin-top: 0px; /* Space between the input field and the message */
+    text-align: left; /* Align text to the left */
+
+}
+
 .button-link {
     text-decoration: none;
 }

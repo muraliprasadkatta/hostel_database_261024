@@ -41,6 +41,9 @@
         <link rel="stylesheet" href="{% static 'css/registration/registartionpage.css' %}">
 
     </head>
+    <style>
+
+    </style>
 
     <body>
         
@@ -120,7 +123,8 @@
 
 
                             
-                            <input type="text" name="username" placeholder="Username" id="username" required oninput="removeSpaces(this)" hx-post="{% url 'check_username' %}" hx-target="#username-check" hx-trigger="change" value="{{ username|default:'' }}">
+                            <input type="text" name="username" placeholder="Username" id="username" required     oninput="removeSpaces(this); this.value = this.value.toLowerCase();" 
+                            hx-post="{% url 'check_username' %}" hx-target="#username-check" hx-trigger="change" value="{{ username|default:'' }}">
                             <div id="username-check" class="live-error-message"></div>
                         
                             
@@ -371,72 +375,69 @@
     <!-- htmx for email and mobile fields auto taken email or mobile field  and disable the submit button whengettingany error-->
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var inputField = document.getElementById('email_or_mobile');
-        var emailField = document.getElementById('email');
-        var mobileField = document.getElementById('mobile');
-        var submitButton = document.getElementById('submit-btn');
-
-        function validateInput() {
-            var input = inputField.value.trim();
-            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex pattern
-            var mobilePattern = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/; // Mobile number validation pattern
-
-            // Reset hidden fields
-            emailField.value = '';
-            mobileField.value = '';
-            submitButton.disabled = true; // Disable submit button by default
-
-            // Check if the input is an email
-            if (emailPattern.test(input)) {
-                emailField.value = input;
-                document.getElementById('data-check').innerHTML = '';
-                checkField('email', "{% url 'check_email' %}", 'data-check');
-            } 
-            // Check if the input is a mobile number
-            else if (mobilePattern.test(input)) {
-                var cleanedMobile = input.replace(/^\+91[\-\s]?/, '').replace(/^0/, ''); // Clean the mobile number
-                if(cleanedMobile.length === 10) {
-                    mobileField.value = cleanedMobile;
-                    document.getElementById('data-check').innerHTML = '';
-                    checkField('mobile', "{% url 'check_mobile' %}", 'data-check');
-                } else {
-                    document.getElementById('data-check').innerHTML = '<div style="color: red;">Please enter a valid 10-digit mobile number.</div>';
-                    submitButton.disabled = true;
-                }
-            } else {
-                // If input is invalid, show error message
-                if(input.length > 0) {
-                    document.getElementById('data-check').innerHTML = '<div style="color: red;">Please enter a valid Gmail address or 10-digit mobile number.</div>';
-                    submitButton.disabled = true;
-                }
-            }
-        }
-
-        inputField.addEventListener('input', validateInput);
-
-        function checkField(fieldId, checkUrl, outputDiv) {
-            var value = document.getElementById(fieldId).value;
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', checkUrl, true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-            xhr.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById(outputDiv).innerHTML = this.responseText;
-                    if (this.responseText.trim() !== '') {
-                        submitButton.disabled = true; // Disable submit button if server returns an error
+        document.addEventListener('DOMContentLoaded', function() {
+            var inputField = document.getElementById('email_or_mobile');
+            var emailField = document.getElementById('email');
+            var mobileField = document.getElementById('mobile');
+            var submitButton = document.getElementById('submit-btn');
+        
+            function validateInput() {
+                var input = inputField.value.trim();
+                var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex pattern
+                var mobilePattern = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/; // Mobile number validation pattern
+        
+                // Reset hidden fields
+                emailField.value = '';
+                mobileField.value = '';
+                submitButton.disabled = true; // Disable submit button by default
+                document.getElementById('data-check').innerHTML = ''; // Clear any existing error messages
+        
+                if (input.length > 0) {
+                    // Check if the input is an email
+                    if (emailPattern.test(input)) {
+                        emailField.value = input;
+                        checkField('email', "{% url 'check_email' %}", 'data-check');
+                    } 
+                    // Check if the input is a mobile number
+                    else if (mobilePattern.test(input)) {
+                        var cleanedMobile = input.replace(/^\+91[\-\s]?/, '').replace(/^0/, ''); // Clean the mobile number
+                        if (cleanedMobile.length === 10) {
+                            mobileField.value = cleanedMobile;
+                            checkField('mobile', "{% url 'check_mobile' %}", 'data-check');
+                        } else {
+                            document.getElementById('data-check').innerHTML = '<div style="color: red;">Please enter a valid 10-digit mobile number.</div>';
+                        }
                     } else {
-                        submitButton.disabled = false; // Enable submit button if server returns no error
+                        // If input is invalid
+                        document.getElementById('data-check').innerHTML = '<div style="color: red;">Please enter a valid Gmail address or 10-digit mobile number.</div>';
                     }
                 }
-            };
-            xhr.send(fieldId + '=' + encodeURIComponent(value));
-        }
-    });
-    </script>
-
-    
+            }
+        
+            function checkField(fieldId, checkUrl, outputDiv) {
+                var value = document.getElementById(fieldId).value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', checkUrl, true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                xhr.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById(outputDiv).innerHTML = this.responseText;
+                        if (this.responseText.trim() !== '') {
+                            submitButton.disabled = true; // Disable submit button if server returns an error
+                        } else {
+                            submitButton.disabled = false; // Enable submit button if server returns no error
+                        }
+                    }
+                };
+                xhr.send(fieldId + '=' + encodeURIComponent(value));
+            }
+        
+            // Trigger validation only on blur event
+            inputField.addEventListener('blur', validateInput);
+        });
+        </script>
+        
     <!-- ---------------------------------------------------- -->
 
 
