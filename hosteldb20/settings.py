@@ -355,4 +355,3 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ztjh fdxk rytu vnef
 # Add logging
 
-

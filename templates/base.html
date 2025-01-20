@@ -163,54 +163,59 @@
     const propertyId = searchBox.getAttribute('data-property-id'); // Get the property ID from the input attribute
     let currentIndex = -1; // To handle arrow navigation
     let lastEnteredValue = ''; // Track the last manually entered value
+    let debounceTimeout; // Timeout for debouncing
 
-    // Handle input in the search box
+    // Handle input in the search box with debounce
     searchBox.addEventListener('input', function () {
       const query = searchBox.value.trim();
       lastEnteredValue = query; // Store the manually entered value
 
-      if (query.length > 0) {
-        fetch(`/search-suggestions/?q=${encodeURIComponent(query)}&property_id=${propertyId}`)
-          .then((response) => response.json())
-          .then((data) => {
-            searchResults.innerHTML = ''; // Clear previous results
-            searchResults.style.display = 'block'; // Show dropdown
-            currentIndex = -1; // Reset current index
+      // Clear previous debounce timeout
+      clearTimeout(debounceTimeout);
 
-            if (data.results && data.results.length > 0) {
-              data.results.forEach((item, index) => {
-                const suggestion = document.createElement('div');
-                suggestion.textContent = item.name; // Display name from the API
-                suggestion.classList.add('suggestion-item'); // Add class for styling
-                suggestion.setAttribute('data-index', index); // Set index for navigation
-                suggestion.addEventListener('mouseenter', function () {
-                  highlightItem(searchResults.querySelectorAll('.suggestion-item'), index);
+      // Set a new debounce timeout
+      debounceTimeout = setTimeout(() => {
+        if (query.length > 0) {
+          fetch(`/search-suggestions/?q=${encodeURIComponent(query)}&property_id=${propertyId}`)
+            .then((response) => response.json())
+            .then((data) => {
+              searchResults.innerHTML = ''; // Clear previous results
+              searchResults.style.display = 'block'; // Show dropdown
+              currentIndex = -1; // Reset current index
+
+              if (data.results && data.results.length > 0) {
+                data.results.forEach((item, index) => {
+                  const suggestion = document.createElement('div');
+                  suggestion.textContent = item.name; // Display name from the API
+                  suggestion.classList.add('suggestion-item'); // Add class for styling
+                  suggestion.setAttribute('data-index', index); // Set index for navigation
+                  suggestion.addEventListener('mouseenter', function () {
+                    // No auto-fill on mouse hover
+                    highlightItem(searchResults.querySelectorAll('.suggestion-item'), index, false);
+                  });
+                  suggestion.addEventListener('click', function () {
+                    searchBox.value = item.name; // Fill input with selected suggestion
+                    searchResults.style.display = 'none'; // Hide dropdown
+                    // Redirect or handle selected item
+                    window.location.href = `/details/${item.id}`;
+                  });
+                  searchResults.appendChild(suggestion);
                 });
-                suggestion.addEventListener('mouseleave', function () {
-                  searchBox.value = lastEnteredValue; // Reset to the last entered value on mouse leave
-                });
-                suggestion.addEventListener('click', function () {
-                  searchBox.value = item.name; // Fill input with selected suggestion
-                  searchResults.style.display = 'none'; // Hide dropdown
-                  // Redirect or handle selected item
-                  window.location.href = `/details/${item.id}`;
-                });
-                searchResults.appendChild(suggestion);
-              });
-            } else {
-              const noResults = document.createElement('div');
-              noResults.textContent = 'No results found';
-              noResults.classList.add('no-results');
-              searchResults.appendChild(noResults);
-            }
-          })
-          .catch((error) => {
-            console.error('Error fetching search suggestions:', error);
-          });
-      } else {
-        searchResults.innerHTML = ''; // Clear any existing results
-        searchResults.style.display = 'none'; // Hide dropdown
-      }
+              } else {
+                const noResults = document.createElement('div');
+                noResults.textContent = 'No results found';
+                noResults.classList.add('no-results');
+                searchResults.appendChild(noResults);
+              }
+            })
+            .catch((error) => {
+              console.error('Error fetching search suggestions:', error);
+            });
+        } else {
+          searchResults.innerHTML = ''; // Clear any existing results
+          searchResults.style.display = 'none'; // Hide dropdown
+        }
+      }, 300); // Adjust debounce delay (in milliseconds) as needed
     });
 
     // Handle keyboard navigation
@@ -220,11 +225,11 @@
         if (event.key === 'ArrowDown') {
           event.preventDefault(); // Prevent cursor movement
           currentIndex = (currentIndex + 1) % items.length; // Move to the next item
-          highlightItem(items, currentIndex);
+          highlightItem(items, currentIndex, true);
         } else if (event.key === 'ArrowUp') {
           event.preventDefault(); // Prevent cursor movement
           currentIndex = (currentIndex - 1 + items.length) % items.length; // Move to the previous item
-          highlightItem(items, currentIndex);
+          highlightItem(items, currentIndex, true);
         } else if (event.key === 'Enter') {
           event.preventDefault(); // Prevent form submission
           if (currentIndex >= 0 && items[currentIndex]) {
@@ -235,12 +240,14 @@
     });
 
     // Highlight suggestion item
-    function highlightItem(items, index) {
+    function highlightItem(items, index, updateInput) {
       items.forEach((item, i) => {
         if (i === index) {
           item.classList.add('highlight'); // Add highlight class
           item.scrollIntoView({ block: 'nearest' }); // Ensure visibility
-          searchBox.value = item.textContent; // Update search box with the highlighted item's text
+          if (updateInput) {
+            searchBox.value = item.textContent; // Update search box with the highlighted item's text (for arrow keys only)
+          }
         } else {
           item.classList.remove('highlight'); // Remove highlight class
         }
