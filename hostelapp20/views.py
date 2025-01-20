@@ -64,11 +64,15 @@ from django.contrib.auth import authenticate, login as django_login, get_user_mo
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
-@never_cache
+
 
 
 @never_cache
 def login_and_registration(request):
+    # Redirect authenticated users to the dashboard
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
     # Determine whether to show the signup or login form
     show_signup = request.GET.get('show_signup', 'false')  # Default to 'false'
 
@@ -171,7 +175,6 @@ def login_and_registration(request):
         'password': '',
         'confirmPassword': ''
     })
-
 
 
 from django.http import JsonResponse
