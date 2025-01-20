@@ -1,12 +1,16 @@
+body {
+    background-color: #fff !important; /* Ensure the entire page background is white */
+}
     .dispaly-beds-conatiner {
         margin-top: 5%;
         padding: 10px;
         box-sizing: border-box;
         height: 100%;
         transition: margin-left 0.3s ease; /* Add transition */
-        /* background-color: white !important; */
+        background-color: white !important;
 
 }
+
 
         /* display: none; */
     .header {
@@ -138,7 +142,6 @@
 
     .add-tenant-button:disabled {
         cursor: not-allowed;
-        background-color: #d3d3d3; /* Dim color */
         border: 1px solid #a9a9a9; /* Dim border */
         color: #a9a9a9; /* Dim text color */
     }
@@ -204,4 +207,3 @@
             width: 300px;
         }
     }
-

@@ -183,7 +183,7 @@
 
   }
 
-  .property-item.active .property-name {
+.property-item.active .property-name {
   color: white;  /* Text color white when active */
 }
   .property-item.disabled {
@@ -223,7 +223,7 @@
   }
 
   .header {
-    background-color: #f7f7f7;
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
