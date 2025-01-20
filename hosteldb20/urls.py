@@ -87,6 +87,10 @@ urlpatterns = [
     path('set-new-password/',views.set_new_password, name='set_new_password'),
 
 
+    path('search/',views. search_view, name='search_view'),
+
+    path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
+
 
 
         # API URLs

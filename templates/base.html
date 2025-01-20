@@ -25,16 +25,7 @@
   <!-- for (manifest.json)  -->
   <link rel="manifest" href="{% static 'manifest.json' %}">
 
-
-
 </head>
-<style>
-  .blur {
-    filter: blur(5px); /* Adjust blur level as needed */
-    transition: filter 0.1s ease;
-}
-
-</style>
 
 <body>
   <!-- Sidebar for properties -->
@@ -114,10 +105,27 @@
     </div>
 
     <!-- Search Section -->
-    <div class="search-container header-search">
+     
+    <!-- <div class="search-container header-search">
       <input type="text" placeholder="Search..." class="search-box" id="search-header">
       <i class="fa fa-search search-icon header-icon"></i>
+    </div> -->
+
+
+    <div class="search-container header-search">
+      <input
+          type="text"
+          placeholder="Search by Name..."
+          class="search-box"
+          id="search-header"
+          autocomplete="off"
+          data-property-id="{{ selected_property.id }}"
+      />
+      <i class="fa fa-search search-icon header-icon"></i>
+      <div class="search-dropdown" id="search-results"></div>
     </div>
+  
+  
 
     <!-- Dropdown and Navigation -->
     <div class="rightOption-icon">
@@ -146,6 +154,101 @@
   {% block paymentTemplate %}{% endblock %}
   {% block content %}{% endblock %}
 
+<!-- for search box in all template  -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchBox = document.getElementById('search-header');
+    const searchResults = document.getElementById('search-results');
+    const propertyId = searchBox.getAttribute('data-property-id'); // Get the property ID from the input attribute
+    let currentIndex = -1; // To handle arrow navigation
+
+    // Handle input in the search box
+    searchBox.addEventListener('input', function () {
+      const query = searchBox.value.trim();
+
+      if (query.length > 0) {
+        fetch(`/search-suggestions/?q=${encodeURIComponent(query)}&property_id=${propertyId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            searchResults.innerHTML = ''; // Clear previous results
+            searchResults.style.display = 'block'; // Show dropdown
+            currentIndex = -1; // Reset current index
+
+            if (data.results && data.results.length > 0) {
+              data.results.forEach((item, index) => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = item.name; // Display name from the API
+                suggestion.classList.add('suggestion-item'); // Add class for styling
+                suggestion.setAttribute('data-index', index); // Set index for navigation
+                suggestion.addEventListener('click', function () {
+                  searchBox.value = item.name; // Fill input with selected suggestion
+                  searchResults.style.display = 'none'; // Hide dropdown
+                  // Redirect or handle selected item
+                  window.location.href = `/details/${item.id}`;
+                });
+                searchResults.appendChild(suggestion);
+              });
+            } else {
+              const noResults = document.createElement('div');
+              noResults.textContent = 'No results found';
+              noResults.classList.add('no-results');
+              searchResults.appendChild(noResults);
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching search suggestions:', error);
+          });
+      } else {
+        searchResults.style.display = 'none'; // Hide dropdown
+      }
+    });
+
+    // Handle keyboard navigation
+    searchBox.addEventListener('keydown', function (event) {
+      const items = searchResults.querySelectorAll('.suggestion-item');
+      if (items.length > 0) {
+        if (event.key === 'ArrowDown') {
+          event.preventDefault(); // Prevent cursor movement
+          currentIndex = (currentIndex + 1) % items.length; // Move to the next item
+          highlightItem(items, currentIndex);
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault(); // Prevent cursor movement
+          currentIndex = (currentIndex - 1 + items.length) % items.length; // Move to the previous item
+          highlightItem(items, currentIndex);
+        } else if (event.key === 'Enter') {
+          event.preventDefault(); // Prevent form submission
+          if (currentIndex >= 0 && items[currentIndex]) {
+            items[currentIndex].click(); // Trigger click on the highlighted item
+          }
+        }
+      }
+    });
+
+    // Highlight suggestion item
+    function highlightItem(items, index) {
+      items.forEach((item, i) => {
+        if (i === index) {
+          item.classList.add('highlight'); // Add highlight class
+          item.scrollIntoView({ block: 'nearest' }); // Ensure visibility
+          searchBox.value = item.textContent; // Update search box with the highlighted item's text
+        } else {
+          item.classList.remove('highlight'); // Remove highlight class
+        }
+      });
+    }
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+      if (!searchBox.contains(event.target) && !searchResults.contains(event.target)) {
+        searchResults.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+
+  
 <script>
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();

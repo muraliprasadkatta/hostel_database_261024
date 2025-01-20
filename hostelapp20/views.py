@@ -505,6 +505,64 @@ def DisplayRooms(request, property_id):
     return render(request, 'data/display_rooms.html', context)
 
 
+
+# search suggestion in search box
+
+from django.http import JsonResponse
+from .models import Tenant  # Adjust based on your model
+
+def search_suggestions(request):
+    query = request.GET.get('q', '').strip()
+    property_id = request.GET.get('property_id')
+
+    if query and property_id:
+        tenants = Tenant.objects.filter(
+            property_id=property_id, name__icontains=query
+        ).values('id', 'name')
+    else:
+        tenants = []
+
+    return JsonResponse({'results': list(tenants)})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+from django.shortcuts import render
+from hostelapp20.models import Tenant
+
+
+def search_view(request):
+    query = request.GET.get('q', '').strip()  # Get the search query
+    results = []  # Initialize results as an empty list
+
+    if query:  # If a search query is provided
+        results = Tenant.objects.filter(
+            name__icontains=query  # Search for tenants with matching names (case-insensitive)
+        )
+
+    context = {
+        'query': query,
+        'results': results,  # Pass the filtered results to the template
+    }
+
+    return render(request, 'search_results.html', context)
+
+
+
+
 from cloudinary.uploader import upload  # Ensure this import if not already
 
 def AddTenants(request, property_id, room_number, tenant_id=None):
