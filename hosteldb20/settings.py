@@ -85,7 +85,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # Load allowed hosts from environment variable
 
 
-
 # this line use for both local and production
 
 # ------------------------------------------------------
