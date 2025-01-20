@@ -208,6 +208,7 @@
             console.error('Error fetching search suggestions:', error);
           });
       } else {
+        searchResults.innerHTML = ''; // Clear any existing results
         searchResults.style.display = 'none'; // Hide dropdown
       }
     });
