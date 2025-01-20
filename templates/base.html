@@ -162,10 +162,12 @@
     const searchResults = document.getElementById('search-results');
     const propertyId = searchBox.getAttribute('data-property-id'); // Get the property ID from the input attribute
     let currentIndex = -1; // To handle arrow navigation
+    let lastEnteredValue = ''; // Track the last manually entered value
 
     // Handle input in the search box
     searchBox.addEventListener('input', function () {
       const query = searchBox.value.trim();
+      lastEnteredValue = query; // Store the manually entered value
 
       if (query.length > 0) {
         fetch(`/search-suggestions/?q=${encodeURIComponent(query)}&property_id=${propertyId}`)
@@ -181,6 +183,12 @@
                 suggestion.textContent = item.name; // Display name from the API
                 suggestion.classList.add('suggestion-item'); // Add class for styling
                 suggestion.setAttribute('data-index', index); // Set index for navigation
+                suggestion.addEventListener('mouseenter', function () {
+                  highlightItem(searchResults.querySelectorAll('.suggestion-item'), index);
+                });
+                suggestion.addEventListener('mouseleave', function () {
+                  searchBox.value = lastEnteredValue; // Reset to the last entered value on mouse leave
+                });
                 suggestion.addEventListener('click', function () {
                   searchBox.value = item.name; // Fill input with selected suggestion
                   searchResults.style.display = 'none'; // Hide dropdown
@@ -242,11 +250,11 @@
     document.addEventListener('click', function (event) {
       if (!searchBox.contains(event.target) && !searchResults.contains(event.target)) {
         searchResults.style.display = 'none';
+        searchBox.value = lastEnteredValue; // Reset to the last manually entered value
       }
     });
   });
 </script>
-
 
   
 <script>
