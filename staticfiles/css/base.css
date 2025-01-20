@@ -248,7 +248,10 @@
     justify-content: center;
     background: transparent;
     margin: 0px 20px;
+    position: relative; /* Ensures the dropdown aligns with the search box */
+
   }
+
 
   .header-search .search-box {
     flex-grow: 1;
@@ -259,8 +262,8 @@
     border-radius: 20px 0 0 20px;
     outline: none;
     color: black;
-    padding: 8px 8px 8px 8px;
-  }
+    padding: 8px 8px 8px 20px; /* Adjust left padding here */
+}
 
   .header-search .search-icon {
     padding: 8px;
@@ -273,6 +276,64 @@
     border-bottom: 2px solid hsl(0, 0%, 80%);
     border-radius: 0 20px 20px 0;
   }
+
+  /* Placeholder styles */
+  .header-search .search-box::placeholder {
+    color: gray; /* Placeholder text color */
+    padding-left: 0px; /* Add padding to the left */
+    padding-right: 8px; /* Add padding to the right if needed */
+  }
+
+  
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 5px); /* Adjust the space between the search box and dropdown */
+  left: 0;
+  right: 0;
+  width: 100%; /* Match the width of the search box */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none; /* Initially hidden */
+  font-size: 15px;
+}
+
+
+.search-dropdown div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-dropdown div:hover {
+  background-color: #f0f0f0;
+}
+
+.blur {
+  filter: blur(5px); /* Adjust blur level as needed */
+  transition: filter 0.1s ease;
+}
+
+.suggestion-item {
+padding: 8px;
+cursor: pointer;
+border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlight {
+background-color: #f0f0f0;
+color: #333;
+}
+
+.no-results {
+padding: 8px;
+color: #999;
+text-align: center;
+}
 
   .fa-search {
     color: #ccc;
@@ -316,6 +377,10 @@
     cursor: pointer;
   }
 
+  .rightOption-icon {
+    display: none;
+  }
+  
   .dropdown-menu {
     display: none;
     position: absolute;
@@ -442,7 +507,7 @@
     }
 
     .header-search .search-icon {
-      padding: 7px;
+      padding: 8px;
       background: white;
     }
 
