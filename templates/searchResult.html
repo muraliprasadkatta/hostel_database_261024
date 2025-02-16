@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+</head>
+<body>
+
+    <h1>Search Results</h1>
+
+    {% if results %}
+        <h2>Exact Matches</h2>
+        <ul>
+            {% for tenant in results %}
+                <li>
+                    <!-- Link to tenant details -->
+                    <a href="{% url 'TenantDetails' tenant.property_id tenant.room_number tenant.id %}">{{ tenant.name }}</a>
+                    {{ tenant.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No exact results found for "{{ query }}"</p>
+    
+        {% if related_results %}
+            <h2>Related Results</h2>
+            <ul>
+                {% for tenant in related_results %}
+                    <li>
+                        <!-- Link to tenant details -->
+                        <a href="{% url 'TenantDetails' tenant.property_id tenant.room_id tenant.id %}">
+                            {{ tenant.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No related results found either.</p>
+        {% endif %}
+    {% endif %}
+
+</body>
+</html>

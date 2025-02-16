@@ -68,7 +68,6 @@ urlpatterns = [
 
 
     path('TenantDetails/<int:property_id>/<int:room_number>/<int:tenant_id>/', views.TenantDetails, name='TenantDetails'),
-    path('Payments/<int:property_id>/', views.Payments, name='Payments'),
     path('Payments/<int:property_id>/dues/', views.dues_view, name='dues_url'),
     path('Payments/<int:property_id>/remainder/', views.remainder_view, name='remainder_url'),
     path('Payments/<int:property_id>/history/', views.history_view, name='history_url'),
@@ -91,6 +90,7 @@ urlpatterns = [
 
     path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
 
+    path('recent-searches/', views.recent_searches, name='recent_searches'),
 
 
         # API URLs

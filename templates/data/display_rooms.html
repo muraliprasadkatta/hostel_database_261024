@@ -1,20 +1,371 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Display Rooms{% endblock %}
 {% block content %}
+<!-- <link rel="stylesheet" href="{% static 'css/display_rooms_view/display_rooms.css'%}"> -->
 
-<link rel="stylesheet" href="{% static 'css/display_rooms_view/display_room.css' %}">
+<style>
+  
+  /* Add your existing CSS styles here */
+  body.sidebar-open .sidebar {
+    transform: translateX(0);
 
+  }
+
+.header.scrolled {
+  background-color: #333; /* New background color when scrolled */
+  color: #fff; /* Change text color if needed */
+  background: blue;
+}
+
+.header .logo {
+  display: flex;
+  align-items: center;
+  background: blue;
+}
+
+.header .logo img {
+  height: 40px;
+}
+
+.menu-icon {
+  display: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.menu-icon img {
+  width: 30px;
+  height: 30px;
+}
+
+.image-section {
+  margin-top: 50px;
+}
+
+.image-section img {
+  width: 100%;
+  height: 300px;
+}
+
+.statistics {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  background: rgb(252, 235, 253);    
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  border: 10px white solid;
+  color: green;
+}
+
+.statistics .stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.divider {
+  width: 2px;
+  height: 50px; /* Adjust height as needed */
+  background-color: #333;
+  margin: 0 1px; /* Adjust space around the divider as needed */
+}
+
+
+.container-wrapper {
+  display: flex;
+  justify-content: center;
+
+}
+
+.container-display {
+  width: 100%;
+}
+
+.display-room-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  margin: 6px;
+  padding: 15px;
+
+  
+}
+
+  /* Room box link covers the whole box */
+  .room-box-link {
+    display: block;
+    text-decoration: none; /* Remove underline from link */
+    color: inherit; /* Inherit text color */
+    position: relative; /* Ensure proper positioning for child elements */
+  }
+
+.room-box {
+  margin: 5px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 100px;
+  min-height: 130px;
+  text-align: center;
+  position: relative;
+  cursor: pointer; /* Make the room-box clickable */
+  flex: 1 1 800px; /* Adjust as needed to ensure proper spacing */
+  /* background:transparent; */
+  /* background: blue; */
+}
+/* Hover effect for room box */
+.room-box:hover {
+  background-color: #e0e0e0; /* Add hover effect if needed */
+}
+
+.room-number {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 0 40px; /* Add padding to accommodate the icon */
+  color: black;
+} 
+.room-edit-option {
+  position: absolute;
+  right: 10px; /* Adjust this value to position the icon closer or further */
+  top: 50%;
+  transform: translateY(-50%);
+  color: black; /* Adjust text color for better visibility */
+  z-index: 10; /* Ensure it's above the clickable room box */
+  cursor: default; /* Set cursor to default (normal arrow) */
+}
+/* Ensure that the room link is disabled when hovering over the edit option */
+.room-edit-option:hover {
+  pointer-events: auto; /* Enable pointer events for the edit option */
+}
+
+/* Disable pointer events for the room box link when hovering over the edit option */
+.room-edit-option:hover ~ .room-box-link {
+  pointer-events: none;
+}
+
+.room-edit-options-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 11; /* Ensure it is above everything else */
+  background: whitesmoke;
+  /* padding: 2px;
+  width: 80px; */
+}
+
+.room-edit-options-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.room-edit-options-menu ul li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: black;
+  font-size: 15px;
+  padding: 1px;
+  
+}
+
+.room-edit-options-menu ul li img {
+  margin-right: 0px; /* Adjust as needed for spacing */
+  width: 10px; /* Image width */
+  height: 10px; /* Image height */
+
+}
+.room-edit-options-menu ul li:hover {
+  background: #f0f0f0;
+}
+
+.shareNumbers {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.shareNumbers i {
+  margin: 5px;
+}
+.read-more-link {
+  margin-top: 10px;
+  display: block;
+}
+.payments-section {
+  display: none;
+}
+
+.custom-button {
+    flex: 1; /* Equal width for all buttons */
+    text-align: center;
+    border: none;
+    color: black;
+    padding: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    min-width: 80px; /* Minimum size when screen compresses */
+    background: transparent;
+    position: relative;
+    /* border: 1px red solid; */
+    border-radius: 10px;
+    
+}
+
+
+.button-container {
+    display: flex;
+    align-items: center;
+    width: 100%; /* Full width */
+    overflow: hidden;
+    position: relative;
+}
+
+
+.button-container a {
+    flex: 1; /* Equal width for all buttons */
+    display: flex;
+    text-decoration: none;
+}
+
+/* Background color for the selected button */
+.custom-button.active {
+    color: black; /* Text color */
+    border: 2px solid rgb(43, 76, 51); /* Blue border */
+    border-radius: 30px; /* Rounded corners */
+    font-weight: bold;
+    background: linear-gradient(135deg, #ffffff, #FFFFF0); /* Bright white with ivory mix */
+    
+    
+}
+
+
+.container-wrapper {
+  background: rgb(252, 235, 253); 
+  min-height: 50%;
+  }
+
+
+  #occupied-beds {
+    color: red; /* Green color */
+}
+
+/* this button dissable when we reach the 999 room in one hostel  */
+.disabled-button {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  position: relative;
+}
+
+
+
+@media screen and (max-width: 768px) {
+
+.payments-section {
+  margin-top: 65px;  
+  display: block;
+  background: rgb(252, 235, 253);
+  border-bottom: 1px black solid;
+  border-bottom-right-radius:  20px;
+  border-bottom-left-radius:  20px;
+}
+
+.container-wrapper {
+  background: rgb(252, 235, 253); 
+  }
+
+  .image-section {
+    margin-top: 0px;
+  }
+  .image-section img {
+    width: 100%;
+    height: 150px;
+    
+  }
+  .room-box {
+    margin: 10px;
+    padding: 0px;
+  }
+
+.display-room-row {
+  margin: 6px;
+  padding: 5px;
+}
+  .form-row .box {
+    margin: 0px;
+  }
+  .form-row .box input[type="text"] {
+    /* margin-top: 10px; */
+    width: 80px;
+    height: 30px;
+    border: 1px solid black;
+    /* background: red; */
+    text-align: center;
+  }
+  .roomavailable-container {
+    margin: 20px 0px 20px 0px;
+    border: 1px dotted black;
+    padding: 10px 30px;
+  }
+  .select-all-container {
+    margin: 10px 0px 10px 0px;
+  }
+  /* Simple modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+}
+
+
+</style>
 <!-- Payments Section -->
+
 <div class="payments-section">
   <div class="button-container">
-    <a href="{% url 'Payments' property_id=selected_property.id %}">
-      <button id="collection-button" class="custom-button">Collections</button>
-    </a>
-    <button id="dashboard-button" class="custom-button">Dashboard</button>
-    <button id="Requests-button" class="custom-button">Requests</button>
-    <span></span>
+    <a href="#"><button id="collection-button" class="custom-button" onclick="moveIndicator(this)">Collections</button></a>
+    <a href="#"><button id="dashboard-button" class="custom-button active" onclick="moveIndicator(this)">Dashboard</button></a>
+    <a href="#"><button id="Requests-button" class="custom-button" onclick="moveIndicator(this)">Requests</button></a>
+    <span id="indicator"></span>
   </div>
 </div>
 
@@ -22,28 +373,38 @@
   <img src="{% static 'images/displayrooms/hostel_peoples.jpg' %}" alt="Background Image" style="width: 100%;">
 </div>
 
-<div class="statistics">
-  <div class="stat-item">
-    <div>Total Rooms</div>
-    <div>{{ total_rooms }}</div>
-  </div>
-  <div class="divider"></div>
-  <div class="stat-item">
-    <div>Occupied Beds</div>
-    <div>{{ occupied_beds }}</div>
-  </div>
-  <div class="divider"></div>
-  <div class="stat-item">
-    <div>Free Beds</div>
-    <div>{{ free_beds }}</div>
-  </div>
-</div>
 
 <div class="addRoom">
-  <button id="add-room-button">Add Rooms</button>
+  <button id="add-room-button" {% if total_rooms >= 999 %}disabled="disabled" class="disabled-button"{% endif %}>
+    {% if total_rooms >= 999   %}
+      Only less than 999 rooms allowed
+    {% else %}
+      Add Rooms
+    {% endif %}
+  </button>
   <div class="admin-row"></div>
   {% include 'includes/error_messages.html' %}
 </div>
+
+
+
+<div class="statistics">
+  <div class="stat-item">
+    <div> Total Rooms</div>
+    <div>{{ total_rooms }} <i class="fas fa-door-open"></i></i></div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-item" id="occupied-beds">
+    <div> Occupied Beds</div>
+    <div>{{ occupied_beds }} <i class="fas fa-bed" style="color: red;"></i></div>
+  </div>
+  <div class="divider"></div>
+  <div class="stat-item">
+    <div> Free Beds</div>
+    <div>{{ free_beds }} <i class="fas fa-bed" style="color: green;"></i></div>
+  </div>
+</div>
+
 
 {% include 'data/add_rooms_modal.html' %}
 
@@ -93,10 +454,31 @@
   </div>
 </div>
 
+
 {% endblock %}
 
 {% block extra_scripts %}
 
+
+
+<!-- collection , dash board and request indicators -->
+<script>
+  window.onload = function () {
+    const activeButton = document.querySelector('.custom-button.active'); 
+    if (activeButton) {
+        activeButton.classList.add('active'); // Ensure Dashboard is selected by default
+    }
+};
+
+function moveIndicator(button) {
+    // Remove active class from all buttons
+    document.querySelectorAll('.custom-button').forEach(btn => btn.classList.remove('active'));
+
+    // Add active class to the clicked button (Changing background color)
+    button.classList.add('active');
+}
+
+</script>
 
 <!-- this used for auto hide the edit option when if we click somewhere -->
 <script>
@@ -276,5 +658,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 </script>
+
+
 
 {% endblock %}

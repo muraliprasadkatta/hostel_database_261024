@@ -34,43 +34,46 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 # da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app (this kepis use for ngrok service its helps to run the server locally for some specific time )
 
-# DEBUG = True
-# SESSION_COOKIE_SECURE = False  
-# SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-# ALLOWED_HOSTS = ['127.0.0.1', 'localhost','da86-2401-4900-60e9-97b6-d553-248f-608b-f6ac.ngrok-free.app']
-# SECURE_SSL_REDIRECT = False
+DEBUG = True
+SESSION_COOKIE_SECURE = False  
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+SECURE_SSL_REDIRECT = False
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://2fa4-123-201-77-112.ngrok-free.app",
+]
 
 
-# # Database Configuration
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('DB_NAME'),
-#         'USER': os.environ.get('DB_USER'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD'),
-#         'HOST': os.environ.get('DB_HOST'),
-#         'PORT': os.environ.get('DB_PORT'),
-#     }
-# }
+# Database Configuration
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
+}
 
 # this is not a mandatory for local prodution
 
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 #   Place media files in a directory outside of STATIC_ROOT
 
 
 # password reset setting
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'  # Use your email service provider's SMTP server
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-# DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
-# SITE_URL = 'http://127.0.0.1:8000'
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Use your email service provider's SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+SITE_URL = 'http://127.0.0.1:8000'
 
 
 
@@ -85,45 +88,44 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 # Load allowed hosts from environment variable
 
 
-
 # this line use for both local and production
 
 # ------------------------------------------------------
 # for production process
 
-import dj_database_url
-DEBUG = False
-SESSION_COOKIE_SECURE = True  
-CSRF_COOKIE_SECURE = True 
+# import dj_database_url
+# DEBUG = False
+# SESSION_COOKIE_SECURE = True  
+# CSRF_COOKIE_SECURE = True 
 
-# import os
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
+# # import os
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS','localhost').split(',')
 
-DATABASES = {
-    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
-}
+# DATABASES = {
+#     'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+# }
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
+# ALLOWED_HOSTS = ['ooye.in', 'www.ooye.in', 'ooye-59a192f7481a.herokuapp.com']
 
-# comment this line if we plan to run this in local terminal
+# # comment this line if we plan to run this in local terminal
 
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# SECURE_SSL_REDIRECT = True
+# SECURE_HSTS_SECONDS = 31536000
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
 
 
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-SITE_URL = "https://ooye.in"
+# EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+# EMAIL_HOST = os.getenv('EMAIL_HOST')
+# EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+# EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
+# EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+# SITE_URL = "https://ooye.in"
 
 # ----------------------------------------------------------------------
 
@@ -146,6 +148,8 @@ INSTALLED_APPS = [
     'cloudinary',  # add this
     'cloudinary_storage',  # add this
     'pwa',
+    'django.contrib.postgres',
+
     # 'django_csp',
     
 
@@ -305,7 +309,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
 
 
 # for sicoal authanticatuon
@@ -325,6 +328,9 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  ## for static folder
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Ensure this is set
+
 
 ## if the 'auth.User', which has been swapped out  use custom user
 AUTH_USER_MODEL = 'hostelapp20.CustomUser'  ## for abstract user

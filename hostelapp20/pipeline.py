@@ -1,7 +1,6 @@
 
 # it is the main role of to access the google auth
 
-
 import logging
 from django.contrib.auth import get_user_model, login
 from django.contrib import messages

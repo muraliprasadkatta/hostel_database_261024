@@ -1,32 +1,15 @@
-body {
+    body {
     background-color: #fff !important; /* Ensure the entire page background is white */
 }
     .dispaly-beds-conatiner {
-        margin-top: 5%;
         padding: 10px;
         box-sizing: border-box;
         height: 100%;
         transition: margin-left 0.3s ease; /* Add transition */
         background-color: white !important;
 
+
 }
-
-
-        /* display: none; */
-    .header {
-        transition: margin-left 0.3s ease; /* Add transition */
-    }
-
-    body.sidebar-open .sidebar {
-        transform: translateX(0);
-    }
-
-    body.sidebar-open .header, 
-    body.sidebar-open .dispaly-beds-conatiner {
-        margin-left: 280px; /* Adjust content when sidebar is open */
-        width: calc(100% - 280px);
-    }
-
     .tenant-image {
         border-radius: 10%;
         width: 100px;
@@ -96,6 +79,7 @@ body {
         flex-wrap: wrap;
         margin-left: 0;
         padding-left: 5px;
+        margin-top: 0px;
     }
 
     .tenant-buttons {
@@ -147,8 +131,8 @@ body {
     }
 
     .no-tenants-image {
-        width: 200px; /* Adjust the size of the image */
-        height: auto;
+        width: 100%; /* Adjust the size of the image */
+        height: 400px;
         margin: 20px auto;
         display: block;
     }

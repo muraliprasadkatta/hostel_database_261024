@@ -516,49 +516,79 @@ def search_suggestions(request):
     property_id = request.GET.get('property_id')
 
     if query and property_id:
-        tenants = Tenant.objects.filter(
-            property_id=property_id, name__icontains=query
-        ).values('id', 'name')
+        tenants = Tenant.objects.filter(property_id=property_id, name__icontains=query).values('id', 'name', 'room__room_number')
+        # Store the recent search in database
     else:
         tenants = []
 
     return JsonResponse({'results': list(tenants)})
 
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .models import RecentSearch
 
+def recent_searches(request):
+    property_id = request.GET.get('property_id')
+    if not property_id:
+        return JsonResponse({'results': []})
 
+    recent_searches = RecentSearch.objects.filter(user=request.user, property_id=property_id).values('search_text')
 
+    tenants = []
+    for search in recent_searches:
+        tenant = Tenant.objects.filter(name=search['search_text'], property_id=property_id).values('id', 'name', 'room__room_number').first()
+        if tenant:
+            tenants.append(tenant)
 
-
-
-
-
-
-
-
-
-
-
+    return JsonResponse({'results': tenants})
 
 
 from django.shortcuts import render
-from hostelapp20.models import Tenant
+from django.db.models import Q
+from django.contrib.postgres.search import TrigramSimilarity
+from .models import Tenant
+
 
 
 def search_view(request):
-    query = request.GET.get('q', '').strip()  # Get the search query
-    results = []  # Initialize results as an empty list
+    query = request.GET.get('q', '').strip()
+    property_id = request.GET.get('property_id')
+    terms = query.split()
 
-    if query:  # If a search query is provided
-        results = Tenant.objects.filter(
-            name__icontains=query  # Search for tenants with matching names (case-insensitive)
-        )
+    # Store the recent search in database
+    if query and property_id:
+        if request.user.is_authenticated:
+            # Check if this search already exists
+            existing_search = RecentSearch.objects.filter(user=request.user, property_id=property_id, search_text=query).first()
+            if not existing_search:
+                RecentSearch.objects.create(user=request.user, property_id=property_id, search_text=query)
+        else:
+            print("User not authenticated")
 
-    context = {
-        'query': query,
-        'results': results,  # Pass the filtered results to the template
-    }
+        results = Tenant.objects.filter(name__icontains=query)
 
-    return render(request, 'search_results.html', context)
+        related_results = []
+        if not results.exists():
+            for term in terms:
+                related_results.extend(Tenant.objects.filter(name__icontains=term))
+
+        related_results = list({tenant.id: tenant for tenant in related_results}.values())
+
+        for tenant in results:
+            tenant.room_number = tenant.room.room_number
+        for tenant in related_results:
+            tenant.room_number = tenant.room.room_number
+
+        context = {
+            'query': query,
+            'results': results,
+            'related_results': related_results,
+            'property_id': property_id,
+        }
+
+        return render(request, 'searchResult.html', context)
+
+# In searchResult.html, update links:
 
 
 
@@ -856,38 +886,26 @@ def DeleteTenant(request, tenant_id):
 
 
 
-
-
-def Payments(request, property_id):
-    selected_property = get_object_or_404(AddProperty, id=property_id)
-
-    context = {
-        'selected_property': selected_property,
-        # Add other context data as needed
-    }
-    return redirect('dues_url', property_id=property_id)
-
-
-
 def dues_view(request, property_id):
-    selected_property = get_object_or_404(AddProperty, id=property_id)
-     # Print statement to debug in development environment
-    if selected_property.image:
-        selected_property.image_url = selected_property.image.url.replace("/http%3A/", "http://")
-    else:
-        selected_property.image_url = None
-
+    selected_property = None
     user_properties = AddProperty.objects.filter(user=request.user)
 
-    # get the properties of images of properties in sidebar
+    # Process image URLs for sidebar properties & find selected property
     for property in user_properties:
         if property.image:
             property.image_url = property.image.url.replace("/http%3A/", "http://")
         else:
             property.image_url = None
 
+        # Identify selected property directly from this loop
+        if property.id == property_id:
+            selected_property = property
+
+    if selected_property is None:
+        raise Http404("Selected property not found")
+
     date_str = request.GET.get('date')
-    
+
     if date_str:
         selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
         date_filtered = True
@@ -903,39 +921,53 @@ def dues_view(request, property_id):
             next_due_date__lte=selected_date
         ).exclude(remainder__isnull=False)
 
+    remainders = Remainder.objects.filter(tenant__property=selected_property)
+
     context = {
         'selected_property': selected_property,
         'tenants_with_due_today': tenants_with_due_today,
         'selected_date': selected_date,
         'date_filtered': date_filtered,
-        'user_properties':user_properties
+        'user_properties': user_properties,
+        'remainders': remainders,
+
     }
+
+    # 🔍 **Check if it's an AJAX Request**
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # 👉 Serve only the body content for AJAX requests
+        return render(request, 'collections/sections/partials/dues_body.html', context)
+
+    # Full page render for normal requests
     return render(request, 'collections/sections/dues.html', context)
 
 
 
 
+logger = logging.getLogger(__name__)
+
 @csrf_protect
 def remainder_view(request, property_id):
+    # Get selected property and user properties
     selected_property = get_object_or_404(AddProperty, id=property_id)
     user_properties = AddProperty.objects.filter(user=request.user)
 
-
     if request.method == 'POST':
-        tenant_id = request.POST.get('tenant_id')
-        amount_paid = request.POST.get('amount_paid')
-        remaining_amount = request.POST.get('remaining_amount')
-        payment_type = request.POST.get('payment_type')
-        reference_number = request.POST.get('reference_number')
-        payment_screenshot = request.FILES.get('payment_screenshot')
-
-        if not tenant_id or not amount_paid or not remaining_amount:
-            return redirect('remainder_url', property_id=property_id)
-
         try:
+            tenant_id = request.POST.get('tenant_id')
+            amount_paid = request.POST.get('amount_paid')
+            remaining_amount = request.POST.get('remaining_amount')
+            payment_type = request.POST.get('payment_type')
+            reference_number = request.POST.get('reference_number')
+            payment_screenshot = request.FILES.get('payment_screenshot')
+
+            if not tenant_id or not amount_paid or not remaining_amount:
+                logger.error("Missing required fields: tenant_id, amount_paid, or remaining_amount")
+                return JsonResponse({'error': 'Missing required fields'}, status=400)
+
             tenant = Tenant.objects.get(id=tenant_id)
 
-            # Always create a new history record for every payment
+            # Create history entry
             History.objects.create(
                 tenant=tenant,
                 amount_paid=Decimal(amount_paid),
@@ -945,14 +977,23 @@ def remainder_view(request, property_id):
             )
 
             if Decimal(remaining_amount) == 0:
-                # If the remaining amount is 0, delete the remainder and update the due date
+                # Delete remainder if fully paid
                 Remainder.objects.filter(tenant=tenant).delete()
-                tenant.next_due_date += relativedelta(months=1)  # Correctly adding one month
+                tenant.next_due_date += relativedelta(months=1)
                 tenant.save()
             else:
-                try:
-                    remainder = Remainder.objects.get(tenant=tenant)
-                    # Update the existing remainder
+                remainder, created = Remainder.objects.get_or_create(
+                    tenant=tenant,
+                    defaults={
+                        'amount_paid': Decimal(amount_paid),
+                        'remaining_amount': Decimal(remaining_amount),
+                        'payment_type': payment_type,
+                        'reference_number': reference_number,
+                        'payment_screenshot': payment_screenshot,
+                        'due_date': tenant.next_due_date,
+                    }
+                )
+                if not created:
                     remainder.amount_paid += Decimal(amount_paid)
                     remainder.remaining_amount = Decimal(remaining_amount)
                     remainder.payment_type = payment_type
@@ -960,33 +1001,31 @@ def remainder_view(request, property_id):
                     remainder.payment_screenshot = payment_screenshot
                     remainder.due_date = tenant.next_due_date
                     remainder.save()
-                except Remainder.DoesNotExist:
-                    # Create a new remainder
-                    Remainder.objects.create(
-                        tenant=tenant,
-                        amount_paid=Decimal(amount_paid),
-                        remaining_amount=Decimal(remaining_amount),
-                        payment_type=payment_type,
-                        reference_number=reference_number,
-                        payment_screenshot=payment_screenshot,
-                        due_date=tenant.next_due_date,
-                        
-                    )
+
+            return JsonResponse({'success': 'Remainder payment processed successfully'})
 
         except Tenant.DoesNotExist:
-            pass  # Handle the error as needed
+            logger.error("Tenant not found for ID: %s", tenant_id)
+            return JsonResponse({'error': 'Tenant does not exist'}, status=404)
+
         except Exception as e:
-            pass  # Handle the error as needed
+            logger.exception("Unexpected error in remainder_view: %s", e)
+            return JsonResponse({'error': str(e)}, status=500)
 
-        return redirect('remainder_url', property_id=property_id)
-
+    # Retrieve remainders for the selected property
     remainders = Remainder.objects.filter(tenant__property=selected_property)
+
     context = {
         'selected_property': selected_property,
         'remainders': remainders,
-        'user_properties':user_properties
-
+        'user_properties': user_properties
     }
+
+    # Return AJAX response if requested with AJAX
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'collections/sections/partials/remainder_body.html', context)
+
+    # Return full page otherwise
     return render(request, 'collections/sections/remainder.html', context)
 
 

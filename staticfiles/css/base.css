@@ -1,4 +1,40 @@
-  /* Add your existing CSS code here */
+    
+/* Sidebar Close Button Styling */
+/* Sidebar Close Button Styling */
+
+.close-btn{
+    display: none;
+}
+
+/* Main content starts after header and sidebar */
+.scrollable-content {
+    margin-left: 250px;
+    margin-top: 60px;  /* Space for the header */
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Header static offset without animation or visible shift */
+.header {
+    position: fixed;
+    top: 0;
+    left: 250px;  /* Sidebar width offset */
+    width: calc(100% - 250px);  /* Remaining width after sidebar */
+    height: 60px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;  /* Center header content */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1050;
+    transition: all 0.3s ease;  /* Smooth transitions */
+}
+
+
+
+
+    /* Sidebar is always visible and takes up space */
   .sidebar {
     width: 250px;
     position: fixed;
@@ -6,22 +42,31 @@
     top: 0;
     bottom: 0;
     background: #fff;
-    transition: transform 0.3s ease;
     z-index: 1000;
     padding: 15px;
     display: flex;
     flex-direction: column;
-    transform: translateX(-100%);
-    /* background: blue; */
-  }
+    transition: transform 0.3s ease;
+}
 
-  .close-btn {
-    font-size: 24px;
-    cursor: pointer;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
+
+
+body:not(.mobile-view) .sidebar {
+    transform: translateX(0);
+}
+
+/* Mobile view: Sidebar hidden initially */
+body.mobile-view .sidebar {
+    transform: translateX(-100%);
+}
+
+/* Sidebar is visible when opened */
+body.sidebar-open .sidebar {
+    transform: translateX(0);
+}
+
+/* Toggle button styles */
+
 
   .bottom-link {
     width: 250px;
@@ -140,7 +185,7 @@
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    max-height: calc(70vh - 200px);
+    max-height: calc(60vh - 200px);
     overflow-y: auto;
   }
 
@@ -222,24 +267,7 @@
     background: black;
   }
 
-  .header {
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1px 20px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1050;
-    border-bottom: 1px solid #ccc;
-    box-sizing: border-box;
-    transition: width 0.3s ease, left 0.3s ease;
-  }
+
 
   .search-container {
     flex-grow: 1;
@@ -263,10 +291,11 @@
     outline: none;
     color: black;
     padding: 8px 8px 8px 20px; /* Adjust left padding here */
+    
 }
 
   .header-search .search-icon {
-    padding: 8px;
+    padding: 12px;
     background: transparent;
     color: gray;
     cursor: pointer;
@@ -339,13 +368,12 @@ text-align: center;
     color: #ccc;
     cursor: pointer;
   }
-
   .nav {
     display: flex;
     justify-content: center;
     flex-grow: 1;
-    transition: width 0.3s ease;
-  }
+    margin: 0 10px;
+}
 
   .nav-list {
     list-style: none;
@@ -357,8 +385,8 @@ text-align: center;
   }
 
   .nav-list li {
-    display: inline;
-  }
+    display: inline-block;
+}
 
   .nav-list li a {
     color: #333;
@@ -368,13 +396,17 @@ text-align: center;
     transition: background-color 0.3s;
   }
 
+  .nav-item {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
   .nav-list li a:hover {
     background-color: #ddd;
-  }
-
-  .rightOption-icon {
-    margin-left: 10px;
-    cursor: pointer;
   }
 
   .rightOption-icon {
@@ -456,22 +488,92 @@ text-align: center;
     background-color: #888;
   }
 
+
+
+/* Hide sidebar initially on mobile view */
+body.sidebar-open .sidebar {
+    transform: translateX(0);
+}
+
+body.mobile-view .sidebar {
+    transform: translateX(-100%);
+}
+
+
+/* Toggle button styles (visible on mobile) */
+.menu-btn {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+
+
   .properties-box::-webkit-scrollbar {
     width: 1px;
   }
 
+  .search-form {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
   @media (max-width: 768px) {
+
+    /* Header static offset without animation or visible shift */
+.header {
+    left: 0px;  /* Sidebar width offset */
+    width: 100%;
+}
+
+
+.close-btn {
+    font-size: 28px;
+    position: absolute;
+    top: 25px;
+    right: 20px;
+    cursor: pointer;
+    color: #333;
+    width: 45px;
+    height: 40px;
+    background-color: #f0f0f0;  /* Light grey background */
+    border-radius: 50%;         /* Circular style */
+    text-align: center;
+    line-height: 35px;          /* Center vertically */
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Light shadow */
+}
+
+.close-btn:hover {
+    background-color: #e0e0e0;  /* Slightly darker grey on hover */
+}
+
+.close-btn {
+        display: block;  /* Visible for screen widths 768px and above */
+    }
+
+    /* Main content starts after header and sidebar */
+.scrollable-content {
+    margin-left: 0px;
+    margin-top: 0px;  /* Space for the header */
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    padding: 0px;
+}
+
+
+    .nav {
+        display: none; /* Hide navigation in mobile by default */
+    }
     .sidebar {
-      width: 320px;
+      width: 100%;
       padding: 20px;
     }
 
     .rightOption-icon {
       display: block;
-    }
-
-    .nav {
-      display: none;
+      margin: 15px;
     }
 
     .nav-list {
@@ -492,37 +594,51 @@ text-align: center;
     .property-item .property-name {
       max-width: 200px;
     }
+    
 
     .tick-image {
       right: 10px;
     }
 
-    .header {
-      padding: 9px 15px;
-      background-color: white;
-    }
 
     .menu-icon {
       display: block;
     }
 
     .header-search .search-icon {
-      padding: 8px;
+      padding: 11px;
       background: white;
     }
 
     .header-search .search-box {
-      padding: 7px 7px 7px 7px;
+      padding: 7px 7px 7px 20px;
+      margin: 0px;
     }
 
+
+    .search-form{
+      margin-top: 0px;
+    }
+
+
+  .search-container {
+    margin: 0px;
+
+  }
     .properties-box {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-      background-color: #fff;
       max-height: calc(60vh - 200px);
-      overflow-y: auto;
+    }
+
+    .menu-btn {
+        display: block;  /* Show the menu button on mobile */
+    }
+
+    .header, .content {
+        padding-left: 0; /* Adjust padding for mobile */
+    }
+
+    body:not(.sidebar-open) .sidebar {
+        transform: translateX(-100%);  /* Hide sidebar when not open */
     }
   }
 

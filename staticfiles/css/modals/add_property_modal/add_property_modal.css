@@ -6,9 +6,7 @@
         top: 0;
         width: 100%; 
         height: 100%; 
-        overflow: auto; 
         background-color: rgba(0, 0, 0, 0.4); 
-        padding-top: 10px;
         z-index: 1000; /* Ensure it's lower than the PIN modal */
     }
 
@@ -17,13 +15,30 @@
         margin: auto;
         padding: 20px;
         border: 1px solid #888;
-        width: 80%;
+        width: 100%;
         position: relative;
         max-height: 90%;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
     }
+
+
+    .add-property-title {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        padding: 15px;
+        font-size: 24px;
+        font-weight: bold;
+        border-bottom: 1px solid #ccc;
+        text-align: center;
+        z-index: 1010; /* Ensure it stays above other content */
+        
+        
+
+    }
+
 
     .add-property-camera-access-modal, .add-property-camera-modal {
         display: none;
@@ -173,8 +188,6 @@
 }
 
 
-
-
 /* Mobile specific styles */
 @media (max-width: 768px) {
     .add-property-camera-modal{
@@ -199,5 +212,8 @@
         transform: scaleX(-1); /* Flip the video horizontally */
         height: 100%;
     }
+
+
+
 }
 
