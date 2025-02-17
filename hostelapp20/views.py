@@ -532,13 +532,25 @@ def recent_searches(request):
     if not property_id:
         return JsonResponse({'results': []})
 
-    recent_searches = RecentSearch.objects.filter(user=request.user, property_id=property_id).values('search_text')
+    # Fetch all recent searches for the given property (no limit)
+    recent_searches = RecentSearch.objects.filter(user=request.user, property_id=property_id).order_by('-timestamp')
 
     tenants = []
     for search in recent_searches:
-        tenant = Tenant.objects.filter(name=search['search_text'], property_id=property_id).values('id', 'name', 'room__room_number').first()
+        tenant = Tenant.objects.filter(name=search.search_text, property_id=property_id).values('id', 'name', 'room__room_number').first()
         if tenant:
-            tenants.append(tenant)
+            tenants.append({
+                'id': tenant['id'],
+                'name': tenant['name'],
+                'room_number': tenant['room__room_number']
+            })
+        else:
+            # Store the search term in the results even if no tenant is found
+            tenants.append({
+                'id': None,  # No tenant found
+                'name': search.search_text,  # Just show the search term
+                'room_number': None
+            })
 
     return JsonResponse({'results': tenants})
 

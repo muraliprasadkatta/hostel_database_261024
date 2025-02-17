@@ -492,3 +492,320 @@ Confirm button IDs and JavaScript logic.
 
 
 -----------------------------------------------------------------------------
+
+search box operations
+---------------------
+
+Three Search Logics:
+Direct Search:
+
+When the user types into the search box and hits the "Search" button or presses Enter, it's treated as a direct search.
+The search query is then sent to the view (e.g., search_view), where it's processed and stored in the database as a recent search.
+The results are rendered in the searchResult.html template.
+Suggestion Search:
+
+When the user clicks on one of the search suggestions (which may be a recent search term), it triggers the same flow as the direct search.
+The selected suggestion is sent to the search_view, stored as a recent search in the database, and the results are displayed on the searchResult.html page.
+Recent Search:
+
+When a user views recent searches, they are clickable and behave like suggestions. Clicking a recent search takes the user to the search results page, where the search term is stored in the database again if needed (to make sure the search is up-to-date).
+This ensures the database always has the latest information.\\
+
+
+
+search_view Logic:
+Store the search query: Regardless of whether the search is a direct input or a suggestion click, the search term is stored as a recent search in the database.
+Check for unique searches: If the same search term is entered multiple times, you ensure that only unique entries are saved in the database.
+Redirect to results: After saving the search, the view renders the searchResult.html page with the results for the query.
+Here's a detailed explanation of how to implement the logic in the search_view:
+
+Explanation:
+    Model for Recent Searches: You'll need a model like RecentSearch to store the searches. Ensure that it's linked to the user (if users are logged in) and property (if the search is property-specific).
+
+
+
+recent search view
+---------------
+
+
+def recent_searches(request):
+    property_id = request.GET.get('property_id')
+    if not property_id:
+        return JsonResponse({'results': []})
+
+    recent_searches = RecentSearch.objects.filter(user=request.user, property_id=property_id).values('search_text')
+
+    tenants = []
+    for search in recent_searches:
+        tenant = Tenant.objects.filter(name=search['search_text'], property_id=property_id).values('id', 'name', 'room__room_number').first()
+        if tenant:
+            tenants.append(tenant)
+
+    return JsonResponse({'results': tenants})
+
+
+search view logic
+---------------------
+
+search_view Logic:
+
+When the search query is received, you check if it's already in the RecentSearch database.
+If it's not there, save it as a new record.
+Then, return the results on the searchResult.html page.
+
+
+
+
+def search_view(request):
+    query = request.GET.get('q', '').strip()
+    property_id = request.GET.get('property_id')
+    terms = query.split()
+
+    # Store the recent search in database
+    if query and property_id:
+        if request.user.is_authenticated:
+            # Check if this search already exists
+            existing_search = RecentSearch.objects.filter(user=request.user, property_id=property_id, search_text=query).first()
+            if not existing_search:
+                RecentSearch.objects.create(user=request.user, property_id=property_id, search_text=query)
+        else:
+            print("User not authenticated")
+
+        results = Tenant.objects.filter(name__icontains=query)
+
+        related_results = []
+        if not results.exists():
+            for term in terms:
+                related_results.extend(Tenant.objects.filter(name__icontains=term))
+
+        related_results = list({tenant.id: tenant for tenant in related_results}.values())
+
+        for tenant in results:
+            tenant.room_number = tenant.room.room_number
+        for tenant in related_results:
+            tenant.room_number = tenant.room.room_number
+
+        context = {
+            'query': query,
+            'results': results,
+            'related_results': related_results,
+            'property_id': property_id,
+        }
+
+        return render(request, 'searchResult.html', context)
+
+--------------------------------------------------
+
+search suggestions
+------------------
+
+def search_suggestions(request):
+    query = request.GET.get('q', '').strip()
+    property_id = request.GET.get('property_id')
+
+    if query and property_id:
+        tenants = Tenant.objects.filter(property_id=property_id, name__icontains=query).values('id', 'name', 'room__room_number')
+        # Store the recent search in database
+    else:
+        tenants = []
+
+    return JsonResponse({'results': list(tenants)})
+
+------------------------------------------------------
+
+baste.html
+----------
+
+  <!-- Search Section -->
+  <div class="search-container header-search">
+      <form action="{% url 'search_view' %}" method="get" id="search-form" class="search-form">
+        <input type="hidden" name="property_id" value="{{ selected_property.id }}">
+          <input
+              type="text"
+              name="q"
+              placeholder="Search by Name..."
+              class="search-box"
+              id="search-header"
+              autocomplete="off"
+              data-property-id="{{ selected_property.id }}"
+              required
+              oninput="this.value = this.value.trimStart()"
+          />
+          <i class="fa fa-search search-icon header-icon" onclick="document.getElementById('search-form').submit();"></i>
+      </form>
+      <div class="search-dropdown" id="search-results"></div>
+  </div>
+
+
+  ----------------------------------------------------------
+js logics
+-------------
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () { // Ensures the code runs after the entire page is loaded
+    const searchBox = document.getElementById('search-header'); // Selects the search input element
+    const searchResults = document.getElementById('search-results'); // Selects the search results container
+
+    const propertyId = searchBox.getAttribute('data-property-id'); // Gets the property ID from the search box attribute
+    let currentIndex = -1; // Tracks the current suggestion index for keyboard navigation
+    let lastEnteredValue = ''; // Stores the last manually entered input value
+    let debounceTimeout; // Timer reference for implementing debounce functionality
+
+
+
+// recent search suggestion
+
+
+function showRecentSearches() {
+  fetch(`/recent-searches/?property_id=${propertyId}`, { cache: 'no-store' })
+    .then(response => response.json())
+    .then(data => {
+      searchResults.innerHTML = '';
+      const title = document.createElement('div');
+      title.textContent = 'recently searched';
+      title.classList.add('recent-search-title');
+      title.style.textAlign = 'center';
+      title.style.fontWeight = 'bold';
+      title.style.textTransform = 'lowercase';
+      searchResults.appendChild(title);
+
+      if (data.results && data.results.length > 0) {
+        data.results.forEach((item, index) => {
+          const suggestion = document.createElement('div');
+          suggestion.textContent = item.name;
+          suggestion.classList.add('suggestion-item');
+          suggestion.setAttribute('data-index', index);
+
+          suggestion.addEventListener('mouseenter', function () {
+            highlightItem(searchResults.querySelectorAll('.suggestion-item'), index, true);
+          });
+
+          suggestion.addEventListener('mouseleave', function () {
+            searchBox.value = lastEnteredValue;
+          });
+
+          suggestion.addEventListener('click', () => {
+            const searchURL = `/search/?property_id=${propertyId}&q=${encodeURIComponent(item.name)}`;
+            window.location.href = searchURL;
+          });
+
+          searchResults.appendChild(suggestion);
+        });
+      } else {
+        const noResults = document.createElement('div');
+        noResults.textContent = 'No recent searches';
+        noResults.classList.add('no-results');
+        searchResults.appendChild(noResults);
+      }
+    })
+    .catch(error => console.error('Error fetching recent searches:', error));
+}
+
+
+    
+    searchBox.addEventListener('focus', showRecentSearches); // Shows recent searches when search box is focused
+
+// idi ichina suggestion lo nunchi direct ga search -suggestion tesukuveltudhi lekunte tesukuvalladhu
+
+
+
+// handle the suggestion to redirect to the tenant details page
+
+searchBox.addEventListener('input', function () {
+  const query = searchBox.value.trim();
+  lastEnteredValue = query;
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    if (query.length > 0) {
+      fetch(`/search-suggestions/?q=${encodeURIComponent(query)}&property_id=${propertyId}`)
+        .then(response => response.json())
+        .then(data => {
+          searchResults.innerHTML = '';
+          searchResults.style.display = 'block';
+          currentIndex = -1;
+
+          if (data.results && data.results.length > 0) {
+            data.results.forEach((item, index) => {
+              const suggestion = document.createElement('div');
+              suggestion.textContent = item.name;
+              suggestion.classList.add('suggestion-item');
+              suggestion.setAttribute('data-index', index);
+
+              suggestion.addEventListener('mouseenter', function () {
+                highlightItem(searchResults.querySelectorAll('.suggestion-item'), index, true);
+              });
+
+              suggestion.addEventListener('mouseleave', function () {
+                searchBox.value = lastEnteredValue;
+              });
+
+              suggestion.addEventListener('click', function () {
+                  const query = item.name;
+                  const searchURL = `/search/?property_id=${propertyId}&q=${encodeURIComponent(query)}`;
+                  window.location.href = searchURL;
+              });
+
+              searchResults.appendChild(suggestion);
+            });
+          } else {
+            const noResults = document.createElement('div');
+            noResults.textContent = 'No results found';
+            noResults.classList.add('no-results');
+            searchResults.appendChild(noResults);
+          }
+        })
+        .catch(error => console.error('Error fetching search suggestions:', error));
+    } else {
+      searchResults.innerHTML = '';
+      searchResults.style.display = 'none';
+    }
+  }, 100);
+});
+    // vachina suggestion lovi arrow tho operate cheyataniki 
+
+    searchBox.addEventListener('keydown', function (event) { // Handles keyboard navigation
+      const items = searchResults.querySelectorAll('.suggestion-item'); // Gets all suggestion items
+
+      if (items.length > 0) { // Checks if items exist
+        if (event.key === 'ArrowDown') { // Handles down arrow key
+          event.preventDefault(); // Prevents default behavior
+          currentIndex = (currentIndex + 1) % items.length; // Moves to next item
+          highlightItem(items, currentIndex, true); // Highlights next item
+        } else if (event.key === 'ArrowUp') { // Handles up arrow key
+          event.preventDefault(); // Prevents default behavior
+          currentIndex = (currentIndex - 1 + items.length) % items.length; // Moves to previous item
+          highlightItem(items, currentIndex, true); // Highlights previous item
+        } else if (event.key === 'Enter') { // Handles enter key
+          event.preventDefault(); // Prevents form submission
+          if (currentIndex >= 0 && items[currentIndex]) { // Checks if item is highlighted
+            items[currentIndex].click(); // Clicks the highlighted item
+          } else {
+            document.getElementById('search-form').submit(); // Submits the form
+          }
+        }
+      } else if (event.key === 'Enter') { // Submits form if no items are displayed
+        document.getElementById('search-form').submit(); // Submits the form
+      }
+    });
+
+
+// idi vachina suggestion   lo nunchi remaining half tho search box ni fill chestudhi  highlightItem function lo ki tesuku veltundhi
+// suggestion function ki and recent search suggestion ki same function  ni use chestunnam
+
+
+    function highlightItem(items, index, updateInput) {
+      items.forEach((item, i) => {
+        if (i === index) {
+          item.classList.add('highlight');
+          item.scrollIntoView({ block: 'nearest' });
+          // Always update input field with the hovered item's text
+          searchBox.value = item.textContent;
+        } else {
+          item.classList.remove('highlight');
+        }
+      });
+    }
+  });
+
+</script>
