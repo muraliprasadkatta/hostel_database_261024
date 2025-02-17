@@ -516,8 +516,12 @@ def search_suggestions(request):
     property_id = request.GET.get('property_id')
 
     if query and property_id:
-        tenants = Tenant.objects.filter(property_id=property_id, name__icontains=query).values('id', 'name', 'room__room_number')
-        # Store the recent search in database
+        # Check for both bike number and name search
+        tenants_bike = Tenant.objects.filter(property_id=property_id, bike_number__icontains=query).values('id', 'name', 'bike_number', 'room__room_number')
+        tenants_name = Tenant.objects.filter(property_id=property_id, name__icontains=query).values('id', 'name', 'bike_number', 'room__room_number')
+
+        # Combine results (avoid duplicates)
+        tenants = list(tenants_name) + [t for t in tenants_bike if t not in tenants_name]
     else:
         tenants = []
 
@@ -532,27 +536,26 @@ def recent_searches(request):
     if not property_id:
         return JsonResponse({'results': []})
 
-    # Fetch all recent searches for the given property (no limit)
     recent_searches = RecentSearch.objects.filter(user=request.user, property_id=property_id).order_by('-timestamp')
 
     tenants = []
+    unique_names = set()  # Track unique search terms
+
     for search in recent_searches:
-        tenant = Tenant.objects.filter(name=search.search_text, property_id=property_id).values('id', 'name', 'room__room_number').first()
-        if tenant:
+        # Display search text directly from the database
+        if search.search_text not in unique_names:
+            unique_names.add(search.search_text)
             tenants.append({
-                'id': tenant['id'],
-                'name': tenant['name'],
-                'room_number': tenant['room__room_number']
-            })
-        else:
-            # Store the search term in the results even if no tenant is found
-            tenants.append({
-                'id': None,  # No tenant found
-                'name': search.search_text,  # Just show the search term
+                'id': None,  # No need for ID here
+                'name': search.search_text,  # Directly use stored search text
                 'room_number': None
             })
 
     return JsonResponse({'results': tenants})
+
+
+
+
 
 
 from django.shortcuts import render
@@ -561,35 +564,45 @@ from django.contrib.postgres.search import TrigramSimilarity
 from .models import Tenant
 
 
+# searchResult template file logic kosa use avutudhi
+
 
 def search_view(request):
     query = request.GET.get('q', '').strip()
     property_id = request.GET.get('property_id')
-    terms = query.split()
 
-    # Store the recent search in database
     if query and property_id:
         if request.user.is_authenticated:
-            # Check if this search already exists
-            existing_search = RecentSearch.objects.filter(user=request.user, property_id=property_id, search_text=query).first()
-            if not existing_search:
+            # Store only the raw query without bike number formatting
+            if not RecentSearch.objects.filter(user=request.user, property_id=property_id, search_text__iexact=query).exists():
                 RecentSearch.objects.create(user=request.user, property_id=property_id, search_text=query)
         else:
             print("User not authenticated")
 
-        results = Tenant.objects.filter(name__icontains=query)
+        # Search logic for both name and bike number
+        results = Tenant.objects.filter(
+            property_id=property_id
+        ).filter(
+            Q(name__icontains=query) | Q(bike_number__icontains=query)
+        )
 
         related_results = []
         if not results.exists():
+            terms = query.split()
             for term in terms:
-                related_results.extend(Tenant.objects.filter(name__icontains=term))
-
-        related_results = list({tenant.id: tenant for tenant in related_results}.values())
+                related_results.extend(Tenant.objects.filter(
+                    property_id=property_id
+                ).filter(
+                    Q(name__icontains=term) | Q(bike_number__icontains=term)
+                ))
+            related_results = list({tenant.id: tenant for tenant in related_results}.values())
 
         for tenant in results:
             tenant.room_number = tenant.room.room_number
+            tenant.bike_number = tenant.bike_number
         for tenant in related_results:
             tenant.room_number = tenant.room.room_number
+            tenant.bike_number = tenant.bike_number
 
         context = {
             'query': query,
@@ -599,6 +612,8 @@ def search_view(request):
         }
 
         return render(request, 'searchResult.html', context)
+
+    return render(request, 'searchResult.html', {'query': query})
 
 # In searchResult.html, update links:
 

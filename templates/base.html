@@ -789,24 +789,79 @@ body.mobile-view .sidebar {
     let lastEnteredValue = ''; // Stores the last manually entered input value
     let debounceTimeout; // Timer reference for implementing debounce functionality
 
-    // recent search suggestion
-    function showRecentSearches() {
-      fetch(`/recent-searches/?property_id=${propertyId}`, { cache: 'no-store' })
+      // recent search suggestion
+      function showRecentSearches() {
+        fetch(`/recent-searches/?property_id=${propertyId}`, { cache: 'no-store' })
+          .then(response => response.json())
+          .then(data => {
+            searchResults.innerHTML = '';
+            const title = document.createElement('div');
+            title.textContent = 'recently searched';
+            title.classList.add('recent-search-title');
+            title.style.textAlign = 'center';
+            title.style.fontWeight = 'bold';
+            title.style.textTransform = 'lowercase';
+            searchResults.appendChild(title);
+
+            if (data.results && data.results.length > 0) {
+              data.results.forEach((item, index) => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = item.name;
+                suggestion.classList.add('suggestion-item');
+                suggestion.setAttribute('data-index', index);
+
+                suggestion.addEventListener('mouseenter', function () {
+                  highlightItem(searchResults.querySelectorAll('.suggestion-item'), index, true);
+                });
+
+                suggestion.addEventListener('mouseleave', function () {
+                  searchBox.value = lastEnteredValue;
+                });
+
+                suggestion.addEventListener('click', () => {
+                  const searchURL = `/search/?property_id=${propertyId}&q=${encodeURIComponent(item.name)}`;
+                  window.location.href = searchURL;
+                });
+
+                searchResults.appendChild(suggestion);
+              });
+            } else {
+              const noResults = document.createElement('div');
+              noResults.textContent = 'No recent searches';
+              noResults.classList.add('no-results');
+              searchResults.appendChild(noResults);
+            }
+          })
+          .catch(error => console.error('Error fetching recent searches:', error));
+      }
+
+
+    // Shows recent searches when search box is focused
+    searchBox.addEventListener('focus', showRecentSearches); // Shows recent searches when search box is focused
+
+    // handle the suggestion to redirect to the tenant details page
+// handle the suggestion to redirect to the tenant details page
+searchBox.addEventListener('input', function () {
+  const query = searchBox.value.trim();
+  lastEnteredValue = query;
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    if (query.length > 0) {
+      fetch(`/search-suggestions/?q=${encodeURIComponent(query)}&property_id=${propertyId}`)
         .then(response => response.json())
         .then(data => {
           searchResults.innerHTML = '';
-          const title = document.createElement('div');
-          title.textContent = 'recently searched';
-          title.classList.add('recent-search-title');
-          title.style.textAlign = 'center';
-          title.style.fontWeight = 'bold';
-          title.style.textTransform = 'lowercase';
-          searchResults.appendChild(title);
+          searchResults.style.display = 'block';
+          currentIndex = -1;
 
           if (data.results && data.results.length > 0) {
             data.results.forEach((item, index) => {
               const suggestion = document.createElement('div');
-              suggestion.textContent = item.name;
+              let displayText = item.name;
+              if (item.bike_number) {
+                displayText += ` (${item.bike_number})`;  // Add bike number next to name
+              }
+              suggestion.textContent = displayText;
               suggestion.classList.add('suggestion-item');
               suggestion.setAttribute('data-index', index);
 
@@ -818,8 +873,9 @@ body.mobile-view .sidebar {
                 searchBox.value = lastEnteredValue;
               });
 
-              suggestion.addEventListener('click', () => {
-                const searchURL = `/search/?property_id=${propertyId}&q=${encodeURIComponent(item.name)}`;
+              suggestion.addEventListener('click', function () {
+                const query = item.name;
+                const searchURL = `/search/?property_id=${propertyId}&q=${encodeURIComponent(query)}`;
                 window.location.href = searchURL;
               });
 
@@ -827,67 +883,18 @@ body.mobile-view .sidebar {
             });
           } else {
             const noResults = document.createElement('div');
-            noResults.textContent = 'No recent searches';
+            noResults.textContent = 'No results found';
             noResults.classList.add('no-results');
             searchResults.appendChild(noResults);
           }
         })
-        .catch(error => console.error('Error fetching recent searches:', error));
+        .catch(error => console.error('Error fetching search suggestions:', error));
+    } else {
+      searchResults.innerHTML = '';
+      searchResults.style.display = 'none';
     }
-
-    searchBox.addEventListener('focus', showRecentSearches); // Shows recent searches when search box is focused
-
-    // handle the suggestion to redirect to the tenant details page
-    searchBox.addEventListener('input', function () {
-      const query = searchBox.value.trim();
-      lastEnteredValue = query;
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
-        if (query.length > 0) {
-          fetch(`/search-suggestions/?q=${encodeURIComponent(query)}&property_id=${propertyId}`)
-            .then(response => response.json())
-            .then(data => {
-              searchResults.innerHTML = '';
-              searchResults.style.display = 'block';
-              currentIndex = -1;
-
-              if (data.results && data.results.length > 0) {
-                data.results.forEach((item, index) => {
-                  const suggestion = document.createElement('div');
-                  suggestion.textContent = item.name;
-                  suggestion.classList.add('suggestion-item');
-                  suggestion.setAttribute('data-index', index);
-
-                  suggestion.addEventListener('mouseenter', function () {
-                    highlightItem(searchResults.querySelectorAll('.suggestion-item'), index, true);
-                  });
-
-                  suggestion.addEventListener('mouseleave', function () {
-                    searchBox.value = lastEnteredValue;
-                  });
-
-                  suggestion.addEventListener('click', function () {
-                    const query = item.name;
-                    const searchURL = `/search/?property_id=${propertyId}&q=${encodeURIComponent(query)}`;
-                    window.location.href = searchURL;
-                  });
-
-                  searchResults.appendChild(suggestion);
-                });
-              } else {
-                const noResults = document.createElement('div');
-                noResults.textContent = 'No results found';
-                noResults.classList.add('no-results');
-                searchResults.appendChild(noResults);
-              }
-            })
-            .catch(error => console.error('Error fetching search suggestions:', error));
-        } else {
-          searchResults.innerHTML = '';
-          searchResults.style.display = 'none';
-        }
-      }, 100);
-    });
+  }, 100);
+});
 
     // Handles keyboard navigation
     searchBox.addEventListener('keydown', function (event) {

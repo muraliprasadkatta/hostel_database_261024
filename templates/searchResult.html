@@ -10,36 +10,33 @@
     <h1>Search Results</h1>
 
     {% if results %}
+    {% if results|length == 1 and results.0.name|lower == query|lower %}
         <h2>Exact Matches</h2>
         <ul>
             {% for tenant in results %}
                 <li>
-                    <!-- Link to tenant details -->
-                    <a href="{% url 'TenantDetails' tenant.property_id tenant.room_number tenant.id %}">{{ tenant.name }}</a>
-                    {{ tenant.name }}
+                    <a href="{% url 'TenantDetails' tenant.property_id tenant.room_number tenant.id %}">
+                        {{ tenant.name }}{% if tenant.bike_number %} ({{ tenant.bike_number }}){% endif %}
                     </a>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
         <p>No exact results found for "{{ query }}"</p>
-    
-        {% if related_results %}
-            <h2>Related Results</h2>
-            <ul>
-                {% for tenant in related_results %}
-                    <li>
-                        <!-- Link to tenant details -->
-                        <a href="{% url 'TenantDetails' tenant.property_id tenant.room_id tenant.id %}">
-                            {{ tenant.name }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No related results found either.</p>
-        {% endif %}
+        <h2>Related Results</h2>
+        <ul>
+            {% for tenant in results %}
+                <li>
+                    <a href="{% url 'TenantDetails' tenant.property_id tenant.room_number tenant.id %}">
+                        {{ tenant.name }}{% if tenant.bike_number %} ({{ tenant.bike_number }}){% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
     {% endif %}
+{% else %}
+    <p>No results found for "{{ query }}"</p>
+{% endif %}
 
 </body>
 </html>
