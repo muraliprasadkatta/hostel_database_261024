@@ -738,7 +738,6 @@ def AddTenants(request, property_id, room_number, tenant_id=None):
 
 
 
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from .models import Tenant, Room, AddProperty

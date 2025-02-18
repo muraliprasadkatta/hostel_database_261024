@@ -274,7 +274,7 @@
 @media screen and (max-width: 768px) {
 
 .payments-section {
-  margin-top: 65px;  
+  margin-top: 0px;  
   display: block;
   background: rgb(252, 235, 253);
   border-bottom: 1px black solid;
@@ -362,7 +362,7 @@
 
 <div class="payments-section">
   <div class="button-container">
-    <a href="#"><button id="collection-button" class="custom-button" onclick="moveIndicator(this)">Collections</button></a>
+    <a href="{% url 'dues_url' selected_property.id %}"><button id="collection-button" class="custom-button" onclick="moveIndicator(this)">Collections</button></a>
     <a href="#"><button id="dashboard-button" class="custom-button active" onclick="moveIndicator(this)">Dashboard</button></a>
     <a href="#"><button id="Requests-button" class="custom-button" onclick="moveIndicator(this)">Requests</button></a>
     <span id="indicator"></span>

@@ -1,91 +1,159 @@
 
 <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f0f2f5;
+    }
 
+    #payments {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        margin: 20px 0;
+    }
 
+    form#duesForm {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    input[type="date"], button[type="submit"] {
+        padding: 8px 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    table th, table td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+    }
+
+    table th {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .dues-table-button {
+        padding: 6px 12px;
+        border-radius: 5px;
+        border: none;
+        background-color: #28a745;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .dues-table-button:hover {
+        background-color: #218838;
+    }
+
+    /* Modal Styling Integration */
     .dues-modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
+        display: none; 
+        position: fixed; 
+        z-index: 1000; 
         left: 0;
         top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        backdrop-filter: blur(5px); /* Apply blur effect */
-        /* background-color: rgba(0,0,0,0.4);  */
-        /* Black w/ opacity */
+        width: 100%; 
+        height: 100%; 
+        overflow: auto;
+        backdrop-filter: blur(5px);
     }
 
     .dues-modal-content {
-        background-color: #fefefe;
-        margin: 5% auto; /* Centered vertically with a top margin */
+        background-color: #fff;
+        margin: 5% auto;
         padding: 20px;
-        border: 1px solid #888;
-        width: 60%; /* Adjust width as needed */
-        border-radius: 8px; /* Optional: adds rounded corners */
+        border-radius: 10px;
+        width: 60%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
-    /* Show modal and apply blur effect */
-.dues-modal.open {
-    display: block;
-}
-
     .dues-close, .dues-cancel {
-        color: #aaa;
         float: right;
-        font-size: 28px;
+        font-size: 24px;
         font-weight: bold;
+        color: #555;
         cursor: pointer;
     }
 
-    .dues-close:hover,
-    .dues-close:focus,
-    .dues-cancel:hover,
-    .dues-cancel:focus {
-        color: black;
-        text-decoration: none;
-    }
-
-    .dues-input-number::-webkit-outer-spin-button,
-    .dues-input-number::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
+    .dues-close:hover, .dues-cancel:hover {
+        color: #000;
     }
 
     .dues-input-number {
-        -moz-appearance: textfield;
-    }
-
-    .dues-error {
-        border: 2px solid red;
-        animation: shake 0.5s;
-    }
-
-    @keyframes shake {
-        0% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        50% { transform: translateX(5px); }
-        75% { transform: translateX(-5px); }
-        100% { transform: translateX(0); }
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
     }
 
     .dues-checkbox-button {
-        display: inline-block;
-        padding: 10px 20px;
+        padding: 8px 16px;
         margin: 5px;
-        border: 1px solid #ccc;
+        border: 1px solid #007bff;
         border-radius: 5px;
         cursor: pointer;
-    }
-
-    .dues-checkbox-button input[type="checkbox"] {
-        display: none;
+        transition: background-color 0.3s ease;
     }
 
     .dues-checkbox-button.active {
-        background-color: #add8e6;
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    @media (max-width: 768px) {
+        #payments {
+            padding: 10px;
+        }
+
+        form#duesForm {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        input[type="date"], button[type="submit"] {
+            width: 100%;
+        }
+
+        table th, table td {
+            font-size: 12px;
+            padding: 8px;
+        }
+
+        .dues-modal-content {
+            width: 90%;
+            margin: 10% auto;
+        }
     }
 </style>
+
 <div id="payments" class="section">
     <h1>Dues Page</h1>
     <form id="duesForm" method="get" action="{% url 'dues_url' selected_property.id %}">
@@ -119,10 +187,11 @@
                     <td>{{ tenant.rent }}</td>
                     <td>{{ tenant.next_due_date }}</td>
                     <td>
-                        <button type="button" onclick="openDuesPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.rent }}')">Pay</button>
+                        <button type="button" class="dues-table-button" onclick="openDuesPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.rent }}')">Pay</button>
                     </td>
                     <td>
-                        <button type="button" onclick="openDuesInitialPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.next_due_date|date:'F j, Y' }}', '{{ tenant.rent }}')">Initial Payment</button>
+                        <button type="button" class="dues-table-button" onclick="openDuesInitialPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.next_due_date|date:'F j, Y' }}', '{{ tenant.rent }}')">Initial Payment</button>
+                    </td>
                     </td>
                 </tr>
             {% empty %}
