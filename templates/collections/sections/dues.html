@@ -1,16 +1,106 @@
-<!-- collections/sections/dues.html -->
 {% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
-<div class="paymentContainer">
+<style>
+    @media screen and (max-width: 768px) {
+        .header {
+            display: none;
+        }
+
+        .scrollable-content {
+            margin-top: 0px;
+        }
+
+        .paymentContainer {
+            background: yellow;
+            margin-top: 50px;
+        }
+
+        /* Mobile Header */
+        .small-header {
+            position: fixed;
+            top: -80px;
+            left: 0;
+            width: 100%;
+            background: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: top 0.3s ease-in-out;
+        }
+
+        /* Header Buttons */
+        .header-buttons {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .header-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .header-buttons button:hover {
+            background: #0056b3;
+        }
+
+        /* Back Button - Overlapping Dues Button */
+        .back-btn {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50px;  /* Adjust width */
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            border: none;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease-out, color 0.3s ease-out;
+            z-index: 10; /* Ensure it appears above buttons */
+        }
+
+        .back-btn:hover {
+            transform: translateX(-50px);
+            color: red;
+        }
+    }
+</style>
+
+<!-- Mobile Header -->
+<div class="small-header" id="smallHeader">
+    <!-- Header Buttons (Dues & Remainder) -->
+    <div class="header-buttons">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <button id="duesBtnHeader" onclick="showSection('dues')">Dues</button>
+        <button id="remainderBtnHeader" onclick="showSection('remainder')">Remainder</button>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="paymentContainer" id="paymentContainer">
     <div class="button-container">
-        <!-- Toggle Buttons -->
         <button id="duesBtn" onclick="showSection('dues')">Dues</button>
         <button id="remainderBtn" onclick="showSection('remainder')">Remainder</button>
     </div>
 
-    <!-- Dynamic Content Sections -->
     <div id="duesContent" style="display: block;">
         {% include 'collections/sections/partials/dues_body.html' %}
     </div>
@@ -21,21 +111,38 @@
 </div>
 
 <script>
-// Ensure proper display of sections
-function showSection(section) {
-    const dues = document.getElementById('duesContent');
-    const remainder = document.getElementById('remainderContent');
-
-    if (section === 'dues') {
-        dues.style.display = 'block';
-        remainder.style.display = 'none';
-    } else if (section === 'remainder') {
-        dues.style.display = 'none';
-        remainder.style.display = 'block';
-    } else {
-        console.error('Invalid section name:', section);
+    function goBack() {
+        window.history.back();
     }
-}
+
+    function showSection(section) {
+        const dues = document.getElementById('duesContent');
+        const remainder = document.getElementById('remainderContent');
+
+        if (section === 'dues') {
+            dues.style.display = 'block';
+            remainder.style.display = 'none';
+        } else if (section === 'remainder') {
+            dues.style.display = 'none';
+            remainder.style.display = 'block';
+        } else {
+            console.error('Invalid section name:', section);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const smallHeader = document.getElementById("smallHeader");
+        const paymentContainer = document.getElementById("paymentContainer");
+        const scrollableContent = document.querySelector(".scrollable-content");
+
+        scrollableContent.addEventListener("scroll", function () {
+            if (paymentContainer.getBoundingClientRect().top <= 0) {
+                smallHeader.style.top = "0"; // Slide down
+            } else {
+                smallHeader.style.top = "-80px"; // Hide again
+            }
+        });
+    });
 </script>
 
 {% endblock %}

@@ -6,6 +6,11 @@
 
 <style>
   
+  html, body {
+    overflow: hidden; /* Prevent body from scrolling */
+    height: 100%;
+}
+
   /* Add your existing CSS styles here */
   body.sidebar-open .sidebar {
     transform: translateX(0);
@@ -89,8 +94,6 @@
   justify-content: start;
   margin: 6px;
   padding: 15px;
-
-  
 }
 
   /* Room box link covers the whole box */
@@ -295,13 +298,13 @@
     
   }
   .room-box {
-    margin: 10px;
+    margin: 0px;
     padding: 0px;
   }
 
 .display-room-row {
-  margin: 6px;
-  padding: 5px;
+  margin: 1px;
+  padding: 3px;
 }
   .form-row .box {
     margin: 0px;
