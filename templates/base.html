@@ -33,6 +33,11 @@
 /* Sidebar Close Button Styling */
 /* Sidebar Close Button Styling */
 
+/* This is maintain that fonts in all temlate in single way */
+html, body {
+    font-family: 'Poppins', sans-serif !important;
+}
+
 .close-btn{
     display: none;
 }
@@ -59,10 +64,15 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 1050;
     transition: all 0.3s ease;  /* Smooth transitions */
-    background: rgb(252, 235, 253); 
     border-top-left-radius:30px;
     border-top-right-radius:30px;
     border-bottom: 2px red solid;
+    background: linear-gradient(135deg, 
+    #ffffff 10%,  /* White */
+    #ff69b4 90%,   /* Pink */
+    #ff69b4 100%,   /* Pink */
+    #ff69b4 150%  /* Back to Pink */
+);
 
 }
 
@@ -78,8 +88,12 @@
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease;
-    background: rgb(250, 240, 251); 
-
+    background: linear-gradient(135deg, 
+    #ffffff 10%,  /* White */
+    #ff69b4 80%,   /* Pink */
+    #ff69b4 80%,   /* Pink */
+    #ff69b4 100%  /* Back to Pink */
+);
     
 }
 
@@ -435,8 +449,6 @@ text-align: center;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
-
-
 
   .nav-list li a:hover {
     background-color: #ddd;

@@ -809,3 +809,37 @@ searchBox.addEventListener('input', function () {
   });
 
 </script>
+
+
+
+
+
+-------------------------------------------------------------------------------
+
+
+
+
+base.html
+-----------
+
+    /* Main content starts after header and sidebar */
+.scrollable-content {
+    margin-left: 0px;
+    margin-top: 60px;  /* Space for the header */
+    height: calc(100vh - 5px);
+    overflow-y: auto;
+    padding: 0px;
+    /* background: red; */
+}
+
+dispaly_room.html
+-----------------
+
+  html, body {
+    overflow: hidden; /* Prevent body from scrolling */
+    height: 100%;
+}
+
+her i am getting multi scrolling issue so kee the body and template overflow hidden in which templat eu getting issue in that template 
+
+because we ha scrolling content in base template
