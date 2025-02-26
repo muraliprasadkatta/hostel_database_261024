@@ -30,6 +30,53 @@
 <body>
 <style>
         
+/* Ensure overlay covers the entire page */
+/* Darker Background Overlay When Modal is Open */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Slight darkness, not full black */
+    z-index: 9999; /* Above background but below modal */
+    backdrop-filter: blur(5px); /* Apply background blur */
+    transition: all 0.3s ease-in-out;
+}
+
+
+@keyframes fadeOverlay {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    animation: fadeOverlay 0.3s ease-in-out;
+}
+
+
+
+
+/* This is belong to background dimm for present (dues_page_payment_modal.html)  */
+
+
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+
+
 /* Sidebar Close Button Styling */
 /* Sidebar Close Button Styling */
 
@@ -37,6 +84,8 @@
 html, body {
     font-family: 'Poppins', sans-serif !important;
 }
+
+
 
 .close-btn{
     display: none;
@@ -530,6 +579,9 @@ body.mobile-view .sidebar {
 
 
 
+
+
+
   @media (max-width: 768px) {
 
     /* Header static offset without animation or visible shift */
@@ -659,6 +711,10 @@ body.mobile-view .sidebar {
 
 
 </style>
+
+
+<!-- Global Background Overlay (Covers Entire Page) -->
+<div id="overlay" class="overlay" onclick="closeAllModals()"></div>
 
   <!-- Add the menu button for mobile view -->
 
@@ -790,14 +846,90 @@ body.mobile-view .sidebar {
   <!-- Content and Payment Template -->
   {% include 'data/add_property_modal.html' %}
 
+
   <div class="scrollable-content">
 
     {% block content %}
     <!-- All the content you want to display goes here -->
     {% endblock %}
 </div>
+
+
+
+
+<!-- This is belong to background dimm for present (dues_page_payment_modal.html)  -->
+<script>
+  // Function to show overlay and apply blur to background
+function showOverlay() {
+    let overlay = document.getElementById("overlay");
+    if (overlay) {
+        overlay.style.display = "block"; // Show overlay
+        document.body.classList.add("blur-background"); // Add blur effect to the background
+    }
+}
+
+// Function to hide overlay and remove background blur
+function hideOverlay() {
+    let overlay = document.getElementById("overlay");
+    if (overlay) {
+        overlay.style.display = "none"; // Hide overlay
+    }
+    document.body.classList.remove("blur-background"); // ✅ Ensure blur is removed immediately
+}
+
+// Close all modals when clicking outside
+function closeAllModals() {
+    let modals = document.querySelectorAll(".small-payment-modal, .dues-modal");
+    modals.forEach(modal => modal.style.display = "none");
+    hideOverlay(); // ✅ Ensure background blur is removed when all modals are closed
+}
+
+// Close modals when clicking on the overlay
+window.onclick = function(event) {
+    let overlay = document.getElementById("overlay");
+    if (event.target === overlay) {
+        closeAllModals();
+    }
+};
+
+function closeDuesPaymentModal() {
+    var modal = document.getElementById("duesPaymentModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+    checkAndRemoveBlur(); // ✅ Immediate check without delay
+}
+
+function closeDuesInitialPaymentModal() {
+    var modal = document.getElementById("duesInitialPaymentModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+    checkAndRemoveBlur(); // ✅ Immediate check without delay
+}
+
+// ✅ Function to remove blur only when all modals are closed
+function checkAndRemoveBlur() {
+    let duesModal = document.getElementById("duesPaymentModal");
+    let initialModal = document.getElementById("duesInitialPaymentModal");
+    let smallModal = document.getElementById("smallPaymentModal");
+
+    if (
+        (!duesModal || duesModal.style.display === "none") &&
+        (!initialModal || initialModal.style.display === "none") &&
+        (!smallModal || smallModal.style.display === "none")
+    ) {
+        hideOverlay(); // ✅ Blur will be removed only when all modals are closed
+    }
+}
+
+</script>
+
+
+
 <!-- for search box in all template  -->
 <!-- 206 in note pad -->
+
 
 
 

@@ -53,13 +53,6 @@ input[type="date"] {
     background-color: #0056b3;
 }
 
-
-
-
-
-
-
-
     #payments {
         background-color: #fff;
         border-radius: 10px;
@@ -124,27 +117,28 @@ input[type="date"] {
         background-color: #218838;
     }
 
-    /* Modal Styling Integration */
-    .dues-modal {
-        display: none; 
-        position: fixed; 
-        z-index: 1000; 
-        left: 0;
-        top: 0;
-        width: 100%; 
-        height: 100%; 
-        overflow: auto;
-        backdrop-filter: blur(5px);
-    }
+/* Ensure dues modal appears on top */
+.dues-modal {
+    display: none;
+    position: fixed;
+    z-index: 11000 !important; /* 🔹 Ensure modal stays above everything */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* 🔹 Center the modal properly */
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2); /* Smooth shadow */
+}
 
-    .dues-modal-content {
-        background-color: #fff;
-        margin: 5% auto;
-        padding: 20px;
-        border-radius: 10px;
-        width: 60%;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
+/* Ensure modal content is visible */
+.dues-modal-content {
+    position: relative;
+    z-index: 11001 !important; /* 🔹 Ensures content is above overlay */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
 
     .dues-close, .dues-cancel {
         float: right;
@@ -225,8 +219,6 @@ input[type="date"] {
         </div>
     </form>
 
-    
-    
 
     <h2>
         Tenants with due payments 
@@ -243,7 +235,6 @@ input[type="date"] {
                 <th>Due Amount</th>
                 <th>Due Date</th>
                 <th>Payment</th>
-                <th>Initial Payment</th>
             </tr>
         </thead>
         <tbody>
@@ -253,20 +244,19 @@ input[type="date"] {
                     <td>{{ tenant.rent }}</td>
                     <td>{{ tenant.next_due_date }}</td>
                     <td>
-                        <button type="button" class="dues-table-button" onclick="openDuesPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.rent }}')">Pay</button>
-                    </td>
-                    <td>
-                        <button type="button" class="dues-table-button" onclick="openDuesInitialPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.next_due_date|date:'F j, Y' }}', '{{ tenant.rent }}')">Initial Payment</button>
-                    </td>
-                    </td>
+                        <button type="button" class="dues-table-button" onclick="openSmallPaymentModal('{{ tenant.id }}', '{{ tenant.name }}', '{{ tenant.rent }}')">
+                            Pay
+                        </button>  
+                     </td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5">No tenants with due payments up to this date.</td>
+                    <td colspan="4">No tenants with due payments up to this date.</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    
 
         <!-- The Payment Modal -->
         <div id="duesPaymentModal" class="dues-modal">
@@ -331,6 +321,9 @@ input[type="date"] {
     </div>
 </div>
 
+{% include 'collections/sections/partials/dues_page_payment_modal.html' %}
+
+
 <script>
     var initialTenantAmountOriginal = 0;
 
@@ -342,6 +335,10 @@ input[type="date"] {
         document.getElementById("duesPaymentAmountInput").value = tenantAmount;
         modal.style.display = "block";
         toggleDuesPaymentReferenceInput();
+
+        modal.style.display = "block";
+        modal.classList.add("modal-clear"); // ✅ Ensure modal remains clear
+        showOverlay(); // ✅ Call background blur effect
     }
 
     function openDuesInitialPaymentModal(tenantId, tenantName, tenantDueDate, tenantAmount) {
@@ -356,6 +353,9 @@ input[type="date"] {
         generateDuesRecommendedAmounts(initialTenantAmountOriginal);
         modal.style.display = "block";
         toggleDuesInitialReferenceInput();
+
+        modal.classList.add("modal-clear"); // ✅ Ensure modal remains clear
+        showOverlay(); // ✅ Call background blur effect
     }
 
     function closeDuesPaymentModal() {

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+<style>
+    /* Payment Modal Styling (Responsive & Beautiful) */
+.small-payment-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000; /* Ensure modal is above the overlay */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    width: 40%; /* Default width for desktops */
+    max-width: 500px; /* Maximum width to prevent oversized modals */
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2); /* Smooth shadow */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -55%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Modal Content Styling */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #444;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: red;
+}
+
+/* Button Group */
+.button-group {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* Button Styles */
+.modal-btn {
+    flex: 1; /* Buttons will share equal width */
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+/* Full Payment Button */
+.full-payment {
+    background-color: #28a745; /* Green */
+    color: white;
+}
+
+.full-payment:hover {
+    background-color: #218838;
+}
+
+/* Initial Payment Button */
+.initial-payment {
+    background-color: #ff9800; /* Orange */
+    color: white;
+}
+
+.initial-payment:hover {
+    background-color: #e68900;
+}
+
+/* ✅ Responsive Design: Mobile-friendly Modal */
+@media (max-width: 768px) {
+    .small-payment-modal {
+        width: 90%; /* Full width on mobile */
+        max-width: 95%; /* Prevents cutting on very small screens */
+        padding: 15px;
+    }
+
+    .modal-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .button-group {
+        flex-direction: column; /* Stack buttons vertically on mobile */
+    }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Small Payment Modal -->
+<div id="smallPaymentModal" class="small-payment-modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSmallPaymentModal()">&times;</span>
+        <h2>Choose Payment Type</h2>
+        <p>Tenant: <span id="smallModalTenantName"></span></p>
+        <p>Due Amount: ₹<span id="smallModalTenantRent"></span></p>
+
+        <div class="button-group">
+            <button class="modal-btn full-payment" onclick="openFullPaymentModal()">Full Payment</button>
+            <button class="modal-btn initial-payment" onclick="openInitialPaymentModal()">Initial Payment</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function openSmallPaymentModal(tenantId, tenantName, tenantRent, tenantDueDate) {
+        let modal = document.getElementById("smallPaymentModal");
+  
+        if (modal) {
+            // Set tenant details inside modal
+            document.getElementById("smallModalTenantName").innerText = tenantName;
+            document.getElementById("smallModalTenantRent").innerText = tenantRent;
+  
+            // Store tenant details globally
+            window.currentTenantId = tenantId;
+            window.currentTenantName = tenantName;
+            window.currentTenantRent = tenantRent;
+            window.currentTenantDueDate = tenantDueDate;
+  
+            // Open modal and dim background
+            modal.style.display = "block";
+            showOverlay();
+        }
+    }
+  
+    function closeSmallPaymentModal() {
+        let modal = document.getElementById("smallPaymentModal");
+  
+        if (modal) {
+            modal.style.display = "none";
+            hideOverlay();
+        }
+    }
+  
+    function openFullPaymentModal() {
+        closeSmallPaymentModal(); // Close small modal first
+        openDuesPaymentModal(window.currentTenantId, window.currentTenantName, window.currentTenantRent);
+    }
+  
+    function openInitialPaymentModal() {
+        closeSmallPaymentModal(); // Close small modal first
+        openDuesInitialPaymentModal(window.currentTenantId, window.currentTenantName, window.currentTenantDueDate, window.currentTenantRent);
+    }
+  </script>
+  
+</body>
+</html>
