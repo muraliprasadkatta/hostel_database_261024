@@ -6,8 +6,6 @@
     <style>
 
 
-
-
 .small-header,.collection-sticky-header{
     display: none;
 }
@@ -38,16 +36,14 @@
 
 }
 
-/* Hover Effect */
-.button-container button:hover {
-    background: linear-gradient(135deg, #003d80, #007bff); /* Reverse gradient */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Soft shadow */
+.button-container button.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border: 2px solid #0056b3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Click Effect */
-.button-container button:active {
-    background: linear-gradient(135deg, #002855, #0056b3);
-}
 
 
 
@@ -235,22 +231,38 @@
         function showSection(section) {
             const dues = document.getElementById('duesContent');
             const remainder = document.getElementById('remainderContent');
+            const duesBtn = document.getElementById('duesBtn');
+            const remainderBtn = document.getElementById('remainderBtn');
+
+            // Remove active class from both buttons
+            document.querySelectorAll(".button-container button").forEach(btn => btn.classList.remove("active"));
 
             if (section === 'dues') {
                 dues.style.display = 'block';
                 remainder.style.display = 'none';
+                duesBtn.classList.add("active"); // ✅ Highlight "Dues" button
             } else if (section === 'remainder') {
                 dues.style.display = 'none';
                 remainder.style.display = 'block';
+                remainderBtn.classList.add("active"); // ✅ Highlight "Remainder" button
             } else {
                 console.error('Invalid section name:', section);
             }
         }
 
+
         document.addEventListener("DOMContentLoaded", function () {
             const smallHeader = document.getElementById("smallHeader");
             const paymentContainer = document.getElementById("paymentContainer");
             const scrollableContent = document.querySelector(".scrollable-content");
+
+
+                // ✅ Automatically highlight the "Dues" button on page load
+            const defaultButton = document.getElementById("duesBtn"); 
+            if (defaultButton) {
+                defaultButton.classList.add("active");
+            }
+
 
             scrollableContent.addEventListener("scroll", function () {
                 if (paymentContainer.getBoundingClientRect().top <= 0) {

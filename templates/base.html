@@ -894,19 +894,20 @@ window.onclick = function(event) {
 
 function closeDuesPaymentModal() {
     var modal = document.getElementById("duesPaymentModal");
-    if (modal) {
-        modal.style.display = "none";
-    }
-    checkAndRemoveBlur(); // ✅ Immediate check without delay
+    modal.style.display = "none";
+    setTimeout(() => {
+        hideOverlay();
+    }, 50); // ✅ Small delay to ensure blur removal
 }
 
 function closeDuesInitialPaymentModal() {
     var modal = document.getElementById("duesInitialPaymentModal");
-    if (modal) {
-        modal.style.display = "none";
-    }
-    checkAndRemoveBlur(); // ✅ Immediate check without delay
+    modal.style.display = "none";
+    setTimeout(() => {
+        hideOverlay();
+    }, 50); // ✅ Small delay to ensure blur removal
 }
+
 
 // ✅ Function to remove blur only when all modals are closed
 function checkAndRemoveBlur() {

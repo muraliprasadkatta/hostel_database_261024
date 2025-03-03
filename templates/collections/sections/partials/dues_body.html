@@ -359,14 +359,17 @@ input[type="date"] {
     }
 
     function closeDuesPaymentModal() {
-        var modal = document.getElementById("duesPaymentModal");
-        modal.style.display = "none";
-    }
+    var modal = document.getElementById("duesPaymentModal");
+    modal.style.display = "none";
+    hideOverlay(); // ✅ Background blur remove avutundhi
+}
 
-    function closeDuesInitialPaymentModal() {
-        var modal = document.getElementById("duesInitialPaymentModal");
-        modal.style.display = "none";
-    }
+function closeDuesInitialPaymentModal() {
+    var modal = document.getElementById("duesInitialPaymentModal");
+    modal.style.display = "none";
+    hideOverlay(); // ✅ Background blur remove avutundhi
+}
+
 
     function clearDuesDefaultZero(input) {
         if (input.value === "0") {
