@@ -15,7 +15,8 @@
     justify-content: space-between; /* Ensures equal spacing */
     width: 100%;
     max-width: 100%; /* Ensures full width */
-    margin: 0 auto;
+    margin: 10px;
+    gap: 20px;
 
 }
 
@@ -36,15 +37,13 @@
 
 }
 
-.button-container button.active {
+/* Active Button State */
+.button-container button.active,
+.header-buttons button.active {
     background-color: #007bff;
     color: white;
     font-weight: bold;
-    border: 2px solid #0056b3;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
-
-
 
 
         @media screen and (max-width: 768px) {
@@ -102,7 +101,7 @@
 
 .button-container button {
     flex: 1; /* Ensures equal width */
-    padding: 12px;
+    padding: 8px;
     font-size: 16px;
     border: 2px solid black;
     cursor: pointer;
@@ -131,6 +130,7 @@
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 z-index: 1000;
                 transition: top 0.3s ease-in-out;
+                
             }
 
             /* Header Buttons */
@@ -139,14 +139,15 @@
                 justify-content: center;
                 width: 100%;
                 position: relative;
+                gap: 10px;
             }
 
             .header-buttons button {
                 flex: 1;
                 padding: 10px;
                 border: none;
-                background: #007bff;
-                color: white;
+                /* background: #007bff; */
+                /* color: white;     */
                 border-radius: 5px;
                 cursor: pointer;
                 font-size: 14px;
@@ -154,9 +155,7 @@
                 text-align: center;
             }
 
-            .header-buttons button:hover {
-                background: #0056b3;
-            }
+
 
 
             /* Back Button - Overlapping Dues Button */
@@ -167,7 +166,7 @@
                 width: 50px;  /* Adjust width */
                 height: 100%;
                 border: none;
-                color: white;
+                color: black;
                 font-size: 25px !important; /* Overrides other styles */
                 display: flex;
                 align-items: center;
@@ -175,12 +174,33 @@
                 cursor: pointer;
                 transition: transform 0.3s ease-out, color 0.3s ease-out;
                 z-index: 10; /* Ensure it appears above buttons */
+
+            }
+
+            .back-btn::before {
+                content: "←"; /* Unicode left arrow */
+                font-size: 22px; /* Adjust arrow size */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1; /* Ensures vertical alignment */
+                position: relative;
+                top: -2px;  /* Move up (negative value), move down (positive value) */
+            }
+
+
+            /* When Dues is Active */
+            .back-btn.dues-active {
+                background-color: #007bff; /* Blue */   
+                color: white;
             }
 
             .back-btn:hover {
                 transform: translateX(-50px);
-                color: red;
+                background: rgb(252, 85, 85);
             }
+
+
         }
 
     </style>
@@ -189,7 +209,7 @@
     <div class="small-header" id="smallHeader">
         <!-- Header Buttons (Dues & Remainder) -->
         <div class="header-buttons">
-            <button class="back-btn" onclick="goBack()">←</button>
+            <button class="back-btn" onclick="goBack()"></button>
             <button id="duesBtnHeader" onclick="showSection('dues')">Dues</button>
             <button id="remainderBtnHeader" onclick="showSection('remainder')">Remainder</button>
         </div>
@@ -221,57 +241,75 @@
         </div>
     </div>
 
-
+<!-- This is script is used for active the buttons and show the selected sections -->
     
-    <script>
-        function goBack() {
-            window.history.back();
-        }
+<script>
+    // Function to go back to the previous page
+function goBack() {
+    window.history.back();
+}
 
-        function showSection(section) {
-            const dues = document.getElementById('duesContent');
-            const remainder = document.getElementById('remainderContent');
-            const duesBtn = document.getElementById('duesBtn');
-            const remainderBtn = document.getElementById('remainderBtn');
+// Function to show the selected section and update the active button states
+function showSection(section) {
+    const dues = document.getElementById('duesContent');
+    const remainder = document.getElementById('remainderContent');
 
-            // Remove active class from both buttons
-            document.querySelectorAll(".button-container button").forEach(btn => btn.classList.remove("active"));
+    // Buttons in Main Section
+    const duesBtn = document.getElementById('duesBtn');
+    const remainderBtn = document.getElementById('remainderBtn');
 
-            if (section === 'dues') {
-                dues.style.display = 'block';
-                remainder.style.display = 'none';
-                duesBtn.classList.add("active"); // ✅ Highlight "Dues" button
-            } else if (section === 'remainder') {
-                dues.style.display = 'none';
-                remainder.style.display = 'block';
-                remainderBtn.classList.add("active"); // ✅ Highlight "Remainder" button
+    // Buttons in Small Header
+    const duesBtnHeader = document.getElementById('duesBtnHeader');
+    const remainderBtnHeader = document.getElementById('remainderBtnHeader');
+
+    // Back Button
+    const backBtn = document.querySelector('.back-btn');
+
+    // Remove 'active' class from all buttons (main, header, and back button)
+    document.querySelectorAll(".button-container button, .header-buttons button").forEach(btn => btn.classList.remove("active"));
+    backBtn.classList.remove("dues-active", "remainder-active"); // ✅ Ensure old states are removed
+
+    if (section === 'dues') {
+        dues.style.display = 'block';
+        remainder.style.display = 'none';
+
+        // Set active class for main and small header buttons
+        duesBtn.classList.add("active");
+        duesBtnHeader.classList.add("active");
+        backBtn.classList.add("dues-active"); // ✅ Change back button color for "Dues"
+    } else if (section === 'remainder') {
+        dues.style.display = 'none';
+        remainder.style.display = 'block';
+
+        // Set active class for main and small header buttons
+        remainderBtn.classList.add("active");
+        remainderBtnHeader.classList.add("active");
+        backBtn.classList.add("remainder-active"); // ✅ Change back button color for "Remainder"
+    } else {
+        console.error('Invalid section name:', section);
+    }
+}
+
+// ✅ Function to execute when the page loads
+document.addEventListener("DOMContentLoaded", function () { 
+    const smallHeader = document.getElementById("smallHeader");
+    const paymentContainer = document.getElementById("paymentContainer");
+    const scrollableContent = document.querySelector(".scrollable-content");
+
+    // ✅ Automatically highlight "Dues" button on page load
+    showSection('dues'); // ✅ Ensures correct default state
+
+    // ✅ Scroll Event - Show Small Header when scrolling
+    if (scrollableContent) {
+        scrollableContent.addEventListener("scroll", function () {
+            if (paymentContainer.getBoundingClientRect().top <= 0) {
+                smallHeader.style.top = "0"; // Show small header
             } else {
-                console.error('Invalid section name:', section);
+                smallHeader.style.top = "-80px"; // Hide small header
             }
-        }
-
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const smallHeader = document.getElementById("smallHeader");
-            const paymentContainer = document.getElementById("paymentContainer");
-            const scrollableContent = document.querySelector(".scrollable-content");
-
-
-                // ✅ Automatically highlight the "Dues" button on page load
-            const defaultButton = document.getElementById("duesBtn"); 
-            if (defaultButton) {
-                defaultButton.classList.add("active");
-            }
-
-
-            scrollableContent.addEventListener("scroll", function () {
-                if (paymentContainer.getBoundingClientRect().top <= 0) {
-                    smallHeader.style.top = "0"; // Slide down
-                } else {
-                    smallHeader.style.top = "-50px"; // Hide again
-                }
-            });
         });
-    </script>
+    }
+});
 
+</script>
     {% endblock %}

@@ -10,6 +10,15 @@
         -moz-appearance: textfield;
     }
 
+.remaining-amount-input {
+    width: 80px; /* Adjust width as needed */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+
     .error {
         border: 2px solid red;
         animation: shake 0.2s ease-in-out 0s 2;
@@ -32,6 +41,308 @@
         background-color: yellow;
         color: black;
     }
+
+    /* ✅ Scrollable Table for Desktop */
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Enables horizontal scrolling */
+    white-space: nowrap;
+}
+
+
+
+/* ✅ Table Tenant Name Cell */
+.tenant-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between avatar and name */
+}
+
+/* ✅ Small Circular Avatar */
+.table-avatar {
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+/* ✅ Truncated Tenant Name */
+.table-tenant-name {
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px; /* Prevents long names from breaking layout */
+}
+
+
+/* ✅ Hide Table on Small Screens & Show Cards */
+@media screen and (max-width: 768px) {
+    .table-container {
+        display: none; /* Hide table on mobile */
+    }
+
+/* ✅ Due Date as a Small Title */
+.card-due-date {
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+
+    .tenant-name {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 5px;
+    max-width: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    display: inline-block; /* Ensures proper hover effect */
+    position: relative; /* Required for tooltip positioning */
+}
+
+
+    .payment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+
+/* ✅ Payment Card Layout */
+.payment-card {
+    position: relative; /* Enables positioning */
+    display: flex;
+    flex-direction: column; /* Stack elements for mobile */
+    align-items: flex-start;
+    background: white;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #007bff;
+    font-family: Arial, sans-serif;
+    width: 100%;
+    position: relative;
+}
+
+/* ✅ Card Header */
+.card-header {
+    display: flex;
+    justify-content: space-between; /* Places Rent & Amount Paid on the Right */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+    background: #f8f9fa; /* Light background for header */
+    padding: 10px;
+    border-radius: 8px;
+}
+
+
+/* ✅ Left Section: Avatar & Name */
+.card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Left Section: Circular Avatar & Truncated Name */
+.card-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    cursor: pointer;
+
+}
+
+/* ✅ Popup Background */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* ✅ Popup Box */
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* ✅ Close Button */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* ✅ Circular Avatar in Popup */
+.popup-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: #007bff;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+}
+
+
+
+
+/* ✅ Circular Avatar */
+.tenant-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+/* ✅ Truncated Tenant Name */
+.tenant-name {
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px; /* Prevents overflow */
+}
+
+/* ✅ Tenant Rent (Top Right) */
+.tenant-rent {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* ✅ Payment Type */
+.tenant-payment-type {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Right Section: Tenant Details */
+.card-right {
+    flex-grow: 1;
+}
+
+/* ✅ Right Section: Rent & Amount Paid */
+.card-header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+
+/* ✅ Amount Paid with Label */
+.tenant-amount-paid {
+    font-size: 14px;
+    font-weight: bold;
+    color: #28a745;
+}
+/* Input and Button Styling */
+.payment-card input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.payment-card button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+}
+
+
+    /* ✅ Mobile Input Container */
+    .mobile-input-container {
+        position: relative;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    /* ✅ Fixed Label Position Above the Input */
+    .mobile-floating-label {
+        position: absolute;
+        top: -10px; /* Keep label fixed above input */
+        left: 12px;
+        font-size: 12px; /* Smaller font */
+        color: #007bff;
+        background: white;
+        padding: 0 5px;
+        transition: none; /* No movement on focus */
+        pointer-events: none; /* Prevents clicking on the label */
+    }
+
+    /* ✅ Floating Input Field */
+    .mobile-floating-input {
+        width: 100%;
+        padding: 12px 10px;
+        font-size: 16px;
+        border: 2px solid #007bff;
+        border-radius: 5px;
+        outline: none;
+        background: white;
+        text-align: center; /* Centered input text */
+    }
+
+    /* ✅ Prevent Any Label Movement */
+    .mobile-floating-input:focus + .mobile-floating-label,
+    .mobile-floating-input:not(:placeholder-shown) + .mobile-floating-label {
+        top: -10px; /* Keeps label fixed above */
+        font-size: 12px;
+    }
+
+
+
+}
+
 </style>
 <div id="payments" class="section">
     <h1>Remainder Page</h1>
@@ -51,7 +362,14 @@
         <tbody>
             {% for remainder in remainders %}
                 <tr>
-                    <td>{{ remainder.tenant.name }}</td>
+                    <td class="tenant-name-cell">
+                        <div class="table-avatar">
+                            {{ remainder.tenant.name|first|upper }}
+                        </div>
+                        <span class="table-tenant-name">
+                            {{ remainder.tenant.name|slice:":12" }}{% if remainder.tenant.name|length > 12 %}...{% endif %}
+                        </span>
+                    </td>
                     <td>{{ remainder.tenant.rent|floatformat:"0" }}</td>
                     <td>{{ remainder.payment_type }}</td>
                     <td>{{ remainder.reference_number }}</td>
@@ -71,6 +389,63 @@
             {% endfor %}
         </tbody>
     </table>
+
+
+
+    <div class="payment-list">
+        {% for remainder in remainders %}
+            <div class="payment-card">
+                
+                <!-- ✅ Top Section: Avatar, Name, Tenant Rent & Amount Paid -->
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="tenant-avatar">
+                            {{ remainder.tenant.name|first|upper }}
+                        </div>
+                        <p class="tenant-name">
+                            {{ remainder.tenant.name|slice:":6" }}{% if remainder.tenant.name|length > 6 %}...{% endif %}
+                        </p>
+                    </div>
+                    <div class="card-header-right">
+                        <p class="tenant-rent">₹{{ remainder.tenant.rent|floatformat:"0" }}</p>
+                        <p class="tenant-amount-paid">Amount Paid: ₹{{ remainder.amount_paid|floatformat:"0" }}</p>
+                    </div>
+                </div>
+    
+                <!-- ✅ Right Side: Remaining Amount & Pay Button -->
+                <div class="card-right">
+                    <div class="mobile-input-container">
+                        <input type="number" id="mobileRemainingAmount{{ remainder.id }}" class="mobile-floating-input" value="{{ remainder.remaining_amount|floatformat:'0' }}" placeholder=" ">
+                        <label for="mobileRemainingAmount{{ remainder.id }}" class="mobile-floating-label">Remaining Amount</label>
+                    </div>
+                    <button>Pay</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    
+    
+    
+
+<!-- ✅ Popup Modal (Only Avatar & Full Name) -->
+<div id="tenantPopup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closeTenantPopup()">&times;</span>
+        <div class="popup-avatar"></div>
+        <h2 id="popupTenantName"></h2>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
 
     <!-- The Remainder Payment Modal -->
     <div id="remainderPaymentModal" class="modal">
@@ -104,6 +479,27 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    // ✅ Function to Open the Popup
+function openTenantPopup(name) {
+    document.getElementById("popupTenantName").textContent = name;
+    
+    // Set the first letter inside the avatar
+    document.querySelector(".popup-avatar").textContent = name.charAt(0).toUpperCase();
+
+    document.getElementById("tenantPopup").style.display = "flex";
+}
+
+// ✅ Function to Close the Popup
+function closeTenantPopup() {
+    document.getElementById("tenantPopup").style.display = "none";
+}
+
+</script>
+
+
 
 <script>
     // Function to update the button state based on the remaining amount input
